@@ -1,0 +1,1041 @@
+{
+  "catalogueVersion": "2026.10.19",
+  "lastUpdated": "2026-10-19",
+  "policy": "Associations describe documented or researched relationships between an entity and a technique. They never state that an entity has fingerprinted the current visitor. Each association carries its own evidence level (1–5).",
+  "entities": [
+    {
+      "entityId": "fingerprint-inc",
+      "name": "Fingerprint (FingerprintJS)",
+      "entityType": "Fingerprinting technology provider",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "fraud-prevention",
+        "identification"
+      ],
+      "description": "Publishes the open-source FingerprintJS library and sells a commercial visitor-identification service marketed for fraud prevention.",
+      "evidenceSummary": "The open-source library's source tree lists its entropy sources explicitly, which makes these Level 1 (confirmed implementation) for the open-source library.",
+      "sourceReferences": [
+        "fpjs-sources"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "Evidence covers the open-source library. The commercial product's signal set is not public and may differ.",
+      "associations": [
+        {
+          "techniqueId": "canvas-2d",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "canvas source module.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "audio-offline",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "audio and audio_base_latency source modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "fonts",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "fonts and font_preferences source modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "webgl-info",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "webgl source module.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "math-precision",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "math source module.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "screen",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "screen_resolution, color_depth and screen_frame modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "intl-timezone",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "timezone and date_time_locale modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "languages",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "languages module.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "platform",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "platform, vendor, vendor_flavors, os_cpu modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "cpu-memory",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "hardware_concurrency and device_memory modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "client-hints",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "user_agent_data and architecture modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "touch",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "touch_support module.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "user-preferences",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "contrast, forced_colors, inverted_colors, reduced_motion, reduced_transparency modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "display-media",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "color_gamut, hdr, monochrome modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "storage-mechanisms",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "local_storage, session_storage, indexed_db, cookies_enabled modules (availability).",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "content-blockers",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "dom_blockers module.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "browser-flags",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "pdf_viewer_enabled and cookies_enabled modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "plugins-mime",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "plugins module.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "pdf-support",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "pdf_viewer_enabled module.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "audio-capabilities",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "audio_base_latency module.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "text-metrics",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "font_preferences module (text widths in default font families).",
+          "sources": [
+            "fpjs-sources"
+          ]
+        },
+        {
+          "techniqueId": "storage-availability",
+          "relation": "uses",
+          "evidenceLevel": 1,
+          "summary": "open_database (WebSQL) and storage availability modules.",
+          "sources": [
+            "fpjs-sources"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "google",
+      "name": "Google",
+      "entityType": "Advertising platform",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "advertising",
+        "bot-detection",
+        "research"
+      ],
+      "description": "Operates major advertising platforms and the Chromium/Chrome browser. Also publishes security research.",
+      "evidenceSummary": "Chromium documentation describes UA reduction and Client Hints. Expert commentary reports a December 2024 ad-policy change permitting fingerprinting-type signals from February 2025. Google researchers documented cloaking via visitor fingerprinting.",
+      "sourceReferences": [
+        "chromium-ua-reduction",
+        "olejnik-google-2024",
+        "cloak-2016"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "medium",
+      "limitations": "The primary ad-policy text is not cited directly here (secondary source). No evidence is cited about which specific signals Google's ad products use.",
+      "associations": [
+        {
+          "techniqueId": "client-hints",
+          "relation": "mitigates",
+          "evidenceLevel": 2,
+          "summary": "Chromium moved high-entropy UA detail into Client Hints as part of UA reduction.",
+          "sources": [
+            "chromium-ua-reduction"
+          ]
+        },
+        {
+          "techniqueId": "user-agent",
+          "relation": "mitigates",
+          "evidenceLevel": 2,
+          "summary": "UA reduction freezes OS/device detail in Chrome's UA string.",
+          "sources": [
+            "chromium-ua-reduction"
+          ]
+        },
+        {
+          "techniqueId": "srv-ip",
+          "relation": "permits",
+          "evidenceLevel": 3,
+          "summary": "Reported policy change allowing advertisers to use IP addresses and fingerprinting-type signals (effective Feb 16, 2025).",
+          "sources": [
+            "olejnik-google-2024"
+          ]
+        },
+        {
+          "techniqueId": "consistency",
+          "relation": "researched",
+          "evidenceLevel": 3,
+          "summary": "Google researchers studied cloaking services that fingerprint visitors to evade security crawlers.",
+          "sources": [
+            "cloak-2016"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "meta",
+      "name": "Meta (Meta Pixel)",
+      "entityType": "Advertising platform",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "advertising",
+        "analytics"
+      ],
+      "description": "Operates the Meta Pixel analytics/advertising script embedded on many websites.",
+      "evidenceSummary": "Independent researchers documented (June 2025) Meta Pixel passing the _fbp cookie to Meta's Android apps via WebRTC to localhost.",
+      "sourceReferences": [
+        "localmess"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "The behaviour was Android-specific and reportedly stopped on June 3, 2025.",
+      "associations": [
+        {
+          "techniqueId": "srv-localhost",
+          "relation": "uses",
+          "evidenceLevel": 3,
+          "summary": "Web-to-app identifier bridge via localhost ports (\"Local Mess\").",
+          "sources": [
+            "localmess"
+          ]
+        },
+        {
+          "techniqueId": "webrtc-local",
+          "relation": "uses",
+          "evidenceLevel": 3,
+          "summary": "WebRTC STUN/TURN with SDP munging was the transport to localhost.",
+          "sources": [
+            "localmess"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "cloudflare",
+      "name": "Cloudflare (Bot Management, Turnstile)",
+      "entityType": "Bot detection provider",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "bot-detection"
+      ],
+      "description": "CDN and security provider offering bot management and the Turnstile challenge.",
+      "evidenceSummary": "First-party docs document JA3/JA4 TLS fingerprints in Bot Management. Turnstile docs say managed challenges use \"client-side signals\" without listing them.",
+      "sourceReferences": [
+        "cf-ja3",
+        "cf-turnstile"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "Turnstile's specific browser signals are not documented publicly; those associations are category-level only.",
+      "associations": [
+        {
+          "techniqueId": "srv-tls",
+          "relation": "uses",
+          "evidenceLevel": 2,
+          "summary": "JA3/JA4 fields documented in Bot Management.",
+          "sources": [
+            "cf-ja3"
+          ]
+        },
+        {
+          "techniqueId": "automation",
+          "relation": "uses",
+          "evidenceLevel": 4,
+          "summary": "Turnstile challenges use client-side signals; specific automation checks are not documented.",
+          "sources": [
+            "cf-turnstile"
+          ]
+        },
+        {
+          "techniqueId": "pointer-dynamics",
+          "relation": "uses",
+          "evidenceLevel": 4,
+          "summary": "Category-level: interaction signals are typical of challenge products; not specifically documented.",
+          "sources": [
+            "cf-turnstile"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "datadome",
+      "name": "DataDome",
+      "entityType": "Bot detection provider",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "bot-detection",
+        "fraud-prevention"
+      ],
+      "description": "Bot and online-fraud protection vendor.",
+      "evidenceSummary": "DataDome's own threat-research posts describe detecting headless Chrome and Chrome DevTools Protocol (CDP) usage, and discuss navigator.webdriver.",
+      "sourceReferences": [
+        "datadome-cdp"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "Detection internals are proprietary; posts describe approaches, not complete signal lists.",
+      "associations": [
+        {
+          "techniqueId": "automation",
+          "relation": "uses",
+          "evidenceLevel": 2,
+          "summary": "First-party research on headless-Chrome and CDP detection.",
+          "sources": [
+            "datadome-cdp"
+          ]
+        },
+        {
+          "techniqueId": "webdriver",
+          "relation": "uses",
+          "evidenceLevel": 2,
+          "summary": "Discusses navigator.webdriver and its evasion.",
+          "sources": [
+            "datadome-cdp"
+          ]
+        },
+        {
+          "techniqueId": "consistency",
+          "relation": "uses",
+          "evidenceLevel": 4,
+          "summary": "Category-level: consistency checks are typical of bot detection; not specifically documented in the cited post.",
+          "sources": [
+            "datadome-cdp"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "akamai",
+      "name": "Akamai",
+      "entityType": "Bot detection provider",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "bot-detection",
+        "research"
+      ],
+      "description": "CDN and security provider (Bot Manager).",
+      "evidenceSummary": "Akamai's threat research team presented a passive HTTP/2 fingerprinting method at Black Hat Europe 2017.",
+      "sourceReferences": [
+        "akamai-h2"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "The research describes the technique; product usage is not detailed in the cited source.",
+      "associations": [
+        {
+          "techniqueId": "srv-http2-http3",
+          "relation": "researched",
+          "evidenceLevel": 2,
+          "summary": "First-party research defining an HTTP/2 client fingerprint.",
+          "sources": [
+            "akamai-h2"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "threatmetrix",
+      "name": "LexisNexis ThreatMetrix",
+      "entityType": "Fraud prevention provider",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "fraud-prevention"
+      ],
+      "description": "Device-intelligence and fraud-prevention network used by banks and retailers.",
+      "evidenceSummary": "Independent research (2020) traced a script on eBay, served via a CNAME to a ThreatMetrix domain, that probed localhost ports for remote-desktop software.",
+      "sourceReferences": [
+        "nullsweep-portscan",
+        "register-ebay"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "medium",
+      "limitations": "Observed on specific deployments in 2020; current behaviour is not verified.",
+      "associations": [
+        {
+          "techniqueId": "srv-localhost",
+          "relation": "uses",
+          "evidenceLevel": 3,
+          "summary": "Localhost WebSocket port probing for remote-access tools (eBay, 2020).",
+          "sources": [
+            "nullsweep-portscan",
+            "register-ebay"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "addthis",
+      "name": "AddThis (Oracle, discontinued)",
+      "entityType": "Other documented technology provider",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "advertising",
+        "analytics"
+      ],
+      "description": "Former social-sharing widget provider whose scripts were widely embedded.",
+      "evidenceSummary": "The 2014 'Web Never Forgets' study measured canvas fingerprinting at scale; press coverage of the study attributes most observed canvas scripts to AddThis.",
+      "sourceReferences": [
+        "acar-2014"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "medium",
+      "limitations": "Historical (2014). The 95% attribution figure comes from press coverage of the study.",
+      "associations": [
+        {
+          "techniqueId": "canvas-2d",
+          "relation": "uses",
+          "evidenceLevel": 3,
+          "summary": "Canvas fingerprinting observed in AddThis scripts in 2014.",
+          "sources": [
+            "acar-2014"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "kissmetrics",
+      "name": "KISSmetrics",
+      "entityType": "Analytics provider",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "analytics"
+      ],
+      "description": "Web analytics company.",
+      "evidenceSummary": "A 2011 UC Berkeley study documented ETag and HTML5-storage respawning attributed to KISSmetrics.",
+      "sourceReferences": [
+        "ayenson-2011"
+      ],
+      "lastVerified": null,
+      "confidence": "medium",
+      "limitations": "Historical (2011). Source URL not re-verified in this catalogue revision.",
+      "associations": [
+        {
+          "techniqueId": "srv-cache-tracking",
+          "relation": "uses",
+          "evidenceLevel": 3,
+          "summary": "ETag-based identifier respawning (2011).",
+          "sources": [
+            "ayenson-2011"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "eff",
+      "name": "Electronic Frontier Foundation (Cover Your Tracks)",
+      "entityType": "Privacy organization",
+      "organizationCategory": "Non-profit",
+      "adversaryCategory": null,
+      "purpose": [
+        "research",
+        "privacy-defense"
+      ],
+      "description": "Digital-rights non-profit; runs the Cover Your Tracks (formerly Panopticlick) fingerprinting test.",
+      "evidenceSummary": "Cover Your Tracks' About page lists the characteristics it measures and explains comparison against recently observed visitors.",
+      "sourceReferences": [
+        "eff-cyt-about",
+        "eckersley-2010"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "Measures for education; its uniqueness numbers reflect its own self-selected visitor population.",
+      "associations": [
+        {
+          "techniqueId": "user-agent",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "User agent string.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        },
+        {
+          "techniqueId": "srv-http-headers",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "HTTP Accept headers.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        },
+        {
+          "techniqueId": "screen",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "Screen resolution and color depth.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        },
+        {
+          "techniqueId": "intl-timezone",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "System timezone.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        },
+        {
+          "techniqueId": "fonts",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "Installed fonts.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        },
+        {
+          "techniqueId": "canvas-2d",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "Canvas fingerprint hash.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        },
+        {
+          "techniqueId": "webgl-info",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "WebGL fingerprint hash.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        },
+        {
+          "techniqueId": "browser-flags",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "Cookie acceptance and Do Not Track.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        },
+        {
+          "techniqueId": "languages",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "Language.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        },
+        {
+          "techniqueId": "touch",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "Touchscreen support.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        },
+        {
+          "techniqueId": "plugins-mime",
+          "relation": "measures",
+          "evidenceLevel": 1,
+          "summary": "Installed plugins.",
+          "sources": [
+            "eff-cyt-about"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "tor-project",
+      "name": "The Tor Project (Tor Browser)",
+      "entityType": "Browser vendor",
+      "organizationCategory": "Non-profit",
+      "adversaryCategory": null,
+      "purpose": [
+        "privacy-defense"
+      ],
+      "description": "Develops Tor Browser, which aims to make all users look the same (uniformity).",
+      "evidenceSummary": "The Tor Browser manual documents letterboxing, font restrictions, canvas extraction blocking, limited languages and user-agent normalization.",
+      "sourceReferences": [
+        "tor-manual-fp"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "Protections apply to Tor Browser (and the related Mullvad Browser), not to Tor used with other browsers.",
+      "associations": [
+        {
+          "techniqueId": "viewport",
+          "relation": "mitigates",
+          "evidenceLevel": 1,
+          "summary": "Letterboxing rounds the content window to 200×100 multiples.",
+          "sources": [
+            "tor-manual-fp"
+          ]
+        },
+        {
+          "techniqueId": "screen",
+          "relation": "mitigates",
+          "evidenceLevel": 1,
+          "summary": "Screen values derived from the letterboxed window.",
+          "sources": [
+            "tor-manual-fp"
+          ]
+        },
+        {
+          "techniqueId": "fonts",
+          "relation": "mitigates",
+          "evidenceLevel": 1,
+          "summary": "Font enumeration limited to bundled fonts.",
+          "sources": [
+            "tor-manual-fp"
+          ]
+        },
+        {
+          "techniqueId": "canvas-2d",
+          "relation": "mitigates",
+          "evidenceLevel": 1,
+          "summary": "Canvas image extraction blocked by default.",
+          "sources": [
+            "tor-manual-fp"
+          ]
+        },
+        {
+          "techniqueId": "languages",
+          "relation": "mitigates",
+          "evidenceLevel": 1,
+          "summary": "Languages restricted to a small predefined set.",
+          "sources": [
+            "tor-manual-fp"
+          ]
+        },
+        {
+          "techniqueId": "user-agent",
+          "relation": "mitigates",
+          "evidenceLevel": 1,
+          "summary": "User-agent normalized across users.",
+          "sources": [
+            "tor-manual-fp"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "brave",
+      "name": "Brave",
+      "entityType": "Browser vendor",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "privacy-defense"
+      ],
+      "description": "Chromium-based browser that randomizes (\"farbles\") fingerprintable outputs.",
+      "evidenceSummary": "Brave's 'Fingerprinting defenses 2.0' post documents farbling of canvas and Web Audio with a per-session, per-site seed.",
+      "sourceReferences": [
+        "brave-fp2"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "The cited post covers canvas and Web Audio; other randomized APIs are not cited here.",
+      "associations": [
+        {
+          "techniqueId": "canvas-2d",
+          "relation": "mitigates",
+          "evidenceLevel": 1,
+          "summary": "Canvas output farbling.",
+          "sources": [
+            "brave-fp2"
+          ]
+        },
+        {
+          "techniqueId": "audio-offline",
+          "relation": "mitigates",
+          "evidenceLevel": 1,
+          "summary": "Web Audio output farbling.",
+          "sources": [
+            "brave-fp2"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "mozilla",
+      "name": "Mozilla (Firefox)",
+      "entityType": "Browser vendor",
+      "organizationCategory": "Non-profit/Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "privacy-defense"
+      ],
+      "description": "Develops Firefox, with Fingerprinting Protection (FPP) and the stricter resistFingerprinting (RFP) mode.",
+      "evidenceSummary": "Mozilla Support documents FPP as the recommended mode and RFP as a stricter option that can break sites. The Mozilla wiki tracks FPP protections.",
+      "sourceReferences": [
+        "mozilla-rfp",
+        "mozilla-fpp-wiki"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "medium",
+      "limitations": "Technique-level details of FPP/RFP are not quoted from the cited pages; those links are category-level.",
+      "associations": [
+        {
+          "techniqueId": "canvas-2d",
+          "relation": "mitigates",
+          "evidenceLevel": 4,
+          "summary": "FPP/RFP include canvas protections (details not quoted here).",
+          "sources": [
+            "mozilla-fpp-wiki"
+          ]
+        },
+        {
+          "techniqueId": "intl-timezone",
+          "relation": "mitigates",
+          "evidenceLevel": 4,
+          "summary": "RFP is widely reported to report UTC; not quoted from the cited page.",
+          "sources": [
+            "mozilla-rfp"
+          ]
+        },
+        {
+          "techniqueId": "timer-precision",
+          "relation": "mitigates",
+          "evidenceLevel": 4,
+          "summary": "RFP coarsens timers; not quoted from the cited page.",
+          "sources": [
+            "mozilla-rfp"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "apple-webkit",
+      "name": "Apple (Safari / WebKit)",
+      "entityType": "Browser vendor",
+      "organizationCategory": "Commercial",
+      "adversaryCategory": null,
+      "purpose": [
+        "privacy-defense"
+      ],
+      "description": "Develops Safari and WebKit, with tracking prevention and Advanced Fingerprinting Protection.",
+      "evidenceSummary": "WebKit's tracking-prevention page documents restricting web content to web fonts and OS-bundled fonts and freezing the user agent. The Private Browsing 2.0 post introduces Advanced Fingerprinting Protection.",
+      "sourceReferences": [
+        "webkit-tp",
+        "webkit-pb2"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "Advanced Fingerprinting Protection's scope differs between Private Browsing and normal browsing.",
+      "associations": [
+        {
+          "techniqueId": "fonts",
+          "relation": "mitigates",
+          "evidenceLevel": 1,
+          "summary": "Only web fonts and OS-bundled fonts are visible to web content.",
+          "sources": [
+            "webkit-tp"
+          ]
+        },
+        {
+          "techniqueId": "user-agent",
+          "relation": "mitigates",
+          "evidenceLevel": 1,
+          "summary": "User agent frozen across minor updates.",
+          "sources": [
+            "webkit-tp"
+          ]
+        },
+        {
+          "techniqueId": "canvas-2d",
+          "relation": "mitigates",
+          "evidenceLevel": 2,
+          "summary": "Advanced Fingerprinting Protection adds noise to fingerprintable APIs.",
+          "sources": [
+            "webkit-pb2"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "amiunique",
+      "name": "AmIUnique (Inria / University of Lille)",
+      "entityType": "Research project",
+      "organizationCategory": "Academic",
+      "adversaryCategory": null,
+      "purpose": [
+        "research"
+      ],
+      "description": "Research platform collecting fingerprints to study browser uniqueness.",
+      "evidenceSummary": "Laperdrix et al. (S&P 2016) analysed 118,934 AmIUnique fingerprints; Gómez-Boix et al. (WWW 2018) showed much lower uniqueness on a large general population.",
+      "sourceReferences": [
+        "laperdrix-2016",
+        "gomezboix-2018"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "AmIUnique visitors are self-selected and privacy-aware.",
+      "associations": [
+        {
+          "techniqueId": "canvas-2d",
+          "relation": "researched",
+          "evidenceLevel": 3,
+          "summary": "Found canvas highly discriminating.",
+          "sources": [
+            "laperdrix-2016"
+          ]
+        },
+        {
+          "techniqueId": "fonts",
+          "relation": "researched",
+          "evidenceLevel": 3,
+          "summary": "Font lists among the most discriminating attributes.",
+          "sources": [
+            "laperdrix-2016"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "princeton-openwpm",
+      "name": "Princeton WebTAP / OpenWPM",
+      "entityType": "Research project",
+      "organizationCategory": "Academic",
+      "adversaryCategory": null,
+      "purpose": [
+        "research"
+      ],
+      "description": "Web transparency research measuring tracking across the top 1 million sites.",
+      "evidenceSummary": "The 2016 census measured canvas fingerprinting on 14,371 sites and discovered AudioContext, WebRTC and Battery API fingerprinting in the wild.",
+      "sourceReferences": [
+        "englehardt-2016"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "high",
+      "limitations": "Measurements from 2016; prevalence today differs.",
+      "associations": [
+        {
+          "techniqueId": "canvas-2d",
+          "relation": "researched",
+          "evidenceLevel": 3,
+          "summary": "Prevalence measurement.",
+          "sources": [
+            "englehardt-2016"
+          ]
+        },
+        {
+          "techniqueId": "audio-offline",
+          "relation": "researched",
+          "evidenceLevel": 3,
+          "summary": "First observation of AudioContext fingerprinting in the wild.",
+          "sources": [
+            "englehardt-2016"
+          ]
+        },
+        {
+          "techniqueId": "webrtc-local",
+          "relation": "researched",
+          "evidenceLevel": 3,
+          "summary": "WebRTC local IP discovery observed in the wild.",
+          "sources": [
+            "englehardt-2016"
+          ]
+        },
+        {
+          "techniqueId": "battery",
+          "relation": "researched",
+          "evidenceLevel": 3,
+          "summary": "Battery API fingerprinting observed.",
+          "sources": [
+            "englehardt-2016"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "adv-cloaking",
+      "name": "Cloaking services & malicious redirectors",
+      "entityType": "Adversary category",
+      "organizationCategory": "Criminal ecosystem",
+      "adversaryCategory": "Cloaking / scam infrastructure",
+      "purpose": [
+        "malicious-targeting"
+      ],
+      "description": "Underground services that fingerprint visitors to show malicious content to victims and benign content to security crawlers.",
+      "evidenceSummary": "Invernizzi et al. (IEEE S&P 2016) analysed cloaking services sold underground and their visitor-fingerprinting techniques.",
+      "sourceReferences": [
+        "cloak-2016"
+      ],
+      "lastVerified": "2026-10-19",
+      "confidence": "medium",
+      "limitations": "Category description; individual actors vary.",
+      "associations": [
+        {
+          "techniqueId": "srv-ip",
+          "relation": "uses",
+          "evidenceLevel": 3,
+          "summary": "IP blacklists of crawler/security ranges.",
+          "sources": [
+            "cloak-2016"
+          ]
+        },
+        {
+          "techniqueId": "user-agent",
+          "relation": "uses",
+          "evidenceLevel": 3,
+          "summary": "User-agent based crawler detection.",
+          "sources": [
+            "cloak-2016"
+          ]
+        },
+        {
+          "techniqueId": "automation",
+          "relation": "uses",
+          "evidenceLevel": 4,
+          "summary": "Category-level: browser-environment checks to detect crawlers.",
+          "sources": [
+            "cloak-2016"
+          ]
+        }
+      ]
+    },
+    {
+      "entityId": "adv-state",
+      "name": "State-level surveillance",
+      "entityType": "Adversary category",
+      "organizationCategory": "Government",
+      "adversaryCategory": "State-level actor",
+      "purpose": [
+        "identification"
+      ],
+      "description": "Intelligence agencies seeking to de-anonymise users, including Tor users.",
+      "evidenceSummary": "Leaked NSA 'Tor Stinks' slides (published 2013) discuss persistent identifiers such as evercookies for de-anonymisation.",
+      "sourceReferences": [
+        "guardian-tor-stinks"
+      ],
+      "lastVerified": null,
+      "confidence": "medium",
+      "limitations": "Historical leaked documents; source URL not re-verified in this revision.",
+      "associations": [
+        {
+          "techniqueId": "storage-mechanisms",
+          "relation": "uses",
+          "evidenceLevel": 3,
+          "summary": "Evercookie-style persistent identifiers discussed for de-anonymisation.",
+          "sources": [
+            "guardian-tor-stinks"
+          ]
+        }
+      ]
+    }
+  ]
+}

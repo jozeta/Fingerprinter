@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- All assets are self-hosted. 'unsafe-inline' is allowed for styles only (dynamic widths in charts); scripts are 'self' only. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'none'; frame-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Fingerprinting Lab</title>
+  <link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<a class="visually-hidden-focusable skip-link" href="#view">Skip to content</a>
+<div id="live-region" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
+<header class="topbar d-lg-none border-bottom">
+  <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Open navigation"><i class="bi bi-list"></i></button>
+  <span class="brand"><span data-icon="logo" data-icon-class="ico logo"></span> Fingerprinting Lab</span>
+</header>
+
+<div class="layout">
+  <nav id="sidebar" class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" aria-label="Primary">
+    <div class="offcanvas-header d-lg-none"><span class="brand">Navigation</span><button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Close"></button></div>
+    <div class="sidebar-inner">
+      <div class="brand d-none d-lg-flex"><span data-icon="logo" data-icon-class="ico logo"></span><span>Fingerprinting Lab<br><small>Privacy research, locally</small></span></div>
+      <ul class="nav flex-column" id="nav-links">
+        <li><a class="nav-link" href="#/overview" data-route="overview"><span data-icon="overview"></span> Overview</a></li>
+        <li><a class="nav-link" href="#/tests" data-route="tests"><span data-icon="tests"></span> Fingerprint Tests</a></li>
+        <li><a class="nav-link" href="#/signals" data-route="signals"><span data-icon="signals"></span> Signal Explorer</a></li>
+        <li><a class="nav-link" href="#/entities" data-route="entities"><span data-icon="entities"></span> Companies &amp; Adversaries</a></li>
+        <li><a class="nav-link" href="#/compare" data-route="compare"><span data-icon="compare"></span> Fingerprint Comparison</a></li>
+        <li><a class="nav-link" href="#/assessment" data-route="assessment"><span data-icon="assessment"></span> Privacy Assessment</a></li>
+        <li><a class="nav-link" href="#/learn" data-route="learn"><span data-icon="learn"></span> Learning Center</a></li>
+        <li><a class="nav-link" href="#/methodology" data-route="methodology"><span data-icon="methodology"></span> Methodology &amp; Sources</a></li>
+        <li><a class="nav-link" href="#/settings" data-route="settings"><span data-icon="settings"></span> Settings</a></li>
+      </ul>
+      <div class="run-box" id="run-box"></div>
+      <p class="sidebar-note"><span data-icon="lock"></span><span>Runs entirely in your browser. Nothing is sent anywhere.</span></p>
+    </div>
+  </nav>
+
+  <main id="view" class="view" tabindex="-1"><p class="text-muted">Loading…</p></main>
+</div>
+
+<div class="offcanvas offcanvas-end detail-panel" tabindex="-1" id="detail" aria-labelledby="detail-title">
+  <div class="offcanvas-header border-bottom">
+    <h2 class="offcanvas-title h5" id="detail-title">Technique</h2>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body" id="detail-body"></div>
+</div>
+
+<div id="print-root" class="print-root" aria-hidden="true"></div>
+
+<noscript><div class="container py-5"><h1>JavaScript required</h1><p>This lab measures what JavaScript can observe, so it needs JavaScript. Without it, sites can still observe HTTP headers, your IP address and CSS media queries.</p></div></noscript>
+
+<script src="js/boot-check.js"></script>
+<script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

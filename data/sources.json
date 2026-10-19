@@ -1,0 +1,382 @@
+{
+  "catalogueVersion": "2026.10.19-2",
+  "note": "dateChecked is set only for sources whose URL and cited claim were checked on that date. null = cited from prior knowledge and not re-verified; treat accordingly.",
+  "sources": {
+    "w3c-fp-guidance": {
+      "title": "Mitigating Browser Fingerprinting in Web Specifications",
+      "publisher": "W3C",
+      "url": "https://www.w3.org/TR/fingerprinting-guidance/",
+      "type": "standard",
+      "dateChecked": null,
+      "supports": "Definitions of passive/active fingerprinting, entropy, and mitigation principles for spec authors."
+    },
+    "mdn-client-hints": {
+      "title": "HTTP Client hints",
+      "publisher": "MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Client_hints",
+      "type": "documentation",
+      "dateChecked": null,
+      "supports": "Client Hint request headers and the Accept-CH opt-in mechanism."
+    },
+    "mdn-uach": {
+      "title": "User-Agent Client Hints API",
+      "publisher": "MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API",
+      "type": "documentation",
+      "dateChecked": null,
+      "supports": "navigator.userAgentData low- and high-entropy values; browser support."
+    },
+    "mdn-audiocontext": {
+      "title": "AudioContext",
+      "publisher": "MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/AudioContext",
+      "type": "documentation",
+      "dateChecked": null,
+      "supports": "Web Audio API processing graph used by the offline audio test."
+    },
+    "mdn-canvas": {
+      "title": "Canvas API",
+      "publisher": "MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API",
+      "type": "documentation",
+      "dateChecked": null,
+      "supports": "2D canvas drawing and pixel read-back APIs."
+    },
+    "mdn-webgl-debug": {
+      "title": "WEBGL_debug_renderer_info extension",
+      "publisher": "MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_debug_renderer_info",
+      "type": "documentation",
+      "dateChecked": null,
+      "supports": "Unmasked vendor/renderer strings and their privacy implications."
+    },
+    "eff-cyt": {
+      "title": "Cover Your Tracks",
+      "publisher": "Electronic Frontier Foundation",
+      "url": "https://coveryourtracks.eff.org/",
+      "type": "tool",
+      "dateChecked": null,
+      "supports": "Public fingerprinting test tool."
+    },
+    "eff-cyt-about": {
+      "title": "About Cover Your Tracks",
+      "publisher": "Electronic Frontier Foundation",
+      "url": "https://coveryourtracks.eff.org/about",
+      "type": "first-party documentation",
+      "dateChecked": "2026-10-19",
+      "supports": "Lists measured characteristics (user agent, Accept headers, screen, timezone, fonts, canvas and WebGL hashes, DNT, platform, language, touch) and that uniqueness is computed against a database of recently observed visitors."
+    },
+    "eckersley-2010": {
+      "title": "How Unique Is Your Web Browser? (Eckersley, PETS 2010)",
+      "publisher": "EFF",
+      "url": "https://coveryourtracks.eff.org/static/browser-uniqueness.pdf",
+      "type": "research paper",
+      "dateChecked": null,
+      "supports": "83.6% of sampled browsers had a unique fingerprint; entropy measured in bits against a self-selected dataset."
+    },
+    "laperdrix-2016": {
+      "title": "Beauty and the Beast: Diverting modern web browsers to build unique browser fingerprints (IEEE S&P 2016)",
+      "publisher": "Laperdrix, Rudametkin, Baudry",
+      "url": "https://hal.archives-ouvertes.fr/hal-01285470",
+      "type": "research paper",
+      "dateChecked": "2026-10-19",
+      "supports": "118,934 fingerprints from AmIUnique; canvas is highly discriminating; mobile fingerprinting is as effective as desktop."
+    },
+    "gomezboix-2018": {
+      "title": "Hiding in the Crowd: an Analysis of the Effectiveness of Browser Fingerprinting at Large Scale (WWW 2018)",
+      "publisher": "Gómez-Boix, Laperdrix, Baudry",
+      "url": "https://hal.inria.fr/hal-01718234",
+      "type": "research paper",
+      "dateChecked": null,
+      "supports": "On ~2 million fingerprints from a large French site, only 33.6% were unique, far lower than self-selected datasets. Shows population bias in uniqueness claims."
+    },
+    "acar-2014": {
+      "title": "The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)",
+      "publisher": "Acar et al.",
+      "url": "https://securehomes.esat.kuleuven.be/~gacar/persistent/the_web_never_forgets.pdf",
+      "type": "research paper",
+      "dateChecked": "2026-10-19",
+      "supports": "First large-scale study of canvas fingerprinting (over 5% of top 100k sites), evercookies/respawning and cookie syncing. Press coverage attributes ~95% of canvas scripts to AddThis."
+    },
+    "englehardt-2016": {
+      "title": "Online Tracking: A 1-million-site Measurement and Analysis (ACM CCS 2016)",
+      "publisher": "Englehardt & Narayanan",
+      "url": "https://www.cs.princeton.edu/~arvindn/publications/OpenWPM_1_million_site_tracking_measurement.pdf",
+      "type": "research paper",
+      "dateChecked": "2026-10-19",
+      "supports": "Canvas fingerprinting on 14,371 sites from ~400 script domains; discovery of AudioContext fingerprinting in the wild; WebRTC and Battery API fingerprinting."
+    },
+    "iqbal-2021": {
+      "title": "Fingerprinting the Fingerprinters: Learning to Detect Browser Fingerprinting Behaviors (IEEE S&P 2021)",
+      "publisher": "Iqbal, Englehardt, Shafiq",
+      "url": "https://arxiv.org/pdf/2008.04480",
+      "type": "research paper",
+      "dateChecked": "2026-10-19",
+      "supports": "Machine-learning detection of fingerprinting scripts in the wild."
+    },
+    "cao-2017": {
+      "title": "(Cross-)Browser Fingerprinting via OS and Hardware Level Features (NDSS 2017)",
+      "publisher": "Cao, Li, Wijmans",
+      "url": "https://www.ndss-symposium.org/ndss2017/ndss-2017-programme/cross-browser-fingerprinting-os-and-hardware-level-features/",
+      "type": "research paper",
+      "dateChecked": null,
+      "supports": "WebGL rendering tasks that identify devices across browsers."
+    },
+    "drawnapart-2022": {
+      "title": "DRAWNAPART: A Device Identification Technique based on Remote GPU Fingerprinting (NDSS 2022)",
+      "publisher": "Laor et al.",
+      "url": "https://arxiv.org/abs/2201.09956",
+      "type": "research paper",
+      "dateChecked": null,
+      "supports": "GPU execution-timing differences distinguish devices with identical GPU models."
+    },
+    "olejnik-2015": {
+      "title": "The leaking battery: A privacy analysis of the HTML5 Battery Status API",
+      "publisher": "Olejnik, Acar, Castelluccia, Diaz",
+      "url": "https://eprint.iacr.org/2015/616",
+      "type": "research paper",
+      "dateChecked": null,
+      "supports": "Battery level and discharge time can act as a short-term cross-site identifier."
+    },
+    "solomos-2021": {
+      "title": "Tales of Favicons and Caches: Persistent Tracking in Modern Browsers (NDSS 2021)",
+      "publisher": "Solomos, Kristoff, Kanich, Polakis",
+      "url": "https://www.ndss-symposium.org/ndss-paper/tales-of-favicons-and-caches-persistent-tracking-in-modern-browsers/",
+      "type": "research paper",
+      "dateChecked": null,
+      "supports": "Favicon cache used as a persistent identifier surviving incognito and cookie clearing."
+    },
+    "cloak-2016": {
+      "title": "Cloak of Visibility: Detecting When Machines Browse a Different Web (IEEE S&P 2016)",
+      "publisher": "Invernizzi et al. (Google)",
+      "url": "https://research.google/pubs/cloak-of-visibility-detecting-when-machines-browse-a-different-web/",
+      "type": "research paper",
+      "dateChecked": "2026-10-19",
+      "supports": "Underground cloaking services fingerprint visitors (IP, user agent, browser properties) to hide malicious content from security crawlers."
+    },
+    "fpjs-sources": {
+      "title": "FingerprintJS open-source entropy sources (src/sources)",
+      "publisher": "Fingerprint, Inc.",
+      "url": "https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources",
+      "type": "first-party source code",
+      "dateChecked": "2026-10-19",
+      "supports": "Source modules include: apple_pay, architecture, audio, audio_base_latency, canvas, color_depth, color_gamut, contrast, cookies_enabled, date_time_locale, device_memory, dom_blockers, font_preferences, fonts, forced_colors, hardware_concurrency, hdr, indexed_db, inverted_colors, languages, local_storage, math, monochrome, os_cpu, pdf_viewer_enabled, platform, plugins, private_click_measurement, reduced_motion, reduced_transparency, screen_frame, screen_resolution, session_storage, timezone, touch_support, user_agent_data, vendor, vendor_flavors, webgl."
+    },
+    "cf-ja3": {
+      "title": "JA3/JA4 fingerprint",
+      "publisher": "Cloudflare",
+      "url": "https://developers.cloudflare.com/bots/additional-configurations/ja3-ja4-fingerprint/",
+      "type": "first-party documentation",
+      "dateChecked": "2026-10-19",
+      "supports": "\"JA3 and JA4 fingerprints identify TLS clients based on how they initiate connections.\" Available to Bot Management Enterprise customers."
+    },
+    "cf-turnstile": {
+      "title": "Turnstile widget modes",
+      "publisher": "Cloudflare",
+      "url": "https://developers.cloudflare.com/turnstile/concepts/widget/",
+      "type": "first-party documentation",
+      "dateChecked": "2026-10-19",
+      "supports": "Managed mode \"chooses the appropriate action based on client-side signals and risk levels\"; challenges run in the visitor's browser. Specific signals are not listed."
+    },
+    "datadome-cdp": {
+      "title": "How New Headless Chrome & the CDP Signal Are Impacting Bot Detection",
+      "publisher": "DataDome",
+      "url": "https://datadome.co/threat-research/how-new-headless-chrome-the-cdp-signal-are-impacting-bot-detection/",
+      "type": "first-party research",
+      "dateChecked": "2026-10-19",
+      "supports": "Describes detecting Chrome DevTools Protocol usage and headless Chrome; notes navigator.webdriver can be hidden by disabling AutomationControlled."
+    },
+    "akamai-h2": {
+      "title": "Passive Fingerprinting of HTTP/2 Clients (Black Hat Europe 2017)",
+      "publisher": "Akamai (Shuster)",
+      "url": "https://www.blackhat.com/docs/eu-17/materials/eu-17-Shuster-Passive-Fingerprinting-Of-HTTP2-Clients.pdf",
+      "type": "first-party research",
+      "dateChecked": "2026-10-19",
+      "supports": "HTTP/2 SETTINGS, WINDOW_UPDATE, PRIORITY and pseudo-header order form a passive client fingerprint; based on >10M connections."
+    },
+    "ja4": {
+      "title": "JA4+ network fingerprinting",
+      "publisher": "FoxIO",
+      "url": "https://github.com/FoxIO-LLC/ja4",
+      "type": "specification / source code",
+      "dateChecked": null,
+      "supports": "JA4 TLS client fingerprint format and related JA4+ methods."
+    },
+    "p0f": {
+      "title": "p0f v3 passive OS fingerprinting",
+      "publisher": "Michal Zalewski",
+      "url": "https://lcamtuf.coredump.cx/p0f3/",
+      "type": "tool",
+      "dateChecked": null,
+      "supports": "Passive TCP/IP stack fingerprinting (TTL, window size, options)."
+    },
+    "localmess": {
+      "title": "Local Mess: covert web-to-app tracking via localhost on Android",
+      "publisher": "Researchers (Radboud University, IMDEA Networks et al.)",
+      "url": "https://localmess.github.io/",
+      "type": "research disclosure",
+      "dateChecked": "2026-10-19",
+      "supports": "Meta Pixel sent the _fbp cookie to Facebook/Instagram apps via WebRTC STUN/TURN to localhost ports 12580–12591; Yandex Metrica used localhost HTTP(S). Disclosed June 2025; Meta stopped on June 3, 2025."
+    },
+    "nullsweep-portscan": {
+      "title": "Why is This Website Port Scanning me?",
+      "publisher": "Charlie Belmer (Nullsweep)",
+      "url": "https://nullsweep.com/why-is-this-website-port-scanning-me/",
+      "type": "independent research",
+      "dateChecked": "2026-10-19",
+      "supports": "eBay's check.js (served via a CNAME to online-metrix.net, ThreatMetrix) probed localhost ports for remote-desktop software over WebSockets (May 2020)."
+    },
+    "register-ebay": {
+      "title": "eBay port scans your PC",
+      "publisher": "The Register",
+      "url": "https://www.theregister.com/2020/05/26/ebay_port_scans_your_pc/",
+      "type": "press",
+      "dateChecked": "2026-10-19",
+      "supports": "Press coverage of the eBay / ThreatMetrix localhost scan."
+    },
+    "olejnik-google-2024": {
+      "title": "Biggest privacy erosion in 10 years? On Google's policy change towards fingerprinting",
+      "publisher": "Lukasz Olejnik",
+      "url": "https://blog.lukaszolejnik.com/biggest-privacy-erosion-in-10-years-on-googles-policy-change-towards-fingerprinting/",
+      "type": "expert commentary",
+      "dateChecked": "2026-10-19",
+      "supports": "Google announced in December 2024 that its ad platform policies would permit fingerprinting/IP-based techniques from February 16, 2025."
+    },
+    "chromium-ua-reduction": {
+      "title": "User-Agent Reduction",
+      "publisher": "The Chromium Projects",
+      "url": "https://www.chromium.org/updates/ua-reduction/",
+      "type": "first-party documentation",
+      "dateChecked": null,
+      "supports": "Chrome freezes/reduces OS and device details in the User-Agent string; detailed values move to Client Hints."
+    },
+    "tor-manual-fp": {
+      "title": "Understanding browser fingerprinting (Tor Browser manual)",
+      "publisher": "The Tor Project",
+      "url": "https://tb-manual.torproject.org/anti-fingerprinting/",
+      "type": "first-party documentation",
+      "dateChecked": "2026-10-19",
+      "supports": "Uniformity strategy; letterboxing (window sizes in 200×100 multiples); font enumeration limits; canvas extraction blocking; limited languages; user-agent normalization."
+    },
+    "brave-fp2": {
+      "title": "Fingerprinting defenses 2.0",
+      "publisher": "Brave",
+      "url": "https://brave.com/privacy-updates/4-fingerprinting-defenses-2.0/",
+      "type": "first-party documentation",
+      "dateChecked": "2026-10-19",
+      "supports": "\"Farbling\" randomizes canvas and Web Audio output with a per-session, per-eTLD+1 seed."
+    },
+    "mozilla-rfp": {
+      "title": "Resist Fingerprinting",
+      "publisher": "Mozilla Support",
+      "url": "https://support.mozilla.org/en-US/kb/resist-fingerprinting",
+      "type": "first-party documentation",
+      "dateChecked": "2026-10-19",
+      "supports": "Mozilla recommends Fingerprinting Protection (FPP) in Enhanced Tracking Protection for most users; privacy.resistFingerprinting is stricter and may break sites."
+    },
+    "mozilla-fpp-wiki": {
+      "title": "Fingerprinting (Firefox Fingerprinting Protection deployment)",
+      "publisher": "Mozilla Wiki",
+      "url": "https://wiki.mozilla.org/Fingerprinting",
+      "type": "first-party documentation",
+      "dateChecked": "2026-10-19",
+      "supports": "Tracks deployment of Firefox Fingerprinting Protection (FPP) protections."
+    },
+    "webkit-tp": {
+      "title": "Tracking Prevention in WebKit",
+      "publisher": "WebKit",
+      "url": "https://webkit.org/tracking-prevention/",
+      "type": "first-party documentation",
+      "dateChecked": "2026-10-19",
+      "supports": "Web content sees only web fonts and OS-bundled fonts (not user-installed); user agent frozen across minor updates; other anti-fingerprinting measures."
+    },
+    "webkit-pb2": {
+      "title": "Private Browsing 2.0",
+      "publisher": "WebKit",
+      "url": "https://webkit.org/?p=15697",
+      "type": "first-party documentation",
+      "dateChecked": "2026-10-19",
+      "supports": "Safari 17 Advanced Fingerprinting Protection, including noise added to fingerprintable web APIs in Private Browsing."
+    },
+    "guardian-tor-stinks": {
+      "title": "'Tor Stinks' presentation",
+      "publisher": "The Guardian",
+      "url": "https://www.theguardian.com/world/interactive/2013/oct/04/tor-stinks-nsa-presentation-document",
+      "type": "press (leaked document)",
+      "dateChecked": null,
+      "supports": "Leaked NSA slides discuss de-anonymising Tor users, including via evercookie-style persistent identifiers."
+    },
+    "ayenson-2011": {
+      "title": "Flash Cookies and Privacy II: Now with HTML5 and ETag Respawning",
+      "publisher": "Ayenson, Wambach, Soltani, Good, Hoofnagle",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1898390",
+      "type": "research paper",
+      "dateChecked": null,
+      "supports": "Documented ETag-based and HTML5-storage respawning, including by KISSmetrics."
+    },
+    "wicg-keyboard-map": {
+      "title": "Keyboard Map",
+      "publisher": "WICG",
+      "url": "https://wicg.github.io/keyboard-map/",
+      "type": "specification",
+      "dateChecked": null,
+      "supports": "navigator.keyboard.getLayoutMap() and its fingerprinting considerations."
+    },
+    "fpjs-architecture": {
+      "title": "FingerprintJS architecture source (src/sources/architecture.ts)",
+      "publisher": "Fingerprint, Inc.",
+      "url": "https://github.com/fingerprintjs/fingerprintjs/blob/master/src/sources/architecture.ts",
+      "type": "first-party source code",
+      "dateChecked": "2026-10-19",
+      "supports": "Computes Infinity − Infinity in a Float32Array and reads the most significant byte: x86/x86-64 produce a NaN with the sign bit set, distinguishing them from other CPU architectures."
+    },
+    "cascading-spy-sheets-2025": {
+      "title": "Cascading Spy Sheets: Exploiting the Complexity of Modern CSS for Email and Browser Fingerprinting (NDSS 2025)",
+      "publisher": "Trampert, Stock et al. (CISPA)",
+      "url": "https://www.ndss-symposium.org/wp-content/uploads/2025-s238-paper.pdf",
+      "type": "research paper",
+      "dateChecked": "2026-10-19",
+      "supports": "Script-less fingerprinting with CSS distinguished 1152 of 1176 (97.95%) tested browser-OS combinations without JavaScript."
+    },
+    "imc-2025-canvas": {
+      "title": "Characterizing Canvas Fingerprinting Use Across the Web (IMC 2025)",
+      "publisher": "Luo, Ritter, Savage, Voelker (UC San Diego)",
+      "url": "https://cseweb.ucsd.edu/~savage/papers/IMC25Canvas.pdf",
+      "type": "research paper",
+      "dateChecked": "2026-10-19",
+      "supports": "Measures how canvas fingerprinting services are deployed across the web."
+    },
+    "popets-2025-behavior": {
+      "title": "Rethinking Fingerprinting: An Assessment of Behavior-based Methods (PoPETs 2025)",
+      "publisher": "Crichton, Cranor, Christin (CMU)",
+      "url": "https://petsymposium.org/popets/2025/popets-2025-0158.pdf",
+      "type": "research paper",
+      "dateChecked": "2026-10-19",
+      "supports": "Examines how behavioral and browser fingerprinting can be combined for more effective linking."
+    },
+    "popets-2025-demographics": {
+      "title": "How Unique is Whose Web Browser? The Role of Demographics in Browser Fingerprinting (PoPETs 2025)",
+      "publisher": "Berke et al.",
+      "url": "https://petsymposium.org/popets/2025/popets-2025-0038.pdf",
+      "type": "research paper",
+      "dateChecked": "2026-10-19",
+      "supports": "Browser attributes commonly collected for fingerprinting can be used to predict demographics with machine learning."
+    },
+    "beyond-the-crawl-2025": {
+      "title": "Beyond the Crawl: Unmasking Browser Fingerprinting in Real User Interactions",
+      "publisher": "arXiv 2502.01608",
+      "url": "https://arxiv.org/html/2502.01608v1",
+      "type": "research paper",
+      "dateChecked": "2026-10-19",
+      "supports": "Automated crawls miss almost half (45%) of the fingerprinting websites encountered by real users."
+    },
+    "creepjs": {
+      "title": "CreepJS",
+      "publisher": "abrahamjuliot (open source)",
+      "url": "https://github.com/abrahamjuliot/creepjs",
+      "type": "tool / source code",
+      "dateChecked": "2026-10-19",
+      "supports": "Open-source research tool that detects API tampering (\"lies\"), fingerprints extension code and privacy settings, and probes new high-entropy APIs, including comparing worker and main-thread values."
+    }
+  }
+}

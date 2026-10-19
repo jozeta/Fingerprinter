@@ -1,0 +1,14 @@
+{
+  "name": "browser-fingerprinting-privacy-lab",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Educational, local-only browser fingerprinting and privacy analysis lab (static SPA, no build step, no dependencies).",
+  "type": "module",
+  "scripts": {
+    "serve": "python3 scripts/serve.py 8765",
+    "test": "node --test tests/unit/",
+    "test:browser": "node scripts/cdp-driver.mjs \"$BROWSER\" http://localhost:8765 ./.test-output",
+    "docs": "node scripts/generate-docs.mjs"
+  },
+  "engines": { "node": ">=22" }
+}

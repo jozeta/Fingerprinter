@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
+  <title>Lab browser tests</title>
+  <style>body{font:14px system-ui;margin:2rem;background:#fff;color:#111}.pass{color:#1d6b45}.fail{color:#8b1e2d;font-weight:600}li{margin:.15rem 0}</style>
+</head>
+<body>
+  <h1>Browser integration tests</h1>
+  <p>Runs every real test in this browser and checks schema validity, cleanup and local-only behaviour. Results stay on this page.</p>
+  <div id="summary" data-done="false">Running…</div>
+  <ol id="out"></ol>
+  <script type="module" src="run.js"></script>
+</body>
+</html>

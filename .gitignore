@@ -1,0 +1,16 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Local tool state (never publish)
+.remember/
+.claude/
+
+# Test and build output
+.test-output/
+node_modules/
+coverage/
+*.log
