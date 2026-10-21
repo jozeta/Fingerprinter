@@ -136,6 +136,14 @@ await evaluate(`document.querySelector('[data-action="detail"][data-id="canvas-2
 await evaluate(`bootstrap.Offcanvas.getInstance('#detail').hide()`); await sleep(400);
 await evaluate(`location.hash = '#/settings'`); await sleep(400); await evaluate(`document.querySelector('#th-dark').click()`); await sleep(200);
 await evaluate(`location.hash = '#/overview'`); await sleep(1400); await evaluate('window.scrollTo(0, 0)'); await viewShot('dark-overview');
+// Old status wording must not appear anywhere in the rendered pages.
+const oldWords = [];
+for (const route of ['overview', 'tests', 'compare', 'assessment']) {
+  await evaluate(`location.hash = '#/${route}'`); await sleep(900);
+  const hits = await evaluate(`[...new Set((document.querySelector('main').innerText.match(/\\b(Unsupported|Interaction required|Permission required|Server-only|Skipped|Randomized|Standardized|No protection detected)\\b/g) || []))]`);
+  if (hits.length) oldWords.push(`${route}: ${hits.join(', ')}`);
+}
+console.log('OLD LABELS on screen:', oldWords.length ? oldWords.join(' | ') : 'none');
 const foreign = await evaluate(`performance.getEntriesByType('resource').filter(e => new URL(e.name).origin !== location.origin).map(e => e.name)`);
 console.log('UI cross-origin requests:', JSON.stringify(foreign));
 console.log('UI console errors/exceptions:', logs.length ? `\n  ${logs.join('\n  ')}` : 'none');

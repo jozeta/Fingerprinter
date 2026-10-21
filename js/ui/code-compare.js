@@ -93,7 +93,7 @@ async function renderComparison(root, app) {
       <select class="form-select form-select-sm" style="width:auto" id="sbs-cat" aria-label="Category"><option value="">All categories</option>${Object.entries(CATEGORIES).map(([k, c]) => `<option value="${k}" ${state.cat === k ? 'selected' : ''}>${esc(c.label)}</option>`).join('')}</select>
     </div>
     <div id="sbs-table">${table(app, cmp)}</div>
-    <p class="small text-muted mt-2 mb-0">Highlighted rows differ; highlighted fields show exactly which values changed. "Randomised" means a browser protection changes the value on purpose. A difference does not automatically mean better privacy.</p>`;
+    <p class="small text-muted mt-2 mb-0">Highlighted rows differ; highlighted fields show exactly which values changed. "Scrambled on purpose" means a browser protection changes the value every time. A difference does not automatically mean better privacy.</p>`;
   const redraw = () => { host.querySelector('#sbs-table').innerHTML = table(app, cmp); };
   host.querySelector('#sbs-diff').addEventListener('change', (e) => { state.onlyDiff = e.target.checked; redraw(); });
   host.querySelector('#sbs-vol').addEventListener('change', (e) => { state.hideVolatile = e.target.checked; renderComparison(root, app); });

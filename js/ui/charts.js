@@ -71,9 +71,9 @@ export function bipartiteGraph(left, right, edges, { title, desc, legend = '' })
 export const STATUS_SEGMENTS = [
   { key: 'measured', label: 'Revealed', cls: 'seg-measured', statuses: ['measured'] },
   { key: 'inferred', label: 'Estimated', cls: 'seg-inferred', statuses: ['inferred'] },
-  { key: 'blocked', label: 'Blocked', cls: 'seg-blocked', statuses: ['blocked'] },
-  { key: 'none', label: 'Unavailable / needs you / error', cls: 'seg-none', statuses: ['unsupported', 'permission-required', 'interaction-required', 'error', 'skipped'] },
-  { key: 'server', label: 'Server-only', cls: 'seg-server', statuses: ['server-only'] },
+  { key: 'blocked', label: 'Hidden by browser', cls: 'seg-blocked', statuses: ['blocked'] },
+  { key: 'none', label: 'Not available or not run', cls: 'seg-none', statuses: ['unsupported', 'permission-required', 'interaction-required', 'error', 'skipped'] },
+  { key: 'server', label: 'Only servers see this', cls: 'seg-server', statuses: ['server-only'] },
 ];
 export const segmentOf = (status) => STATUS_SEGMENTS.find((s) => s.statuses.includes(status))?.key || 'none';
 

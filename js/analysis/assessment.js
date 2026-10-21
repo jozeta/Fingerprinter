@@ -11,7 +11,7 @@ export const ASSESSMENT_RULES = [
   'Low: H ≤ 1, or P ≥ 3 (most strongly identifying surfaces are protected).',
   'Moderate: everything else.',
   'Confidence: high when coverage ≥ 85% and repeated-render checks ran (repeat ≥ 2); medium when coverage ≥ 60%; otherwise low.',
-  'Server-only signals (IP, TLS, headers) are never counted: they are unobservable here but available to every server you visit.',
+  'Signals only servers can see (IP, TLS, headers) are never counted: this page cannot observe them, but every server you visit can.',
 ];
 
 export function assess(defs, results, { repeat = 1 } = {}) {

@@ -22,7 +22,21 @@ Canvas, WebGL render and audio are executed `repeat` times (default 3). If the o
 
 ### Status rules
 
-On screen, `measured` is shown as **Revealed** (the browser gave the value away) and `inferred` as **Estimated** (worked out indirectly; may be wrong). Exports and the result schema keep the original status codes.
+On screen the status codes use plain labels; exports, result codes and the result schema keep the codes.
+
+| Code | Shown as |
+|---|---|
+| `measured` | Revealed |
+| `inferred` | Estimated |
+| `blocked` | Hidden by browser |
+| `unsupported` | Not in this browser |
+| `permission-required` | Needs permission |
+| `interaction-required` | Start it yourself |
+| `server-only` | Only servers see this |
+| `error` | Didn't finish |
+| `skipped` | Not run |
+
+Protection indicators: `none-detected` = No protection found, `randomized` = Scrambled on purpose, `standardized` = Same as everyone, `blocked` = Hidden by browser, `unknown` = Unclear.
 
 
 - Only `measured` and `inferred` results carry values.

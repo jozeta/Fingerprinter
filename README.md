@@ -2,7 +2,7 @@
 
 **See what any website can learn about your browser, without cookies.**
 
-**Live demo: https://jozeta.github.io/Fingerprinter/** · Current version: **2.2.0** ([changelog](CHANGELOG.md))
+**Live demo: https://jozeta.github.io/Fingerprinter/** · Current version: **2.2.1** ([changelog](CHANGELOG.md))
 
 An educational, defensive privacy lab that runs real browser-fingerprinting techniques against your own browser, shows exactly what each one revealed, and explains it in plain language. Every technique is linked to documented real-world use, with an explicit evidence level. Everything runs locally: nothing is sent anywhere.
 
@@ -18,7 +18,7 @@ An educational, defensive privacy lab that runs real browser-fingerprinting tech
   - **Storage, permissions and APIs.**
   - **Cross-signal consistency and automation detection.**
   - **Server-side techniques** (TLS JA3/JA4, HTTP/2, IP, script-less CSS), explained but not measured.
-- **Clear results:** each check is marked *Revealed*, *Estimated*, *Blocked*, *Unavailable* or *Server-only*. Expand any result to see your actual data, a plain-language explanation of what *your* value means, **how common your value is** (a labelled estimate) and **how identifying the check is** (published entropy where verified), why it matters, and how to hide or blur it.
+- **Clear results:** each check is marked in plain words: *Revealed*, *Estimated*, *Hidden by browser*, *Not in this browser*, *Start it yourself* or *Only servers see this*. Expand any result to see your actual data, a plain-language explanation of what *your* value means, **how common your value is** (a labelled estimate) and **how identifying the check is** (published entropy where verified), why it matters, and how to hide or blur it.
 - **Companies & adversaries:** a versioned catalogue (FingerprintJS, Google, Meta, Cloudflare, DataDome, Akamai, EFF, Tor Project, Brave, Mozilla, Apple, researchers and adversary categories). Every link to a technique carries an evidence level from *L1 Confirmed* to *L5 Unverified*, plus sources.
 - **Signal explorer:** choose which signals form your local fingerprint, watch the SHA-256 digest change, and see how signals connect.
 - **Result codes & side-by-side comparison:** after a run, copy one line of text (`FPLAB1.…`) that holds the entire result. Change a setting or move to another computer, run again, paste the old code, and get a detailed side-by-side table with every difference highlighted and an "only differences" filter. Codes are compressed and base64url-encoded. A *full* code includes the actual values; a *compact* code only fingerprints of them. Local IP addresses are never included.

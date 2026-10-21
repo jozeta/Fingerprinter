@@ -37,7 +37,7 @@ export function render(view, app) {
         </section>
         <section class="panel"><h2 class="h6">Server adapter</h2>
           <p class="small mb-1">Status: <strong>${activeAdapter.enabled ? 'enabled' : 'disabled'}</strong> (${esc(activeAdapter.id)})</p>
-          <p class="small text-muted mb-0">The static build includes only a null adapter, so server-only techniques show as "Server-only". A deployer can add an adapter that discloses its endpoint, what it observes and stores, retention and logging. The visitor must consent before it runs. See <code>docs/SERVER-ADAPTER.md</code>.</p>
+          <p class="small text-muted mb-0">The static build includes only a null adapter, so server-side techniques show as "Only servers see this". A deployer can add an adapter that discloses its endpoint, what it observes and stores, retention and logging. The visitor must consent before it runs. See <code>docs/SERVER-ADAPTER.md</code>.</p>
         </section>
       </div>
     </div>`);

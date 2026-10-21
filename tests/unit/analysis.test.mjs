@@ -117,6 +117,7 @@ test('recommendations: never promise anonymity; every item has benefit, compatib
 
 test('evidence-level and status rendering include text labels (not color alone)', () => {
   for (const k of Object.keys(EVIDENCE_LEVELS)) assert.ok(evidenceChip(k).includes(EVIDENCE_LEVELS[k].short));
-  assert.match(statusChip('blocked'), /Blocked/);
-  assert.match(statusChip('<script>'), /Skipped/);
+  assert.match(statusChip('blocked'), /Hidden by browser/);
+  assert.match(statusChip('<script>'), /Not run/);
+  assert.doesNotMatch(statusChip('<script>'), /<script>/);
 });

@@ -1,7 +1,7 @@
 // Overview: hero with the live fingerprint-ridge figure, pre-run explanation (nothing auto-runs),
 // result breakdowns (category × status, relevance × outcome), distinctive signals and limitations.
 import { esc } from '../core/util.js';
-import { STATUSES, CATEGORIES } from '../core/constants.js';
+import { STATUSES, CATEGORIES, PROTECTION } from '../core/constants.js';
 import { statusChip, mount, previewLine, commonBadge } from './components.js';
 import { interpret } from '../analysis/interpret.js';
 import { STATUS_SEGMENTS } from './charts.js';
@@ -54,7 +54,7 @@ export function render(view, app) {
       <p>Websites can recognise a browser without cookies, just by reading how it is set up and how it draws, sounds and calculates. This lab runs ${auto.length} of those checks on your own browser, shows the results, and explains each one in plain language.</p>
       ${ran.length ? `<div class="kpis" aria-label="Summary">
           <div><div class="kpi" data-count="${readable}">${readable}</div><div class="kpi-label">signals your browser revealed</div></div>
-          <div><div class="kpi" data-count="${counts.blocked}">${counts.blocked}</div><div class="kpi-label">blocked by your browser</div></div>
+          <div><div class="kpi" data-count="${counts.blocked}">${counts.blocked}</div><div class="kpi-label">hidden by your browser</div></div>
           <div><div class="kpi" data-count="${ran.length}">${ran.length}</div><div class="kpi-label">checks completed of ${app.defs.length}</div></div>
         </div>` : `
         <ul class="mt-3 mb-3 small" style="max-width:52ch">
@@ -68,7 +68,7 @@ export function render(view, app) {
       </div>
     </div>
     <div>
-      ${ridgeFigure(groups, { title: 'Your fingerprint, by category', desc: 'Each ridge is one category of checks and each segment one check. Colour shows the result: blue revealed, amber estimated, green blocked, grey unavailable, violet server-only. Hover, tab to or click a segment for details.', tipFor: ridgeTip, scanning: app.running })}
+      ${ridgeFigure(groups, { title: 'Your fingerprint, by category', desc: 'Each ridge is one category of checks and each segment one check. Colour shows the result: blue revealed, amber estimated, green hidden by your browser, grey not available or not run, violet only servers can see. Hover, tab to or click a segment for details.', tipFor: ridgeTip, scanning: app.running })}
       ${statusLegend()}
       <p class="small text-muted mb-0">Each ridge is a category, each segment a check. Hover or tab to a segment to see what is behind it; click to open it.</p>
     </div>
@@ -119,8 +119,8 @@ export function render(view, app) {
     <div class="col-lg-4"><section class="panel h-100"><div class="panel-title">Signals that are stronger together</div><div class="panel-sub">Pairs that research shows are combined, both readable here.</div>
       ${combos.length ? `<ul class="mb-0">${combos.map((x) => `<li>${esc(x.a.name)} + ${esc(x.b.name)}</li>`).join('')}</ul>` : '<p class="text-muted mb-0">No documented pair was fully readable.</p>'}
       <p class="small mt-2 mb-0"><a href="#/signals">Explore all connections</a></p></section></div>
-    <div class="col-lg-4"><section class="panel h-100"><div class="panel-title">Protections your browser used</div><div class="panel-sub">Blocked, randomised or standardised results.</div>
-      ${protections.length ? `<ul class="mb-0">${protections.map((d) => `<li><a href="#" data-action="detail" data-id="${d.id}">${esc(d.name)}</a> <span class="small text-muted">${esc(results[d.id].protectionIndicator)}</span></li>`).join('')}</ul>` : '<p class="text-muted mb-0">None seen. That does not prove no protection is active.</p>'}</section></div>
+    <div class="col-lg-4"><section class="panel h-100"><div class="panel-title">Protections your browser used</div><div class="panel-sub">Values your browser hid, scrambled or made the same as everyone's.</div>
+      ${protections.length ? `<ul class="mb-0">${protections.map((d) => `<li><a href="#" data-action="detail" data-id="${d.id}">${esc(d.name)}</a> <span class="small text-muted">${esc(PROTECTION[results[d.id].protectionIndicator]?.label || '')}</span></li>`).join('')}</ul>` : '<p class="text-muted mb-0">None seen. That does not prove no protection is active.</p>'}</section></div>
   </div>
   <div class="section-head"><h2>Every check, by result</h2></div>
   <div class="d-flex flex-wrap gap-2">${Object.entries(counts).filter(([, n]) => n).map(([s, n]) => `<a href="#/tests" class="text-decoration-none" data-status-link="${s}">${statusChip(s)} <span class="small text-muted">${n}</span></a>`).join('')}</div>
@@ -129,7 +129,7 @@ export function render(view, app) {
     <li>This page only looks at <em>your</em> browser. It cannot see what any company does, and it never claims a company has tracked you.</li>
     <li>There is no "you are 1 in a million" number: that would need a large, representative comparison database, which this lab deliberately does not have.</li>
     <li>Your IP address, network and HTTP details are visible to every server you visit, but this page cannot measure them.</li>
-    <li>"Blocked" or "unavailable" means unknown, not pass or fail.</li>
+    <li>"Hidden by browser" or "Not in this browser" means unknown, not pass or fail.</li>
   </ul>`);
 
   root.querySelector('[data-copy-code]')?.addEventListener('click', async (e) => {

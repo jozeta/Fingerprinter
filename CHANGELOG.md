@@ -2,6 +2,9 @@
 
 All notable changes to this project. Versions follow [semantic versioning](https://semver.org/): new features bump the minor version, fixes bump the patch version. The version shown in the app's sidebar comes from `APP_VERSION` in `js/core/constants.js` and must match the newest entry here (checked by `npm test`).
 
+## 2.2.1 (2026-10-21)
+- Plain-language result labels everywhere: Hidden by browser, Not in this browser, Needs permission, Start it yourself, Only servers see this, Didn't finish, Not run; protection tags Scrambled on purpose, Same as everyone, No protection found, Unclear; comparison labels Now hidden, Now revealed, Cannot compare. Internal status codes in exports and result codes are unchanged.
+
 ## 2.2.0 (2026-10-21)
 - Version number in the sidebar, linked to this changelog.
 - "How common is your value?" estimate for every result, plus "How identifying is this check?" using published per-attribute entropy (EFF Panopticlick, 2010) where available.

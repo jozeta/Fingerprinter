@@ -5,8 +5,8 @@ const VALUE = new Set(['measured', 'inferred']);
 const INCONCLUSIVE = new Set(['error', 'skipped', 'interaction-required', 'permission-required']);
 
 export const CLASSES = {
-  added: 'Added', removed: 'Removed', changed: 'Changed', unchanged: 'Unchanged', randomized: 'Randomized',
-  'newly-blocked': 'Newly blocked', 'newly-available': 'Newly available', inconclusive: 'Inconclusive',
+  added: 'Only in B', removed: 'Only in A', changed: 'Different', unchanged: 'Same', randomized: 'Scrambled on purpose',
+  'newly-blocked': 'Now hidden', 'newly-available': 'Now revealed', inconclusive: 'Cannot compare',
 };
 
 /** Reduce a results map to a comparable snapshot entry per test (digests only, no raw data). */

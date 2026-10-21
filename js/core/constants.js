@@ -1,6 +1,6 @@
 // Versions, enumerations and shared vocabulary. Bump TEST_CATALOGUE_VERSION when test definitions change.
 export const APP_NAME = 'Browser Fingerprinting & Privacy Lab';
-export const APP_VERSION = '2.2.0';
+export const APP_VERSION = '2.2.1';
 export const RESULT_SCHEMA_VERSION = '1.0';
 export const TEST_CATALOGUE_VERSION = '2026.10.21';
 export const EXPORT_FORMAT = 'fp-lab-export';
@@ -8,21 +8,21 @@ export const EXPORT_FORMAT = 'fp-lab-export';
 export const STATUSES = {
   'measured':             { label: 'Revealed',             tone: 'measured',   icon: 'bi-eye',                  definitive: true,  help: 'Your browser gave this value away when asked.' },
   'inferred':             { label: 'Estimated',            tone: 'inferred',   icon: 'bi-lightbulb',            definitive: true,  help: 'Worked out indirectly from other clues. A likely answer, not a certain one.' },
-  'blocked':              { label: 'Blocked',              tone: 'blocked',    icon: 'bi-shield-check',         definitive: true,  help: 'The browser refused or neutralised the measurement. This is unknown data, not a failure.' },
-  'unsupported':          { label: 'Unsupported',          tone: 'neutral',    icon: 'bi-slash-circle',         definitive: false, help: 'The API does not exist in this browser.' },
-  'permission-required':  { label: 'Permission required',  tone: 'neutral',    icon: 'bi-key',                  definitive: false, help: 'Would need a permission this lab never requests automatically.' },
-  'interaction-required': { label: 'Interaction required', tone: 'neutral',    icon: 'bi-hand-index',           definitive: false, help: 'Needs you to start an exercise explicitly.' },
-  'server-only':          { label: 'Server-only',          tone: 'server',     icon: 'bi-hdd-network',          definitive: false, help: 'Only observable by a server. This static app does not run one.' },
-  'error':                { label: 'Error',                tone: 'error',      icon: 'bi-bug',                  definitive: false, help: 'The test threw an exception or timed out.' },
-  'skipped':              { label: 'Skipped',              tone: 'neutral',    icon: 'bi-skip-forward',         definitive: false, help: 'Not run (cancelled, excluded by settings, or not started).' },
+  'blocked':              { label: 'Hidden by browser',    tone: 'blocked',    icon: 'bi-shield-check',         definitive: true,  help: 'Your browser refused to give this value, or gave an empty one. Websites learn nothing from it (though they may notice it was hidden).' },
+  'unsupported':          { label: 'Not in this browser',  tone: 'neutral',    icon: 'bi-slash-circle',         definitive: false, help: 'Your browser does not have this feature, so websites cannot use it.' },
+  'permission-required':  { label: 'Needs permission',     tone: 'neutral',    icon: 'bi-key',                  definitive: false, help: 'Would need your permission. This lab never asks for it automatically.' },
+  'interaction-required': { label: 'Start it yourself',    tone: 'neutral',    icon: 'bi-hand-index',           definitive: false, help: 'This check only runs when you click Run on it (or start the exercise).' },
+  'server-only':          { label: 'Only servers see this', tone: 'server',    icon: 'bi-hdd-network',          definitive: false, help: 'Every website\'s server can see this, but this page cannot measure it because it has no server.' },
+  'error':                { label: 'Didn\'t finish',        tone: 'error',      icon: 'bi-bug',                  definitive: false, help: 'Something went wrong or the browser did not answer in time. Nothing is known about this value.' },
+  'skipped':              { label: 'Not run',              tone: 'neutral',    icon: 'bi-skip-forward',         definitive: false, help: 'This check was cancelled, turned off in Settings, or not started yet.' },
 };
 
 export const PROTECTION = {
-  'none-detected': { label: 'No protection detected', help: 'Repeated measurements were identical and nothing indicated blocking. This does not prove no protection exists.' },
-  'randomized':    { label: 'Randomized',             help: 'Repeated measurements differed, which is consistent with noise injection (farbling).' },
-  'standardized':  { label: 'Standardized',           help: 'The value matches a known uniform value used by anti-fingerprinting modes.' },
-  'blocked':       { label: 'Blocked',                help: 'The API refused access or returned an empty value.' },
-  'unknown':       { label: 'Unknown',                help: 'Not determinable from this test.' },
+  'none-detected': { label: 'No protection found', help: 'Repeated measurements were identical and nothing indicated blocking. This does not prove no protection exists.' },
+  'randomized':    { label: 'Scrambled on purpose',   help: 'The value changed every time we measured it. Your browser adds random noise so websites cannot use it to recognise you.' },
+  'standardized':  { label: 'Same as everyone',       help: 'The value matches the uniform value privacy browsers give everyone (for example time zone UTC).' },
+  'blocked':       { label: 'Hidden by browser',      help: 'Your browser refused access or returned an empty value.' },
+  'unknown':       { label: 'Unclear',                help: 'This check cannot tell whether a protection is active.' },
 };
 
 export const CONFIDENCE = {

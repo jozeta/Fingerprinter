@@ -1,6 +1,6 @@
 {
   "name": "browser-fingerprinting-privacy-lab",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "description": "Educational, local-only browser fingerprinting and privacy analysis lab (static SPA, no build step, no dependencies).",
   "type": "module",

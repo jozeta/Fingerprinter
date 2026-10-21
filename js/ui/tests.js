@@ -54,7 +54,7 @@ function row(app, d) {
   const best = bestEvidence(app.assocIndex[d.id]);
   const nEnt = (app.assocIndex[d.id] || []).length;
   return `<li class="test-row">
-    <div><div class="meta mb-1">${categoryLabel(d.category)} ${d.tier === 'advanced' ? '<span class="chip chip-outline">Advanced</span>' : ''}${d.serverRequired ? '<span class="chip tone-server">server-only</span>' : ''}${d.interaction ? '<span class="chip chip-outline">interactive</span>' : ''}</div>
+    <div><div class="meta mb-1">${categoryLabel(d.category)} ${d.tier === 'advanced' ? '<span class="chip chip-outline">Advanced</span>' : ''}${d.serverRequired ? '<span class="chip tone-server">Only servers see this</span>' : ''}${d.interaction ? '<span class="chip chip-outline">Start it yourself</span>' : ''}</div>
       <h3><a href="#" data-action="detail" data-id="${d.id}">${esc(d.name)}</a></h3></div>
     <div class="test-actions">${r ? (changed ? statusChip(r.executionStatus).replace('class="chip', 'class="chip pop') : statusChip(r.executionStatus)) : '<span class="chip chip-outline">Not run</span>'}${r ? protectionChip(r.protectionIndicator) : ''}</div>
     <div class="summary">${esc(d.simple)}</div>

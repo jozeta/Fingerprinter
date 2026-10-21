@@ -33,11 +33,11 @@ export function render(view, app) {
         <p class="mb-1"><span id="lvl" class="fs-3 fw-bold text-capitalize">${esc(a.level)}</span></p>
         <p>${esc(LEVEL_TEXT[a.level])}</p>
         <p class="small mb-1"><strong>Confidence: ${esc(a.confidence)}</strong>. Coverage ${Math.round(a.coverage * 100)}% (${a.ranCount} client-side tests, repeat count ${app.settings.repeat}).</p>
-        <p class="small text-muted mb-0">Revealed or estimated: ${a.measuredCount} results. Unknown / inconclusive: ${a.unknown.length}. Server-only (not assessed): ${a.serverOnlyCount}.</p>
+        <p class="small text-muted mb-0">Revealed or estimated: ${a.measuredCount} results. Not available or not run: ${a.unknown.length}. Only servers can see (not assessed): ${a.serverOnlyCount}.</p>
         <div class="d-flex flex-wrap gap-2 mt-3"><button class="btn btn-sm btn-outline-secondary" data-print>Print / PDF report</button><button class="btn btn-sm btn-outline-secondary" data-export>Export mitigation report JSON</button></div>
       </section></div>
       <div class="col-lg-7"><section class="panel h-100"><div class="panel-title">Where your exposure comes from</div><div class="panel-sub">The high-relevance row matters most.</div>
-        ${stackedBars(byRelevance, { title: 'Results by relevance tier', desc: 'Checks grouped by how identifying research considers them. Randomised results are counted as blocked. This counts signals; it does not measure uniqueness.' })}
+        ${stackedBars(byRelevance, { title: 'Results by relevance tier', desc: 'Checks grouped by how identifying research considers them. Scrambled results are counted as hidden. This counts signals; it does not measure uniqueness.' })}
       </section></div>
     </div>
     <div class="row g-3 mb-3">

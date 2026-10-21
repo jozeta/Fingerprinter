@@ -4,7 +4,7 @@ import { canonicalize } from '../core/hash.js';
 const VALUE = new Set(['measured', 'inferred']);
 
 export const KINDS = {
-  same: 'Same', changed: 'Different', randomized: 'Randomised', 'newly-blocked': 'Now blocked', 'newly-available': 'Now readable',
+  same: 'Same', changed: 'Different', randomized: 'Scrambled on purpose', 'newly-blocked': 'Now hidden', 'newly-available': 'Now revealed',
   'status-changed': 'Result type changed', 'only-now': 'Only in this run', 'only-then': 'Only in pasted result', unknown: 'Cannot compare',
 };
 export const isDifference = (kind) => kind !== 'same';
