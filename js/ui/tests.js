@@ -2,7 +2,7 @@
 import { esc } from '../core/util.js';
 import { CATEGORIES, STATUSES, PURPOSES, DATA_TYPES, RELEVANCE, EVIDENCE_LEVELS } from '../core/constants.js';
 import { filterAndSort, emptyFilter, bestEvidence } from '../analysis/filters.js';
-import { statusChip, protectionChip, evidenceChip, categoryLabel, previewLine, mount, explainBlock } from './components.js';
+import { statusChip, protectionChip, evidenceChip, categoryLabel, previewLine, mount, explainBlock, commonBadge } from './components.js';
 import { interpret } from '../analysis/interpret.js';
 import { icon } from './icons.js';
 import { stackedBars, segmentOf } from './charts.js';
@@ -60,7 +60,7 @@ function row(app, d) {
     <div class="summary">${esc(d.simple)}</div>
     <div class="preview">${previewLine(r)}</div>
     ${r && !d.serverRequired ? `<details class="explain" data-explain="${d.id}" ${openExplain.has(d.id) ? 'open' : ''}><summary>Show my data and what it means</summary>${openExplain.has(d.id) ? explainBlock(d, r, interpret(d, r)) : ''}</details>` : ''}
-    <div class="meta" style="grid-column:1/-1"><span class="chip chip-outline">Relevance: ${esc(d.relevance)}</span>${best ? `${evidenceChip(best)}<span class="small text-muted">${nEnt} documented association${nEnt === 1 ? '' : 's'}</span>` : '<span class="small text-muted">no documented associations</span>'}
+    <div class="meta" style="grid-column:1/-1">${r ? commonBadge(d, r) : ''}<span class="chip chip-outline">How identifying: ${esc(d.relevance)}</span>${best ? `${evidenceChip(best)}<span class="small text-muted">${nEnt} documented association${nEnt === 1 ? '' : 's'}</span>` : '<span class="small text-muted">no documented associations</span>'}
       <span class="ms-auto d-flex gap-1"><button class="btn btn-sm btn-outline-secondary" data-action="detail" data-id="${d.id}">Details</button>${d.serverRequired ? '' : `<button class="btn btn-sm btn-outline-primary" data-rerun="${d.id}" aria-label="Run ${esc(d.name)}"><i class="bi bi-play" aria-hidden="true"></i> Run</button>`}</span></div>
   </li>`;
 }

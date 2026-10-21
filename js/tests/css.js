@@ -7,8 +7,8 @@ const pick = (f, vals) => vals.find((v) => matchMedia(`(${f}: ${v})`).matches) ?
 export default [
   define({
     id: 'user-preferences', version: '1.0.0', category: 'css', name: 'Accessibility & appearance preferences',
-    simple: 'Dark mode, reduced motion, high contrast and similar settings you chose in your OS.',
-    how: 'Evaluates <code>prefers-color-scheme</code>, <code>prefers-reduced-motion</code>, <code>prefers-contrast</code>, <code>forced-colors</code>, <code>prefers-reduced-transparency</code> and <code>inverted-colors</code>.',
+    simple: 'Your appearance and accessibility choices: dark mode, reduced motion, high contrast and similar.',
+    how: 'Your browser tells pages about settings like dark mode, reduced motion and higher contrast so they can adapt. These are good settings to keep if you need them; enabled accessibility settings are just less common.',
     technical: 'Each is low-entropy, but accessibility settings are used by minorities and are therefore more distinctive when enabled. <strong>These are legitimate user preferences, not vulnerabilities.</strong> Sites need them to render accessibly.',
     exposes: 'Appearance and accessibility preferences.', dataType: 'object', apis: ['window.matchMedia'],
     purpose: ['identification', 'compatibility'], relevance: 'low', relevanceBasis: 'Binary-ish values; minority settings add some distinctiveness.', stability: 'semi-stable',
@@ -30,8 +30,8 @@ export default [
 
   define({
     id: 'media-query-matrix', version: '1.0.0', category: 'css', name: 'Extended media query matrix', tier: 'advanced',
-    simple: 'A wide sweep of CSS media queries: scripting, display mode, update rate, resolution and more.',
-    how: 'Evaluates about 20 media features with <code>matchMedia()</code>, including <code>scripting</code>, <code>update</code>, <code>overflow-block</code>, <code>display-mode</code>, <code>prefers-reduced-data</code>, <code>video-dynamic-range</code>, <code>grid</code>, resolution buckets in dppx and aspect-ratio buckets.',
+    simple: 'A wide sweep of questions about your display and browser mode.',
+    how: 'The page asks about twenty more questions about your display, such as how sharp it is, its shape, whether the page runs as an installed app, and whether you asked for reduced data use. Sites can ask these even without JavaScript.',
     technical: 'Every one of these can also be evaluated <strong>without JavaScript</strong> by CSS that loads a different URL per match, so a server can collect them from request logs. Unknown features never match, which itself reveals engine support.',
     exposes: 'Media-query match matrix.', dataType: 'object', apis: ['window.matchMedia'],
     purpose: ['identification', 'compatibility'], relevance: 'low', relevanceBasis: 'Mostly correlated with device class and browser.', stability: 'semi-stable',
@@ -59,8 +59,8 @@ export default [
 
   define({
     id: 'css-features', version: '1.0.0', category: 'css', name: 'CSS feature support',
-    simple: 'Which modern CSS features your browser supports, which roughly reveals the browser and version.',
-    how: 'Calls <code>CSS.supports()</code> for a fixed list of properties and selectors introduced at different times.',
+    simple: 'Which modern styling features your browser supports, which hints at its version.',
+    how: 'The page asks your browser whether it understands a list of newer design features. Each browser version supports a slightly different set, so the answers point to your browser and version.',
     technical: 'Support bitmasks map to browser release ranges. Vendor-prefixed properties (<code>-moz-</code>, <code>-webkit-touch-callout</code>) reveal the engine. Outdated support patterns indicate old (potentially unpatched) browsers.',
     exposes: 'Supported/unsupported CSS features.', dataType: 'object', apis: ['CSS.supports'],
     purpose: ['compatibility', 'bot-detection', 'identification'], relevance: 'low', relevanceBasis: 'Shared by all users of the same browser version.', stability: 'semi-stable',
@@ -85,8 +85,8 @@ export default [
   define({
     id: 'system-colors', version: '2.0.0', category: 'css', name: 'CSS system colors & computed styles',
     tier: 'advanced', maturity: 'research',
-    simple: 'Special CSS color names that can take values from your OS theme (such as your accent color), plus default font and scrollbar styles.',
-    how: 'Applies keywords such as <code>AccentColor</code>, <code>Highlight</code>, <code>ButtonFace</code> and <code>Canvas</code> to a hidden element and reads <code>getComputedStyle().color</code>. Also reads computed defaults: the default font family and size, a default <code>&lt;button&gt;</code> font, and the scrollbar width of an overflowing element.',
+    simple: 'Colours your system uses for buttons and highlights, plus your default text size and scrollbar width.',
+    how: 'Pages can ask for special colour names that may follow your system theme (such as your accent colour), and can measure your default text size and how wide scrollbars are. Many browsers now return fixed values here.',
     technical: 'CSS Color 4 system colors historically exposed OS theme colors; browsers increasingly hard-code them. Default font size reflects the user\'s browser font setting (16px unless changed). Scrollbar width differs between overlay scrollbars (0 px on macOS by default) and classic ones (~15–17 px on Windows), and with the OS "always show scrollbars" setting.',
     exposes: 'Resolved system colors, default font settings, scrollbar width.', dataType: 'object', apis: ['getComputedStyle', 'CSS system colors', 'Element.clientWidth'],
     purpose: ['identification'], relevance: 'low', relevanceBasis: 'Mostly standardized in current browsers.', stability: 'semi-stable',

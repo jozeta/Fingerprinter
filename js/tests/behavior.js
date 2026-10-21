@@ -26,8 +26,8 @@ export function keyStats(keys) {
 export default [
   define({
     id: 'pointer-dynamics', version: '1.0.0', category: 'behavior', name: 'Pointer movement dynamics', tier: 'advanced', interaction: true, stability: 'volatile',
-    simple: 'How you move your mouse (speed, smoothness, curvature) can tell a human from a script.',
-    how: 'Only inside the Learning Center pad, and only after you press <em>Start</em>, the lab records pointer coordinates and timestamps in memory and computes speed, variability and direction change.',
+    simple: 'How you move your mouse (speed, smoothness, curves) can tell a person from a script.',
+    how: 'Only on the pad in the Learning center, and only after you press Start, the lab records where your pointer moves and how fast. The data stays on the page until you reset it.',
     technical: 'Bot-defense products score pointer telemetry: humans produce curved, accelerating, jittery paths, while naive bots produce straight or replayed ones. Research on behavioral biometrics shows partial re-identification is possible, but it is noisy and context-dependent.',
     exposes: 'Movement statistics from the lab pad only.', dataType: 'object', apis: ['PointerEvent'],
     purpose: ['bot-detection', 'fraud-prevention'], relevance: 'low', relevanceBasis: 'Mainly bot detection; weak as a stable identifier.',
@@ -43,8 +43,8 @@ export default [
 
   define({
     id: 'keystroke-timing', version: '1.0.0', category: 'behavior', name: 'Keystroke timing', tier: 'advanced', interaction: true, stability: 'volatile',
-    simple: 'Your typing rhythm: how long you hold keys and the gaps between them.',
-    how: 'Only in the Learning Center text box, after you press <em>Start</em>, the lab records key-down/key-up <em>timestamps</em>. It never records which keys were pressed, and the text is not read.',
+    simple: 'Your typing rhythm: how long you hold keys and the pauses between them.',
+    how: 'Only in the Learning center text box, after you press Start, the lab records when keys go down and up. It never records which keys you pressed.',
     technical: '"Dwell" (press→release) and "flight" (release→next press) times form a rhythm used in continuous-authentication and fraud products. Rhythm varies with keyboard, fatigue and language.',
     exposes: 'Timing statistics only.', dataType: 'object', apis: ['KeyboardEvent'],
     purpose: ['fraud-prevention', 'bot-detection'], relevance: 'low', relevanceBasis: 'Behavioral, not a stable device identifier.',

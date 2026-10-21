@@ -2,7 +2,9 @@
 // result breakdowns (category × status, relevance × outcome), distinctive signals and limitations.
 import { esc } from '../core/util.js';
 import { STATUSES, CATEGORIES } from '../core/constants.js';
-import { statusChip, mount } from './components.js';
+import { statusChip, mount, previewLine, commonBadge } from './components.js';
+import { interpret } from '../analysis/interpret.js';
+import { STATUS_SEGMENTS } from './charts.js';
 import { stackedBars, countMatrix, ridgeFigure, segmentOf, statusLegend, firstTime } from './charts.js';
 import { assess } from '../analysis/assessment.js';
 import { copyFullCode } from './code-compare.js';
@@ -26,6 +28,23 @@ export function render(view, app) {
   ran.forEach((r) => counts[r.executionStatus]++);
   const groups = Object.entries(CATEGORIES).map(([k, c]) => ({ key: k, label: c.label, items: app.defs.filter((d) => d.category === k).map((d) => ({ id: d.id, name: d.name, status: results[d.id]?.executionStatus })) })).filter((g) => g.items.length);
   const auto = app.defs.filter((d) => !d.serverRequired && !d.interaction);
+  const byId = Object.fromEntries(app.defs.map((d) => [d.id, d]));
+  // Hover box for one fingerprint segment: the check, its result, your value, what it means and how common it is.
+  const ridgeTip = (it, g) => {
+    const d = byId[it.id], r = results[it.id];
+    if (!r) return `<div class="t-title">${esc(it.name)}</div><div class="t-sub">${esc(g.label)}</div><div>${esc(d.simple)}</div><div class="t-hint">Not run yet</div>`;
+    const meaning = interpret(d, r) || '';
+    return `<div class="t-title">${esc(it.name)}</div><div class="t-sub">${esc(g.label)}</div>
+      <div class="mb-1">${statusChip(r.executionStatus)} ${commonBadge(d, r)}</div>
+      ${r.rawResult !== null ? `<div class="preview mb-1">${previewLine(r)}</div>` : ''}
+      <div>${esc(meaning.length > 220 ? `${meaning.slice(0, 218)}…` : meaning)}</div><div class="t-hint">Click for full details</div>`;
+  };
+  // Hover box for one part of a category bar: the checks behind it.
+  const segTip = (row, seg, n, total) => {
+    const items = row.items.filter((it) => (it.status ? segmentOf(it.status) : 'pending') === seg.key);
+    return `<div class="t-title">${esc(row.label)}</div><div class="t-sub"><span class="sw" style="background:var(--s-${seg.key})"></span>${esc(seg.label)}: ${n} of ${total} checks</div>
+      <ul>${items.slice(0, 10).map((it) => { const r = results[it.id]; const pv = r && r.rawResult !== null ? previewLine(r).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : ''; return `<li><strong>${esc(it.name)}</strong>${pv ? `<br><span class="text-muted">${esc(pv.slice(0, 90))}${pv.length > 90 ? '…' : ''}</span>` : ''}</li>`; }).join('')}${items.length > 10 ? `<li>and ${items.length - 10} more</li>` : ''}</ul>`;
+  };
   const readable = counts.measured + counts.inferred;
 
   const hero = `
@@ -49,15 +68,15 @@ export function render(view, app) {
       </div>
     </div>
     <div>
-      ${ridgeFigure(groups, { title: 'Your fingerprint, by category', desc: 'Each ridge is one category of checks and each segment one check. Colour shows the result: blue revealed, amber estimated, green blocked, grey unavailable, violet server-only. Click a segment for details.' })}
+      ${ridgeFigure(groups, { title: 'Your fingerprint, by category', desc: 'Each ridge is one category of checks and each segment one check. Colour shows the result: blue revealed, amber estimated, green blocked, grey unavailable, violet server-only. Hover, tab to or click a segment for details.', tipFor: ridgeTip, scanning: app.running })}
       ${statusLegend()}
-      <p class="small text-muted mb-0">Each ridge is a category, each segment a check. Click a segment to open it.</p>
+      <p class="small text-muted mb-0">Each ridge is a category, each segment a check. Hover or tab to a segment to see what is behind it; click to open it.</p>
     </div>
   </section>`;
 
   if (!ran.length) { const root = mount(view, `${hero}<p class="small text-muted mt-4">Exposing these properties is normal for every browser. It is a <em>privacy</em> question, not a sign that your browser is broken or hacked.</p>`); countUp(root); return; }
 
-  const catRows = groups.map((g) => ({ label: g.label, counts: g.items.reduce((a, it) => { const s = it.status ? segmentOf(it.status) : 'pending'; a[s] = (a[s] || 0) + 1; return a; }, {}) }));
+  const catRows = groups.map((g) => ({ label: g.label, items: g.items, counts: g.items.reduce((a, it) => { const s = it.status ? segmentOf(it.status) : 'pending'; a[s] = (a[s] || 0) + 1; return a; }, {}) }));
   const rel = ['high', 'medium', 'low'];
   const cols = ['Readable', 'Protected', 'Unknown'];
   const matrix = rel.map((lv) => {
@@ -83,7 +102,7 @@ export function render(view, app) {
   <div class="row g-4">
     <div class="col-xl-8"><section class="panel h-100">
       <div class="panel-title">What each category revealed</div><div class="panel-sub">Share of checks per category by result. "Readable" counts revealed and estimated values.</div>
-      ${stackedBars(catRows, { title: 'Results by category', desc: 'Each bar is a category, split by result. Longer blue and amber parts mean more readable signals.' })}
+      ${stackedBars(catRows, { title: 'Results by category', desc: 'Each bar is a category, split by result. Longer blue and amber parts mean more readable signals. Hover or tab to a part to see the checks behind it.', tips: segTip })}
     </section></div>
     <div class="col-xl-4"><section class="panel h-100">
       <div class="panel-title">Privacy exposure</div><div class="panel-sub">A rough, rule-based rating, not a security score.</div>
@@ -116,6 +135,7 @@ export function render(view, app) {
   root.querySelector('[data-copy-code]')?.addEventListener('click', async (e) => {
     e.target.disabled = true;
     const r = await copyFullCode(app);
+    const btn = e.target; const label = btn.textContent; btn.textContent = r.ok ? 'Copied ✓' : 'Copy failed'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1800);
     const msg = r.ok ? `Copied (${r.length.toLocaleString()} characters). Paste it somewhere safe, then use it on the Comparison page.` : 'Could not copy automatically. Open the Comparison page to select and copy the code.';
     root.querySelector('#copy-status').textContent = msg; announce(msg); e.target.disabled = false;
   });

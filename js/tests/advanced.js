@@ -10,8 +10,8 @@ export default [
   define({
     id: 'consistency', version: '1.0.0', category: 'advanced', name: 'Cross-signal consistency', tier: 'advanced', maturity: 'demonstrated',
     dependsOn: ['user-agent', 'platform', 'client-hints', 'webgl-info', 'fonts', 'engine-inference'],
-    simple: 'Checks whether your browser tells a consistent story, e.g. a "Windows" browser with a Mac-only graphics chip would be suspicious.',
-    how: 'Compares results already measured: the UA OS claim against <code>navigator.platform</code>, Client Hints platform, the WebGL renderer and detected fonts, and the inferred engine against the claimed one.',
+    simple: 'Checks whether your browser tells a consistent story. A "Windows" browser with a Mac-only graphics chip would be suspicious.',
+    how: 'The lab compares answers it already collected: does the system named in the name tag match the platform, the graphics chip and the fonts? Spoofing tools often get some of these wrong.',
     technical: 'Bot-management and fraud systems score contradictions because spoofing tools rarely change every layer consistently. Each check here is a simple rule; real systems use many more. Contradictions can also be legitimate (remote desktops, VMs, enterprise builds).',
     exposes: 'A list of contradictions between signals.', dataType: 'list', apis: [],
     purpose: ['bot-detection', 'fraud-prevention'], relevance: 'medium', relevanceBasis: 'Contradictions are rare and therefore distinctive.', stability: 'stable',
@@ -43,8 +43,8 @@ export default [
 
   define({
     id: 'canvas-repeatability', version: '1.0.0', category: 'advanced', name: 'Canvas repeatability', tier: 'advanced', maturity: 'demonstrated', stability: 'volatile', includeByDefault: false,
-    simple: 'Draws the same canvas image five times and checks whether every copy is pixel-identical.',
-    how: 'Renders a fixed scene (text, gradient, arcs) five times on fresh canvases, hashes each result locally with SHA-256, and compares them. Also counts how many bytes differ from the first render.',
+    simple: 'Draws the same picture five times and checks whether every copy is identical.',
+    how: 'If every copy is identical, the picture can be used to recognise you. If the copies differ, your browser is adding random noise on purpose to protect you.',
     technical: 'Deterministic rendering gives identical digests, the precondition for canvas fingerprinting. Different digests within one page load indicate noise injection (Brave farbling, Safari Advanced Fingerprinting Protection, Firefox FPP, CanvasBlocker-type extensions). Noise that is <em>stable per site and session</em> (Brave) still looks identical here; this test detects per-read noise only.',
     exposes: 'Per-render digests and a stability verdict.', dataType: 'list', apis: ['CanvasRenderingContext2D.getImageData'],
     purpose: ['privacy-defense', 'bot-detection'], relevance: 'low', relevanceBasis: 'Describes a defense rather than identifying the user.',
@@ -76,8 +76,8 @@ export default [
 
   define({
     id: 'date-behavior', version: '1.0.0', category: 'advanced', name: 'Date parsing & serialization behavior', tier: 'advanced', maturity: 'research',
-    simple: 'How the browser parses ambiguous date strings and prints dates. Engines disagree on several cases.',
-    how: 'Parses a fixed list of ambiguous strings with <code>Date.parse()</code> (date-only vs date-time ISO, slashes, two-digit years, month names, invalid input) and records the results, plus the shape of <code>Date.prototype.toString()</code> and the long timezone name.',
+    simple: 'How your browser reads unclear dates and writes dates out. Browsers disagree on some cases.',
+    how: 'The page gives the browser a list of dates written in unusual ways and records how it understands them, plus how it writes a date and your time zone\'s name.',
     technical: 'The ECMAScript spec defines only the ISO format; everything else is implementation-defined, so V8, SpiderMonkey and JavaScriptCore differ (e.g. for "2026-1-2" or "01/02/26"). The timezone name in <code>toString()</code> is localized and reveals both timezone and locale data.',
     exposes: 'Parsed timestamps (relative to UTC) and string formats.', dataType: 'object', apis: ['Date.parse', 'Date.prototype.toString', 'Intl.DateTimeFormat'],
     purpose: ['bot-detection', 'identification'], relevance: 'low', relevanceBasis: 'Mostly engine- and timezone-determined.', stability: 'stable',
@@ -98,8 +98,8 @@ export default [
 
   define({
     id: 'error-stack', version: '1.0.0', category: 'advanced', name: 'Error stack format heuristic', tier: 'advanced', maturity: 'demonstrated',
-    simple: 'How the JavaScript engine formats error messages and stack traces. Each engine has its own style.',
-    how: 'Triggers three harmless errors (reading a property of <code>null</code>, calling an undefined value, an invalid array length), records their messages, and classifies the stack-frame format. File paths are stripped. Also checks <code>Error.captureStackTrace</code> and <code>Error.stackTraceLimit</code>.',
+    simple: 'How your browser words error messages. Each browser has its own style.',
+    how: 'The page triggers three harmless errors and records how the browser words them and how it lists where the error happened. File paths are removed.',
     technical: 'V8 frames look like <code>    at fn (file:line:col)</code>; SpiderMonkey and JavaScriptCore use <code>fn@file:line:col</code>, with different column conventions and messages. Spoofed user agents rarely fake these, so bot detection compares them with the claimed browser.',
     exposes: 'Error messages and stack-format class.', dataType: 'object', apis: ['Error.prototype.stack', 'Error.captureStackTrace'],
     purpose: ['bot-detection', 'fraud-prevention'], relevance: 'low', relevanceBasis: 'Few engines; useful for contradiction checks.', stability: 'stable',
@@ -124,8 +124,8 @@ export default [
 
   define({
     id: 'native-tostring', version: '1.0.0', category: 'advanced', name: 'Native function stringification shape', tier: 'advanced', maturity: 'demonstrated',
-    simple: 'How built-in functions look when converted to text. Engines format them slightly differently.',
-    how: 'Converts several functions to strings: a native method (<code>Math.max</code>), a native getter, a bound function, a class and an arrow function, and records the <em>shape</em> (whitespace, newlines, naming) with names masked.',
+    simple: 'How built-in functions look when written out as text. Browsers format them slightly differently.',
+    how: 'The page turns a few built-in functions into text and records their shape, such as line breaks and spacing, with names hidden.',
     technical: 'V8 and JavaScriptCore print <code>function max() { [native code] }</code> on one line; SpiderMonkey prints it over three lines with indentation. Getters show as <code>function get userAgent()</code>. Spoofing tools that override functions often get this shape wrong, which is why integrity checks rely on it.',
     exposes: 'String shapes of native and user functions.', dataType: 'object', apis: ['Function.prototype.toString'],
     purpose: ['bot-detection', 'fraud-prevention'], relevance: 'low', relevanceBasis: 'Engine-determined.', stability: 'stable',
@@ -142,8 +142,8 @@ export default [
 
   define({
     id: 'prototype-surface', version: '1.0.0', category: 'advanced', name: 'Selected prototype surface', tier: 'advanced', maturity: 'demonstrated',
-    simple: 'How many properties key browser objects (Navigator, Document, HTMLElement…) have. Every browser version has its own count.',
-    how: 'Counts <code>Object.getOwnPropertyNames()</code> on the prototypes of <code>Navigator</code>, <code>Document</code>, <code>HTMLElement</code>, <code>Element</code>, <code>Screen</code>, <code>CanvasRenderingContext2D</code> and <code>Window</code>, and hashes the sorted name lists. Global variables added by pages or extensions are not counted.',
+    simple: 'How many properties some core browser objects have. Each browser version has its own count.',
+    how: 'The page counts the properties of a few core browser objects and makes a short code from their names. The counts change with nearly every browser release.',
     technical: 'Property sets change with nearly every release and differ between engines, so counts plus a digest pin the browser version precisely. CreepJS-style tools use such surfaces to detect spoofed versions. Extensions that patch prototypes also change the result.',
     exposes: 'Property counts and name-list digests.', dataType: 'object', apis: ['Object.getOwnPropertyNames'],
     purpose: ['bot-detection', 'identification', 'compatibility'], relevance: 'low', relevanceBasis: 'Shared by all users of the same version.', stability: 'semi-stable',
@@ -164,8 +164,8 @@ export default [
 
   define({
     id: 'third-party-requests', version: '1.0.0', category: 'advanced', name: 'Third-party requests on this page', tier: 'advanced', maturity: 'demonstrated', stability: 'volatile', includeByDefault: false,
-    simple: 'Lists every request this page made to other websites, which is how trackers usually arrive. This lab should show zero.',
-    how: 'Reads the browser\'s Resource Timing entries (<code>performance.getEntriesByType("resource")</code>) for this page and groups them by origin. Third-party = any origin other than this site.',
+    simple: 'Lists every other website this page contacted. Trackers usually arrive this way. This lab should show none.',
+    how: 'The browser keeps a list of everything a page loaded. The lab reads it and groups it by website. On a typical commercial site this list includes analytics, ads and bot-detection services.',
     technical: 'On a typical commercial site this list contains analytics, tag managers, ad networks and fraud/bot scripts. It is the client-side view of tracker activity. Requests blocked by an extension do not appear. Activity on <em>other</em> websites cannot be observed from here; that would require network inspection or a browser extension.',
     exposes: 'Origins this page contacted.', dataType: 'object', apis: ['PerformanceResourceTiming'],
     purpose: ['privacy-defense', 'research'], relevance: 'low', relevanceBasis: 'Describes the page, not the user.',
@@ -184,8 +184,8 @@ export default [
 
   define({
     id: 'integrity', version: '1.0.0', category: 'advanced', name: 'Native function integrity', tier: 'advanced', maturity: 'demonstrated',
-    simple: 'Checks whether built-in browser functions were replaced, as spoofing extensions and some automation tools do.',
-    how: 'Inspects <code>Function.prototype.toString</code> output and property descriptors of getters like <code>navigator.userAgent</code>, <code>HTMLCanvasElement.prototype.toDataURL</code> and <code>WebGLRenderingContext.prototype.getParameter</code>.',
+    simple: 'Checks whether built-in browser functions were replaced, as spoofing extensions and some bots do.',
+    how: 'Built-in functions describe themselves in a standard way. If an extension or script has replaced one, its description usually changes. Real browser-level protections work differently and stay invisible here.',
     technical: 'Native functions stringify as <code>function x() { [native code] }</code>. JavaScript overrides usually do not, unless carefully disguised. Overrides on the instance (instead of the prototype) are another tell. Browser-native protections (Brave, Firefox, Safari) change values <em>inside</em> the engine and pass this check.',
     exposes: 'Whether common fingerprinting APIs were patched by page-level JavaScript.', dataType: 'list', apis: ['Function.prototype.toString', 'Object.getOwnPropertyDescriptor'],
     purpose: ['bot-detection', 'fraud-prevention'], relevance: 'low', relevanceBasis: 'Most users have no patched functions.', stability: 'stable',
@@ -214,8 +214,8 @@ export default [
   define({
     id: 'automation', version: '1.0.0', category: 'advanced', name: 'Automation indicators', tier: 'advanced', maturity: 'demonstrated',
     dependsOn: ['webdriver', 'webgl-info', 'languages', 'permission-states'],
-    simple: 'Signs that the browser is driven by automation (Selenium, Puppeteer, Playwright) rather than a person.',
-    how: 'Combines <code>navigator.webdriver</code>, "HeadlessChrome" in the UA, empty language lists, zero outer window size, software GPU renderers, known automation globals (<code>cdc_*</code>, <code>__playwright*</code>), and permission-state inconsistencies.',
+    simple: 'Signs that software, not a person, is driving the browser.',
+    how: 'The lab looks for traces that automation tools leave behind, such as a raised automation flag, a missing browser object, an empty language list or a software-only graphics chip. A virtual machine can trigger some of these for real people.',
     technical: 'Bot-management vendors document moving beyond <code>navigator.webdriver</code> to protocol-level side effects (e.g. CDP). These indicators are a teaching subset. Absence does not prove a human; presence does not prove a bot (VMs and remote desktops use software GPUs).',
     exposes: 'Automation indicator hits.', dataType: 'object', apis: ['navigator.webdriver', 'window properties'],
     purpose: ['bot-detection'], relevance: 'low', relevanceBasis: 'Nearly all humans show no indicators.', stability: 'stable',
@@ -240,8 +240,8 @@ export default [
   define({
     id: 'protection-indicators', version: '1.0.0', category: 'advanced', name: 'Privacy protection indicators', tier: 'advanced', maturity: 'speculative',
     dependsOn: ['canvas-2d', 'webgl-render', 'audio-offline', 'intl-timezone', 'timer-precision', 'webgl-info', 'fonts', 'languages'],
-    simple: 'Summarizes signs that your browser actively protects against fingerprinting (noise, blocking, uniform values).',
-    how: 'Reads the protection indicators of earlier tests: randomized canvas/WebGL/audio output, blocked read-backs, UTC timezone, coarse timers, a masked WebGL renderer and very short font lists.',
+    simple: 'A summary of signs that your browser actively protects you (noise, blocking, uniform values).',
+    how: 'The lab collects the protection signs from other checks: randomised images or audio, blocked read-backs, a UTC time zone, a blurry clock, a hidden graphics chip name and very few visible fonts. Each sign alone has innocent explanations.',
     technical: 'Each indicator has innocent explanations (e.g. people really live in UTC; GPUs without the debug extension). The combination is suggestive, not conclusive. This lab does <strong>not</strong> claim to identify a specific browser or extension from these indicators.',
     exposes: 'Which defenses appear active.', dataType: 'object', apis: [],
     purpose: ['privacy-defense'], relevance: 'low', relevanceBasis: 'Describes defenses.', stability: 'semi-stable',
@@ -266,8 +266,8 @@ export default [
 
   define({
     id: 'content-blockers', version: '1.0.0', category: 'advanced', name: 'Content-blocker detection (bait elements)', tier: 'advanced', maturity: 'demonstrated',
-    simple: 'Detects whether a content/ad blocker hides elements that look like ads.',
-    how: 'Inserts invisible elements with ad-like class names (<code>adsbox</code>, <code>ad-banner</code>…) and checks whether they get hidden by cosmetic filter rules. They are removed immediately.',
+    simple: 'Detects whether an ad or content blocker is hiding things on the page.',
+    how: 'The page adds invisible boxes with ad-like names and checks whether something hides them. Blockers hide such boxes, which gives them away. The boxes are removed straight after.',
     technical: 'FingerprintJS\'s <code>dom_blockers</code> source uses lists of selectors from regional filter lists to infer which lists are active, and therefore hints at region. Blockers are common (a large minority of users), so presence alone is a modest signal.',
     exposes: 'Whether cosmetic filtering is active.', dataType: 'object', apis: ['DOM layout'],
     purpose: ['identification', 'advertising'], relevance: 'medium', relevanceBasis: 'Filter-list combinations can be distinctive.', stability: 'stable',
@@ -287,8 +287,8 @@ export default [
 
   define({
     id: 'extension-indicators', version: '1.0.0', category: 'advanced', name: 'Injected extension objects', tier: 'advanced', maturity: 'demonstrated',
-    simple: 'Some extensions (crypto wallets, developer tools, writing assistants) add objects to every page. Those can be seen.',
-    how: 'Checks for well-known injected globals and DOM markers: <code>window.ethereum</code>, <code>window.solana</code>, React/Redux/Vue DevTools hooks, Grammarly and Dark Reader markers.',
+    simple: 'Some extensions (crypto wallets, developer tools, writing helpers) add things to every page that sites can see.',
+    how: 'The page looks for a short list of objects and markers that popular extensions add to every website, such as a crypto wallet connector. Most extensions add nothing visible.',
     technical: 'Injected objects are visible to all page scripts. Malicious "drainer" pages target wallet users this way. Detection here is inference: other extensions can mimic these objects, and many extensions inject nothing. This lab cannot detect every extension.',
     exposes: 'Which of a small set of extensions appear present.', dataType: 'list', apis: ['window properties', 'DOM'],
     purpose: ['identification', 'malicious-targeting'], relevance: 'medium', relevanceBasis: 'Extension combinations are distinctive when visible.', stability: 'stable',

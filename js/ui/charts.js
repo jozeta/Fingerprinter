@@ -1,5 +1,6 @@
 // Accessible SVG charts. Each chart has <title>/<desc>, visible value labels, and a text-table alternative.
 import { esc } from '../core/util.js';
+import { setTip } from './tooltip.js';
 
 let uid = 0;
 
@@ -82,7 +83,7 @@ export const statusLegend = (segs = STATUS_SEGMENTS) => `<div class="legend">${s
  * 100% stacked horizontal bars. rows: [{label, counts: {segKey: n}, href?}].
  * 2px surface gaps between segments; counts in text at the row end; tooltip per segment; table alternative.
  */
-export function stackedBars(rows, { title, desc, segs = STATUS_SEGMENTS, endLabel = null }) {
+export function stackedBars(rows, { title, desc, segs = STATUS_SEGMENTS, endLabel = null, tips = null }) {
   const id = `s${++uid}`, anim = firstTime(`stack:${title}`);
   const rowH = 30, labelW = 200, barW = 420, H = rows.length * rowH + 4;
   const body = rows.map((r, i) => {
@@ -90,7 +91,9 @@ export function stackedBars(rows, { title, desc, segs = STATUS_SEGMENTS, endLabe
     let x = labelW;
     const parts = segs.map((s) => {
       const n = r.counts[s.key] || 0; if (!n) return '';
-      const w = (n / total) * barW; const rect = `<rect class="${s.cls}${anim ? ' grow' : ''}" style="--i:${i}" x="${x}" y="${i * rowH + 7}" width="${Math.max(0, w - 2)}" height="16" rx="3"><title>${esc(r.label)}: ${n} ${esc(s.label.toLowerCase())}</title></rect>`;
+      const w = (n / total) * barW, tipKey = tips ? `${id}:${i}:${s.key}` : null;
+      if (tipKey) setTip(tipKey, tips(r, s, n, total));
+      const rect = `<rect class="${s.cls}${anim ? ' grow' : ''}" style="--i:${i}" x="${x}" y="${i * rowH + 7}" width="${Math.max(0, w - 2)}" height="16" rx="3" ${tipKey ? `data-tip="${tipKey}" tabindex="0" aria-label="${esc(r.label)}: ${n} ${esc(s.label.toLowerCase())}"` : ''}>${tipKey ? '' : `<title>${esc(r.label)}: ${n} ${esc(s.label.toLowerCase())}</title>`}</rect>`;
       x += w; return rect;
     }).join('');
     const sum = segs.reduce((a, s) => a + (r.counts[s.key] || 0), 0);
@@ -116,7 +119,7 @@ export function countMatrix(rowLabels, colLabels, values, { title, desc }) {
  * Ridges open at the bottom like a real fingerprint. New results "ink in" once (stroke-draw animation).
  */
 const inked = new Set();
-export function ridgeFigure(groups, { title, desc }) {
+export function ridgeFigure(groups, { title, desc, tipFor = null, scanning = false }) {
   const id = `r${++uid}`, cx = 200, cy = 222;
   const start = 118, end = 422; // degrees, gap at the bottom
   const pt = (rx, ry, a, dy) => { const t = (a * Math.PI) / 180; return [cx + rx * Math.cos(t), cy + dy + ry * Math.sin(t)]; };
@@ -129,10 +132,12 @@ export function ridgeFigure(groups, { title, desc }) {
       const seg = it.status ? segmentOf(it.status) : 'pending';
       const key = `${it.id}:${seg}`, draw = seg !== 'pending' && !inked.has(key);
       if (draw) inked.add(key);
-      return `<path class="${draw ? 'draw' : ''}" pathLength="1" style="stroke:var(--s-${seg});animation-delay:${draw ? (gi * 40 + k * 18) : 0}ms" d="M${x0.toFixed(1)} ${y0.toFixed(1)} A${rx} ${ry.toFixed(1)} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}" data-action="detail" data-id="${esc(it.id)}"><title>${esc(g.label)}: ${esc(it.name)} (${esc(it.status || 'not run')})</title></path>`;
+      if (tipFor) setTip(`ridge:${it.id}`, tipFor(it, g));
+      return `<path class="${draw ? 'draw' : ''}" pathLength="1" style="stroke:var(--s-${seg});animation-delay:${draw ? (gi * 40 + k * 18) : 0}ms" d="M${x0.toFixed(1)} ${y0.toFixed(1)} A${rx} ${ry.toFixed(1)} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}" data-action="detail" data-id="${esc(it.id)}" ${tipFor ? `data-tip="ridge:${esc(it.id)}" tabindex="0" role="button" aria-label="${esc(it.name)}, ${esc(g.label)}"` : ''}>${tipFor ? '' : `<title>${esc(g.label)}: ${esc(it.name)}</title>`}</path>`;
     }).join('');
   }).join('');
   return `<figure class="ridge-wrap mb-0"><svg class="ridge w-100" viewBox="0 0 400 430" role="img" aria-labelledby="${id}-t ${id}-d" style="max-width:440px;cursor:pointer">
     <title id="${id}-t">${esc(title)}</title><desc id="${id}-d">${esc(desc)}</desc>
-    <ellipse class="core" cx="${cx}" cy="${cy + 4}" rx="18" ry="22"></ellipse>${paths}</svg></figure>`;
+    <ellipse class="core" cx="${cx}" cy="${cy + 4}" rx="18" ry="22"></ellipse><path class="core-ridge" d="M${cx - 8} ${cy + 12} C ${cx - 10} ${cy - 6}, ${cx + 10} ${cy - 6}, ${cx + 8} ${cy + 12}"></path>${paths}
+    ${scanning ? `<g class="scan" style="transform-origin:${cx}px ${cy}px;animation-delay:-${Math.round((globalThis.performance?.now() ?? 0) % 2200)}ms"><path d="M${cx} ${cy} L${cx} ${cy - 200} A200 200 0 0 1 ${cx + 120} ${cy - 160} Z"></path></g>` : ''}</svg></figure>`;
 }

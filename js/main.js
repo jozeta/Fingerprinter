@@ -18,6 +18,8 @@ import * as methodology from './ui/methodology.js';
 import * as settingsView from './ui/settings.js';
 import { openDetail } from './ui/detail.js';
 import { hydrateIcons } from './ui/icons.js';
+import { initTooltips } from './ui/tooltip.js';
+import { APP_VERSION } from './core/constants.js';
 
 const VIEWS = { overview, tests: testsView, signals, entities, compare, assessment, learn, methodology, settings: settingsView };
 
@@ -84,6 +86,22 @@ function renderRunBox() {
   }
 }
 
+// Fade sections up as they scroll into view, once per page visit (never during live result updates).
+function revealOnScroll(view) {
+  if (app.running || matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+  const els = [...view.querySelectorAll('.panel, .lesson, .test-row, .section-head')].slice(0, 80);
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+  els.forEach((el, i) => { el.classList.add('reveal'); el.style.setProperty('--d', `${Math.min(i, 8) * 40}ms`); io.observe(el); });
+}
+
+// Brief "Copied" confirmation on any button with data-copied-label after a successful copy.
+export function confirmCopy(btn, ok) {
+  if (!btn) return;
+  const label = btn.dataset.label || btn.textContent; btn.dataset.label = label;
+  btn.textContent = ok ? 'Copied ✓' : 'Copy failed'; btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1800);
+}
+
 function route() {
   const name = (location.hash.match(/^#\/([a-z]+)/) || [])[1] || 'overview';
   app.route = VIEWS[name] ? name : 'overview';
@@ -91,6 +109,7 @@ function route() {
   const view = $('#view');
   app.current = VIEWS[app.route];
   app.current.render(view, app);
+  revealOnScroll(view);
   document.title = `${document.querySelector(`[data-route="${app.route}"]`)?.textContent.trim()} · Fingerprinting Lab`;
   view.focus({ preventScroll: true }); window.scrollTo(0, 0);
   bootstrap.Offcanvas.getInstance('#sidebar')?.hide();
@@ -112,6 +131,8 @@ async function loadJSON(path) {
 async function init() {
   window.__fplabStarted = true; // read by js/boot-check.js
   hydrateIcons();
+  initTooltips();
+  const v = document.getElementById('app-version'); if (v) v.textContent = `Version ${APP_VERSION}`;
   applyTheme();
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
   try {

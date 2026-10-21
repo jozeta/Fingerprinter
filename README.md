@@ -2,7 +2,7 @@
 
 **See what any website can learn about your browser, without cookies.**
 
-**Live demo: https://jozeta.github.io/Fingerprinter/**
+**Live demo: https://jozeta.github.io/Fingerprinter/** · Current version: **2.2.0** ([changelog](CHANGELOG.md))
 
 An educational, defensive privacy lab that runs real browser-fingerprinting techniques against your own browser, shows exactly what each one revealed, and explains it in plain language. Every technique is linked to documented real-world use, with an explicit evidence level. Everything runs locally: nothing is sent anywhere.
 
@@ -10,7 +10,7 @@ An educational, defensive privacy lab that runs real browser-fingerprinting tech
 
 ## What it does
 
-- **93 techniques**, from basic to advanced. They cover the full 65-item test list in [docs/TEST-COVERAGE.md](docs/TEST-COVERAGE.md):
+- **98 techniques**, from basic to advanced. They cover the full 65-item test list in [docs/TEST-COVERAGE.md](docs/TEST-COVERAGE.md):
   - **Basic:** User-Agent and Client Hints, screen and display, languages and time zone.
   - **Rendering:** canvas, WebGL and WebGPU, emoji and text metrics, fonts, SVG.
   - **Audio and media:** offline audio, hardware video decoding and encoding.
@@ -18,12 +18,13 @@ An educational, defensive privacy lab that runs real browser-fingerprinting tech
   - **Storage, permissions and APIs.**
   - **Cross-signal consistency and automation detection.**
   - **Server-side techniques** (TLS JA3/JA4, HTTP/2, IP, script-less CSS), explained but not measured.
-- **Clear results:** each check is marked *Revealed*, *Estimated*, *Blocked*, *Unavailable* or *Server-only*. Expand any result to see your actual data, a plain-language explanation of what *your* value means, why it matters, and how to hide or blur it.
+- **Clear results:** each check is marked *Revealed*, *Estimated*, *Blocked*, *Unavailable* or *Server-only*. Expand any result to see your actual data, a plain-language explanation of what *your* value means, **how common your value is** (a labelled estimate) and **how identifying the check is** (published entropy where verified), why it matters, and how to hide or blur it.
 - **Companies & adversaries:** a versioned catalogue (FingerprintJS, Google, Meta, Cloudflare, DataDome, Akamai, EFF, Tor Project, Brave, Mozilla, Apple, researchers and adversary categories). Every link to a technique carries an evidence level from *L1 Confirmed* to *L5 Unverified*, plus sources.
 - **Signal explorer:** choose which signals form your local fingerprint, watch the SHA-256 digest change, and see how signals connect.
 - **Result codes & side-by-side comparison:** after a run, copy one line of text (`FPLAB1.…`) that holds the entire result. Change a setting or move to another computer, run again, paste the old code, and get a detailed side-by-side table with every difference highlighted and an "only differences" filter. Codes are compressed and base64url-encoded. A *full* code includes the actual values; a *compact* code only fingerprints of them. Local IP addresses are never included.
 - **Privacy assessment:** a rule-based rating with documented rules and a confidence level. It is explicitly not a security score.
 - **Learning center:** illustrated lessons and hands-on exercises, such as "Does clearing cookies change your fingerprint?"
+- **Hover to explore:** hover over or tab to any part of the fingerprint figure or the category chart to see the checks and values behind it.
 - **Reports:** JSON exports (raw data excluded by default) and a printable report (print to PDF).
 
 ## Screenshots
@@ -37,6 +38,9 @@ An educational, defensive privacy lab that runs real browser-fingerprinting tech
 
 ![Side-by-side comparison of two setups using a pasted result code](docs/images/compare-codes.png)
 *Comparing two setups with a result code: rows and individual values that differ are highlighted.*
+
+![Hover box on the fingerprint figure showing a check, its value, what it means and how common it is](docs/images/tooltip.png)
+*Hover over the fingerprint figure or the category chart to see what is behind each part.*
 
 ![Dark mode overview](docs/images/overview-dark.png)
 *Dark mode, with its own colour steps tuned for the dark background.*

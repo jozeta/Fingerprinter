@@ -157,4 +157,106 @@ export default [
       return obs ? measured(obs) : serverOnly('Observable only in server request logs. This static deployment has no server component.');
     },
   }),
+
+  define({
+    id: 'validation-message', version: '1.0.0', category: 'browser', name: 'Browser interface language (form messages)', tier: 'advanced',
+    simple: 'Every browser has built-in messages like "Please fill out this field." Their wording reveals which browser you use and the language its menus are in.',
+    how: 'Creates two invisible form fields (one required and empty, one with an invalid e-mail address) that are never shown or sent, and reads the message the browser would display.',
+    technical: 'Reads <code>HTMLInputElement.validationMessage</code>. The text comes from the browser\'s own interface translations, so it reflects the UI language even when <code>navigator.languages</code> or <code>Accept-Language</code> were changed, and its wording differs between Chrome, Firefox and Safari.',
+    exposes: 'Built-in validation message texts.', dataType: 'object', apis: ['HTMLInputElement.validationMessage'],
+    purpose: ['identification', 'bot-detection'], relevance: 'medium', relevanceBasis: 'Reveals the browser\'s interface language, which can contradict spoofed language settings.', stability: 'stable',
+    combinesWith: [{ id: 'languages', basis: 'hypothetical', note: 'Interface language vs preferred languages.' }, { id: 'engine-inference', basis: 'hypothetical', note: 'Wording identifies the browser.' }],
+    privacyImpact: 'Moderate: can reveal your native language even if you changed your language settings.', limitations: ['Some browsers follow the OS language rather than the browser setting.'],
+    defenses: 'Tor Browser uses English messages for everyone when it spoofs English.', mitigations: ['If you hide your language, also use the browser in the same language you report.'], sources: ['w3c-fp-guidance'],
+    run: async () => {
+      if (!g.document) return unsupported('DOM unavailable');
+      const req = document.createElement('input'); req.required = true;
+      const mail = document.createElement('input'); mail.type = 'email'; mail.value = 'x';
+      const raw = { requiredField: req.validationMessage || null, invalidEmail: mail.validationMessage || null };
+      if (!raw.requiredField && !raw.invalidEmail) return blocked('No validation messages were returned.', { protection: 'unknown' });
+      return measured(raw);
+    },
+  }),
+
+  define({
+    id: 'font-smoothing', version: '1.0.0', category: 'rendering', name: 'Font smoothing (text edge colours)', tier: 'advanced',
+    simple: 'Checks whether your system smooths text with coloured edges (typical on Windows) or grey edges (typical on Macs and phones).',
+    how: 'Draws black text on a white, non-transparent canvas and looks at the edge pixels. Coloured fringes mean subpixel smoothing (ClearType-style); pure grey means greyscale smoothing.',
+    technical: 'Subpixel anti-aliasing depends on OS, display (HiDPI screens usually disable it), user settings (ClearType tuning) and browser policy. Only drawn on an opaque canvas, because browsers disable subpixel AA on transparent backgrounds.',
+    exposes: 'Subpixel vs greyscale anti-aliasing.', dataType: 'object', apis: ['CanvasRenderingContext2D.fillText', 'CanvasRenderingContext2D.getImageData'],
+    purpose: ['identification'], relevance: 'low', relevanceBasis: 'Mostly mirrors OS and display type.', stability: 'stable',
+    combinesWith: [{ id: 'canvas-2d', basis: 'hypothetical', note: 'Part of why canvas images differ.' }],
+    privacyImpact: 'Low.', limitations: ['Canvas may not use subpixel smoothing even where web pages do.'],
+    defenses: 'Canvas noise also affects this check.', mitigations: ['No practical action.'], sources: ['w3c-fp-guidance'],
+    run: async () => {
+      if (!g.document) return unsupported('DOM unavailable');
+      const c = document.createElement('canvas'); c.width = 120; c.height = 30;
+      const ctx = c.getContext('2d', { alpha: false, willReadFrequently: true });
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 120, 30); ctx.fillStyle = '#000'; ctx.font = '16px sans-serif'; ctx.fillText('mmmmwwww', 4, 20);
+      const d = ctx.getImageData(0, 0, 120, 30).data;
+      let colored = 0, edge = 0;
+      for (let i = 0; i < d.length; i += 4) { if (d[i] < 250 || d[i + 1] < 250 || d[i + 2] < 250) { edge++; if (Math.max(d[i], d[i + 1], d[i + 2]) - Math.min(d[i], d[i + 1], d[i + 2]) > 12) colored++; } }
+      if (!edge) return blocked('No text pixels could be read.');
+      return measured({ subpixel: colored / edge > 0.15, colouredEdgeShare: +(colored / edge).toFixed(2) }, { normalized: { subpixel: colored / edge > 0.15 } });
+    },
+  }),
+
+  define({
+    id: 'apple-pay', version: '1.0.0', category: 'apis', name: 'Apple Pay availability', tier: 'advanced',
+    simple: 'Checks whether Apple Pay can be used in this browser. That reveals Safari on an Apple device, and sometimes whether a card is set up.',
+    how: 'Checks for the <code>ApplePaySession</code> object and, if present, asks whether payments are possible. No payment sheet is opened and nothing is charged.',
+    technical: '<code>ApplePaySession.canMakePayments()</code> returns whether the device supports Apple Pay (it does not reveal cards). FingerprintJS includes an <code>apple_pay</code> source; the API also throws in some contexts (e.g. inside cross-origin frames), and that state is recorded too.',
+    exposes: 'Apple Pay support state.', dataType: 'object', apis: ['ApplePaySession.canMakePayments'],
+    purpose: ['identification', 'fraud-prevention'], relevance: 'low', relevanceBasis: 'Few values; mostly separates Apple devices.', stability: 'stable',
+    privacyImpact: 'Low.', concern: 'limitation', limitations: ['Only present in Safari and some WebKit browsers.'],
+    defenses: 'None needed.', mitigations: ['No action needed.'], sources: ['fpjs-sources'],
+    run: async () => {
+      if (!('ApplePaySession' in g)) return measured({ applePaySession: false }, { notes: ['Not a Safari/WebKit browser with Apple Pay.'] });
+      let can = null, err = null;
+      try { can = ApplePaySession.canMakePayments(); } catch (e) { err = e.name; }
+      return measured({ applePaySession: true, canMakePayments: can, error: err });
+    },
+  }),
+
+  define({
+    id: 'locale-details', version: '1.0.0', category: 'browser', name: 'Regional formats', tier: 'advanced',
+    simple: 'How your browser formats lists, plurals, currencies and which day starts the week. These follow your region settings.',
+    how: 'Uses the built-in internationalisation API to format a short list, a price and a country name in your language, and reads the first day of the week for your locale.',
+    technical: 'Reads <code>Intl.Locale.prototype.getWeekInfo()</code> (or <code>weekInfo</code>), <code>Intl.ListFormat</code>, <code>Intl.PluralRules</code>, <code>Intl.NumberFormat</code> with currency, and <code>Intl.DisplayNames</code>. Results depend on the locale and on the browser\'s CLDR data version.',
+    exposes: 'Locale-dependent formats.', dataType: 'object', apis: ['Intl.Locale', 'Intl.ListFormat', 'Intl.DisplayNames'],
+    purpose: ['identification'], relevance: 'low', relevanceBasis: 'Mostly follows the language and region settings.', stability: 'stable',
+    combinesWith: [{ id: 'intl-timezone', basis: 'hypothetical', note: 'Region consistency.' }, { id: 'languages', basis: 'hypothetical', note: 'Locale.' }],
+    privacyImpact: 'Low; may confirm your region.', limitations: ['Redundant with language for most people.'],
+    defenses: 'Tor Browser normalises the locale to English.', mitigations: ['No practical action besides language settings.'], sources: ['w3c-fp-guidance'],
+    run: async () => {
+      if (!g.Intl?.Locale) return unsupported('Intl.Locale not available');
+      const loc = new Intl.Locale(g.navigator?.language || 'en');
+      const week = loc.getWeekInfo?.() ?? loc.weekInfo ?? null;
+      const days = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      return measured({
+        locale: loc.toString(), firstDayOfWeek: week ? days[week.firstDay] : null,
+        list: g.Intl.ListFormat ? new Intl.ListFormat(undefined, { type: 'conjunction' }).format(['A', 'B', 'C']) : null,
+        price: new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(1234.5),
+        pluralCategories: g.Intl.PluralRules ? new Intl.PluralRules().resolvedOptions().pluralCategories : null,
+        countryName: g.Intl.DisplayNames ? new Intl.DisplayNames(undefined, { type: 'region' }).of('SE') : null,
+      });
+    },
+  }),
+
+  define({
+    id: 'gamepads', version: '1.0.0', category: 'apis', name: 'Game controller API',
+    simple: 'Checks whether the browser supports game controllers and whether one is already connected.',
+    how: 'Calls <code>navigator.getGamepads()</code>. Browsers only reveal a controller after you have pressed one of its buttons on this page, so most people see none.',
+    technical: 'Gamepad IDs include vendor and product codes (e.g. "Xbox Wireless Controller (STANDARD GAMEPAD Vendor: 045e Product: 0b13)"), which are distinctive once exposed. The user-gesture requirement limits this.',
+    exposes: 'Gamepad API presence and connected controller count.', dataType: 'object', apis: ['navigator.getGamepads'],
+    purpose: ['identification'], relevance: 'low', relevanceBasis: 'Usually nothing is exposed.', stability: 'semi-stable',
+    privacyImpact: 'Low unless a controller is exposed.', concern: 'limitation', limitations: ['Requires a button press before controllers appear.'],
+    defenses: 'User-gesture gating in all browsers.', mitigations: ['Disconnect controllers you are not using.'], sources: ['w3c-fp-guidance'],
+    run: async () => {
+      if (typeof g.navigator?.getGamepads !== 'function') return unsupported('Gamepad API not available');
+      let pads = [];
+      try { pads = Array.from(navigator.getGamepads() || []).filter(Boolean); } catch (e) { return blocked(`getGamepads() refused: ${e.name}`); }
+      return measured({ supported: true, connected: pads.length, controllers: pads.map((p) => p.id.slice(0, 80)) }, { normalized: { supported: true, connected: pads.length } });
+    },
+  }),
 ];

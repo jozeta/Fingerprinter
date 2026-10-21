@@ -7,8 +7,8 @@ import { settleWithin } from '../core/util.js';
 export default [
   define({
     id: 'api-availability', version: '1.0.0', category: 'apis', name: 'Capability API availability',
-    simple: 'Which powerful browser features exist (location, notifications, clipboard, Bluetooth…). Existing is not the same as being exposed.',
-    how: 'Checks only whether objects such as <code>navigator.geolocation</code>, <code>Notification</code>, <code>navigator.clipboard</code>, <code>navigator.serviceWorker</code>, <code>RTCPeerConnection</code>, <code>navigator.gpu</code>, <code>navigator.bluetooth</code> exist. Nothing is called.',
+    simple: 'Which powerful browser features exist, like location, notifications or Bluetooth. Existing is not the same as being allowed.',
+    how: 'The page only checks whether these features exist in your browser; it does not use them or ask for permission. The set differs between browsers, versions and devices.',
     technical: 'The set of present APIs depends on browser, version, platform and enterprise policy. <strong>Presence does not mean the API can be used without permission</strong>, and it is not a vulnerability.',
     exposes: 'Presence flags for capability APIs.', dataType: 'object', apis: ['navigator.*'],
     purpose: ['compatibility', 'identification'], relevance: 'low', relevanceBasis: 'Shared by all users of a browser version/platform.', stability: 'stable',
@@ -26,8 +26,8 @@ export default [
 
   define({
     id: 'permission-states', version: '1.0.0', category: 'apis', name: 'Permission states (no prompts)',
-    simple: 'Which permissions you have previously granted or denied for this site. Checking does not show any prompt.',
-    how: 'Calls <code>navigator.permissions.query()</code> for common permission names. This API never prompts; it only reports <code>granted</code>, <code>denied</code> or <code>prompt</code>.',
+    simple: 'Which permissions you have already allowed or blocked for this site. Checking shows no pop-up.',
+    how: 'Pages can quietly check whether you have previously allowed, blocked or never been asked about things like camera or notifications for this site. Asking this never shows a prompt.',
     technical: 'For a fresh origin almost everything is <code>prompt</code>. Unusual defaults (e.g. notifications globally blocked) and enterprise policies show up here. Inconsistencies between <code>Notification.permission</code> and the Permissions API were historically a headless-Chrome tell.',
     exposes: 'Per-permission state for this origin.', dataType: 'object', apis: ['Permissions.query', 'Notification.permission'],
     purpose: ['bot-detection', 'identification'], relevance: 'low', relevanceBasis: 'Mostly "prompt" on first visit.', stability: 'semi-stable',
@@ -49,8 +49,8 @@ export default [
 
   define({
     id: 'api-surface', version: '1.0.0', category: 'apis', name: 'JavaScript API surface', tier: 'advanced',
-    simple: 'Which newer JavaScript features exist, which narrows the browser version.',
-    how: 'Checks for ~20 globals introduced in different releases (e.g. <code>scheduler</code>, <code>navigation</code>, <code>CompressionStream</code>, <code>EyeDropper</code>, <code>Sanitizer</code>).',
+    simple: 'Which newer browser features exist, which narrows down your browser version.',
+    how: 'The page checks for about twenty features that browsers added at different times. Which ones exist points to your browser and roughly which version you run.',
     technical: 'A presence bitmask maps to a release range and engine. Bot detectors compare it with the claimed UA version to detect spoofing.',
     exposes: 'Presence bitmask.', dataType: 'object', apis: ['globalThis'],
     purpose: ['compatibility', 'bot-detection'], relevance: 'low', relevanceBasis: 'Shared by users of the same version.', stability: 'semi-stable',
@@ -68,8 +68,8 @@ export default [
 
   define({
     id: 'webrtc-presence', version: '1.0.0', category: 'apis', name: 'WebRTC API presence',
-    simple: 'Whether WebRTC (real-time audio/video/data) is exposed, and which codecs it advertises. No connection is made and no network candidates are collected.',
-    how: 'Checks for <code>RTCPeerConnection</code>, <code>RTCDataChannel</code>, <code>RTCRtpTransceiver</code> and insertable-streams interfaces, and reads <code>RTCRtpSender.getCapabilities()</code> codec lists. No peer connection is created.',
+    simple: 'Whether video-call technology is available and which video and audio formats it offers. No connection is made.',
+    how: 'The page checks whether the browser\'s video-call feature exists and lists the formats it supports. It does not start a call or collect network addresses.',
     technical: 'Codec capability lists (VP8/VP9/AV1/H.264 profiles, Opus, RED, hardware-accelerated codecs) differ by browser, OS and hardware encoders. Presence of WebRTC <em>does not</em> mean network candidates are gathered; that only happens in the separate, user-initiated candidate test.',
     exposes: 'WebRTC interface presence and advertised codecs.', dataType: 'object', apis: ['RTCPeerConnection', 'RTCRtpSender.getCapabilities'],
     purpose: ['compatibility', 'identification'], relevance: 'low', relevanceBasis: 'Codec lists vary modestly by platform.', stability: 'stable',
@@ -88,8 +88,8 @@ export default [
 
   define({
     id: 'device-posture', version: '1.0.0', category: 'apis', name: 'Device & posture API exposure',
-    simple: 'Whether APIs for sensors, foldable-screen posture, multi-screen setups and on-screen keyboards exist. Nothing is read from sensors.',
-    how: 'Checks presence of <code>navigator.devicePosture</code>, <code>DeviceOrientationEvent</code>, <code>DeviceMotionEvent</code>, Generic Sensor classes (<code>Accelerometer</code>, <code>Gyroscope</code>, <code>AmbientLightSensor</code>…), <code>navigator.virtualKeyboard</code>, <code>getScreenDetails</code> and viewport segments. No sensor is started and no event listener is attached.',
+    simple: 'Whether features for motion sensors, foldable screens, multiple monitors and on-screen keyboards exist. No sensor is read.',
+    how: 'The page only checks whether these features exist. It never starts a sensor or listens to movement.',
     technical: 'Sensor readings have been shown to enable device fingerprinting (e.g. accelerometer calibration errors), which is why this lab only checks presence. Posture/segments APIs indicate foldables; multi-screen APIs indicate desktop Chromium.',
     exposes: 'Presence flags; posture type where exposed.', dataType: 'object', apis: ['navigator.devicePosture', 'DeviceOrientationEvent', 'Sensor'],
     purpose: ['compatibility', 'identification'], relevance: 'low', relevanceBasis: 'Mostly a device/browser-class signal.', stability: 'stable',
@@ -108,8 +108,8 @@ export default [
 
   define({
     id: 'webauthn', version: '1.0.0', category: 'apis', name: 'WebAuthn & credential capability',
-    simple: 'Whether passkeys / Web Authentication are available, and whether a built-in authenticator (Touch ID, Windows Hello) is present. No credential is requested.',
-    how: 'Checks <code>PublicKeyCredential</code>, <code>navigator.credentials</code>, <code>PasswordCredential</code> and <code>IdentityCredential</code> (FedCM), and calls the prompt-free capability queries <code>isUserVerifyingPlatformAuthenticatorAvailable()</code>, <code>isConditionalMediationAvailable()</code> and <code>getClientCapabilities()</code> where present.',
+    simple: 'Whether passkeys work here, and whether your device has a built-in fingerprint or face unlock. No login is started.',
+    how: 'The page asks your browser, without showing anything, whether passkeys are supported and whether a built-in unlock method (Touch ID, Face ID, Windows Hello) exists.',
     technical: 'These queries never show UI. Whether a platform authenticator exists (Touch ID, Face ID, Windows Hello, Android biometrics) is a hardware/OS signal. Client capabilities (hybrid transport, related origins, passkey sync) vary with browser and OS versions.',
     exposes: 'Credential API presence and authenticator availability.', dataType: 'object', apis: ['PublicKeyCredential', 'navigator.credentials'],
     purpose: ['fraud-prevention', 'compatibility', 'identification'], relevance: 'low', relevanceBasis: 'Few distinct combinations; correlates with device class.', stability: 'stable',
@@ -129,8 +129,8 @@ export default [
 
   define({
     id: 'observer-support', version: '1.0.0', category: 'apis', name: 'Event & observer support matrix', tier: 'advanced',
-    simple: 'Which observer and event APIs the browser implements, plus the performance entry types it records.',
-    how: 'Checks for observer classes (<code>ResizeObserver</code>, <code>IntersectionObserver</code>, <code>MutationObserver</code>, <code>ReportingObserver</code>, <code>PressureObserver</code>…), event constructors and handler properties, and reads <code>PerformanceObserver.supportedEntryTypes</code>.',
+    simple: 'Which page-watching and event features your browser has, which narrows down its version.',
+    how: 'The page checks for features that let sites watch for changes on the page, and lists the kinds of performance measurements the browser supports. Browsers add these release by release.',
     technical: 'Supported performance entry types (e.g. <code>largest-contentful-paint</code>, <code>long-animation-frame</code>, <code>soft-navigation</code>) are added release by release and differ between engines, so the list narrows browser and version.',
     exposes: 'API presence and supported entry types.', dataType: 'object', apis: ['PerformanceObserver.supportedEntryTypes'],
     purpose: ['compatibility', 'bot-detection'], relevance: 'low', relevanceBasis: 'Shared by users of the same version.', stability: 'semi-stable',
@@ -147,8 +147,8 @@ export default [
 
   define({
     id: 'dom-features', version: '1.0.0', category: 'apis', name: 'DOM & HTML implementation features', tier: 'advanced',
-    simple: 'Which HTML elements, attributes and input types the browser supports.',
-    how: 'Checks for features such as <code>&lt;dialog&gt;</code>, the <code>popover</code> and <code>inert</code> attributes, declarative shadow DOM, custom elements and <code>document.fonts</code>, and tests which <code>&lt;input type&gt;</code> values are kept (date, color, month, week, datetime-local, range) using detached elements.',
+    simple: 'Which page-building features your browser supports, like pop-up dialogs and date pickers.',
+    how: 'The page checks a list of newer page elements and asks whether special input types, such as date or colour pickers, are supported. Unsupported ones silently fall back to plain text boxes.',
     technical: 'Unsupported input types silently fall back to <code>text</code>, so assigning a type and reading it back reveals support. Together with newer DOM APIs this maps to engine and release range.',
     exposes: 'HTML/DOM feature support.', dataType: 'object', apis: ['HTMLInputElement.type', 'HTMLElement.popover', 'HTMLDialogElement'],
     purpose: ['compatibility', 'bot-detection'], relevance: 'low', relevanceBasis: 'Shared by users of the same version.', stability: 'semi-stable',
@@ -168,8 +168,8 @@ export default [
 
   define({
     id: 'isolation-posture', version: '1.0.0', category: 'apis', name: 'Secure context & isolation posture',
-    simple: 'Whether this page runs in a secure context and how strongly it is isolated from other sites.',
-    how: 'Reads <code>isSecureContext</code>, <code>crossOriginIsolated</code>, <code>originAgentCluster</code>, the page protocol, and the features allowed by the Permissions Policy (<code>document.featurePolicy</code> / <code>permissionsPolicy</code> where exposed).',
+    simple: 'Whether this page runs in a secure mode, and how well it is walled off from other sites.',
+    how: 'The page reads whether it was loaded securely and which protective settings are active. These depend mostly on how the site is set up, not on you, but they decide which other checks can run.',
     technical: 'These values describe the <em>page and server configuration</em> more than the user. They matter because they gate other APIs (high-resolution timers, SharedArrayBuffer, Storage, Web Crypto). The allowed-features list also differs between browser versions.',
     exposes: 'Security context flags and allowed policy features.', dataType: 'object', apis: ['isSecureContext', 'crossOriginIsolated', 'Document.featurePolicy'],
     purpose: ['compatibility'], relevance: 'low', relevanceBasis: 'Determined by the site, not the user.', stability: 'stable',
@@ -185,8 +185,8 @@ export default [
 
   define({
     id: 'permission-api-surface', version: '1.0.0', category: 'apis', name: 'Permission API surface', tier: 'advanced',
-    simple: 'Which permission names and permission-related functions the browser recognizes. No permission is requested.',
-    how: 'Calls <code>navigator.permissions.query()</code> with ~25 permission names and records only whether each name is <em>recognized</em> (a TypeError means unknown). Also checks for <code>Permissions.request/revoke</code>, <code>Notification.requestPermission</code> and the <code>&lt;permission&gt;</code> element.',
+    simple: 'Which permission types your browser knows about. Nothing is requested.',
+    how: 'The page asks about a list of permission names and only records which ones your browser recognises. Different browsers know different names. No prompt is shown.',
     technical: 'The set of recognized names differs by engine and version (e.g. "window-management", "local-fonts", "captured-surface-control" are Chromium-only). Querying never prompts. This is distinct from the permission <em>states</em> test.',
     exposes: 'Recognized permission names and API surface.', dataType: 'object', apis: ['Permissions.query'],
     purpose: ['compatibility', 'bot-detection'], relevance: 'low', relevanceBasis: 'Shared by users of the same version.', stability: 'stable',
@@ -209,8 +209,8 @@ export default [
 
   define({
     id: 'webrtc-local', version: '1.0.0', category: 'apis', name: 'WebRTC local candidate exposure', tier: 'advanced', interaction: true,
-    simple: 'Checks whether WebRTC would reveal your local network address. Runs only when you click it, and contacts no server.',
-    how: 'Creates an <code>RTCPeerConnection</code> with <strong>no STUN/TURN servers</strong>, so no network request leaves your device. It gathers host ICE candidates and checks whether they are real IPs or obfuscated <code>.local</code> mDNS names. Addresses are not stored or exported unless you choose to export raw data.',
+    simple: 'Checks whether video-call technology would reveal your home network address. Runs only when you click it, and contacts no server.',
+    how: 'Browsers\' video-call feature (WebRTC) collects network addresses to connect people. The lab starts it without any outside server and checks whether your local address is shown or hidden behind a random name. Nothing is stored.',
     technical: 'Since ~2019 browsers replace host IPs with random mDNS names unless media permission was granted. With a STUN server, a server-reflexive candidate would also expose the public IP; this lab deliberately does not do that. The 2025 "Local Mess" disclosure showed WebRTC being used to reach localhost apps.',
     exposes: 'Whether local IPs are exposed or mDNS-obfuscated.', dataType: 'object', apis: ['RTCPeerConnection'],
     purpose: ['identification', 'fraud-prevention'], relevance: 'medium', relevanceBasis: 'LAN IPs are distinctive when exposed; mDNS obfuscation removes most value.', stability: 'semi-stable',

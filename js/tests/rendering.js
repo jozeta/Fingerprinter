@@ -36,8 +36,8 @@ export { FONT_CANDIDATES };
 export default [
   define({
     id: 'canvas-2d', version: '1.0.0', category: 'rendering', name: 'Canvas 2D rendering', repeatable: true,
-    simple: 'Your browser draws a small picture. Tiny differences in how it draws text and shapes can tell devices apart.',
-    how: 'A deterministic scene (gradient, text in two fonts, emoji, blended circles, a curve) is drawn on an off-screen <code>&lt;canvas&gt;</code>. The pixels are read with <code>getImageData()</code> and hashed locally with SHA-256. The scene is drawn several times and compared pixel by pixel.',
+    simple: 'Your browser draws a small picture. Tiny differences in how it draws can tell devices apart.',
+    how: 'The page secretly draws some text, shapes and an emoji, then reads back the exact pixels and turns them into a short code. The picture looks the same to you, but fonts, graphics chip and system settings change a few pixels. The lab draws it several times to see if your browser adds random noise as a protection.',
     technical: 'Output depends on font rasterization and hinting, sub-pixel anti-aliasing, GPU/driver compositing, color management and the emoji font. Identical outputs across repeated draws but different across devices make it a strong signal. Differing outputs <em>within</em> one page load indicate noise injection (e.g. Brave farbling, Safari Advanced Fingerprinting Protection).',
     exposes: 'A pixel buffer whose digest reflects your rendering stack.', dataType: 'hash', apis: ['HTMLCanvasElement', 'CanvasRenderingContext2D.getImageData'],
     purpose: ['identification', 'fraud-prevention', 'bot-detection', 'advertising'], relevance: 'high',
@@ -74,8 +74,8 @@ export default [
 
   define({
     id: 'webgl-info', version: '2.0.0', category: 'rendering', name: 'WebGL renderer & capabilities',
-    simple: 'What your graphics card is and which WebGL features it supports.',
-    how: 'Creates a WebGL context, reads version strings and the extension list. If <code>WEBGL_debug_renderer_info</code> is exposed, also reads the unmasked vendor and renderer strings. Shader precision and numeric limits are a separate test. The context is released afterwards.',
+    simple: 'Which graphics chip you have and what it can do, as reported by the browser\'s 3D feature.',
+    how: 'Pages can open the browser\'s 3D graphics feature (WebGL) and ask for its version, the list of extra features, and sometimes the exact name of your graphics chip. The lab closes it again right away.',
     technical: 'Unmasked renderer strings such as "ANGLE (NVIDIA, GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0)" are very specific. Limits and extensions vary with GPU, driver and browser. Software renderers (SwiftShader, llvmpipe) are typical of headless or virtualized environments. A missing renderer string does <em>not</em> identify a particular privacy product.',
     exposes: 'GPU vendor/model (if exposed), driver capabilities, extension list.', dataType: 'object', apis: ['WebGLRenderingContext', 'WEBGL_debug_renderer_info'],
     purpose: ['identification', 'fraud-prevention', 'bot-detection'], relevance: 'high', relevanceBasis: 'Renderer strings and parameters vary widely; included in FingerprintJS and Cover Your Tracks.',
@@ -109,8 +109,8 @@ export default [
 
   define({
     id: 'webgl-precision', version: '1.0.0', category: 'rendering', name: 'WebGL shader precision & limits', tier: 'advanced',
-    simple: 'How precise your GPU\'s shader math is and how large its internal limits are.',
-    how: 'Reads <code>getShaderPrecisionFormat()</code> for vertex and fragment shaders at low, medium and high precision (float and int), plus about 15 numeric limits such as <code>MAX_TEXTURE_SIZE</code> and <code>MAX_VARYING_VECTORS</code>. The context is released afterwards.',
+    simple: 'How precise your graphics chip\'s maths is and how big its internal limits are.',
+    how: 'The page asks the graphics chip about the precision of its calculations and the maximum sizes it supports. These come from the chip and its driver, and still work when the chip\'s name is hidden.',
     technical: 'Precision ranges and limits come from the GPU driver (often through ANGLE on Windows/macOS). They separate GPU families and driver generations, and still work when the renderer string itself is masked. Mobile GPUs often report reduced medium-precision ranges.',
     exposes: 'Shader precision formats and GPU limits.', dataType: 'object', apis: ['WebGLRenderingContext.getShaderPrecisionFormat', 'WebGLRenderingContext.getParameter'],
     purpose: ['identification', 'fraud-prevention'], relevance: 'medium', relevanceBasis: 'Varies by GPU/driver; available even when renderer strings are masked.', stability: 'stable',
@@ -144,8 +144,8 @@ export default [
 
   define({
     id: 'webgl-context-attrs', version: '1.0.0', category: 'rendering', name: 'WebGL context attributes', tier: 'advanced',
-    simple: 'The settings your browser actually grants when a page asks for a WebGL drawing surface.',
-    how: 'Requests WebGL 1 and WebGL 2 contexts with default options and reads <code>getContextAttributes()</code> (antialias, alpha, depth, stencil, premultipliedAlpha, powerPreference, desynchronized). Also checks whether a context is refused with <code>failIfMajorPerformanceCaveat</code>, which indicates software rendering. Contexts are released afterwards.',
+    simple: 'The drawing settings your browser actually gives a page that asks for 3D graphics.',
+    how: 'The page asks for a 3D drawing surface with default settings and reads back what it got. It also checks whether the browser refuses when only fast hardware would do, which happens with software-only graphics.',
     technical: 'Granted attributes depend on GPU, driver and browser policy. A refusal under <code>failIfMajorPerformanceCaveat: true</code> means the GPU is blocklisted or rendering falls back to software, common in VMs and headless servers.',
     exposes: 'Granted context attributes and WebGL versions.', dataType: 'object', apis: ['WebGLRenderingContext.getContextAttributes', 'WebGL2RenderingContext'],
     purpose: ['identification', 'bot-detection'], relevance: 'low', relevanceBasis: 'Few distinct combinations.', stability: 'stable',
@@ -169,8 +169,8 @@ export default [
 
   define({
     id: 'emoji-render', version: '1.0.0', category: 'rendering', name: 'Canvas emoji & glyph rendering', repeatable: true,
-    simple: 'Emoji and special characters are drawn and their pixels hashed. Emoji artwork differs by operating system and version.',
-    how: 'Draws a fixed set of emoji and Unicode glyphs (including recent emoji that older systems lack) onto a small canvas, reads the pixels and hashes them locally. Rendered twice to detect randomization.',
+    simple: 'Emoji are drawn and their pixels turned into a code. Emoji artwork differs between systems and versions.',
+    how: 'The page draws a row of emoji and special characters, reads back the pixels and makes a short code from them. Your system\'s emoji style and version decide what they look like.',
     technical: 'Emoji come from the OS font (Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji) and change with OS releases. Missing glyphs render as "tofu" boxes. Unlike width metrics, pixel output also captures color and artwork, so it distinguishes OS versions very well.',
     exposes: 'A digest of emoji/glyph pixels.', dataType: 'hash', apis: ['CanvasRenderingContext2D.fillText', 'CanvasRenderingContext2D.getImageData'],
     purpose: ['identification', 'bot-detection'], relevance: 'medium', relevanceBasis: 'Strongly tied to OS version; correlated with canvas output.', stability: 'stable',
@@ -199,8 +199,8 @@ export default [
 
   define({
     id: 'webgl-render', version: '1.0.0', category: 'rendering', name: 'WebGL rendering digest', repeatable: true, tier: 'advanced',
-    simple: 'Your graphics card draws a small 3D test image; the result is hashed.',
-    how: 'A shader draws a deterministic triangle with a math-heavy color function. <code>readPixels()</code> extracts the result, which is hashed locally. Repeated renders are compared to detect randomization. The context is released afterwards.',
+    simple: 'Your graphics chip draws a small 3D image, and the result is turned into a code.',
+    how: 'The page asks the graphics chip to draw a coloured triangle with some maths in it and reads back the pixels. Different chips and drivers round the maths slightly differently, which changes the image.',
     technical: 'Floating-point precision in GPU shader cores, driver compilers and rasterization rules changes edge and gradient pixels. Cao et al. (NDSS 2017) used dozens of such rendering tasks for cross-browser device identification.',
     exposes: 'A digest of GPU-rendered pixels.', dataType: 'hash', apis: ['WebGLRenderingContext.readPixels'],
     purpose: ['identification', 'fraud-prevention'], relevance: 'medium', relevanceBasis: 'Research shows cross-browser identification; many devices with identical GPUs collide.',
@@ -243,8 +243,8 @@ export default [
 
   define({
     id: 'webgpu', version: '1.0.0', category: 'rendering', name: 'WebGPU adapter information', tier: 'advanced', maturity: 'research', secureContext: true,
-    simple: 'The newest graphics API can describe your GPU and its limits.',
-    how: 'Calls <code>navigator.gpu.requestAdapter()</code> and reads <code>adapter.info</code> (vendor, architecture), the feature set and numeric limits. No GPU work is executed.',
+    simple: 'What the newest graphics feature (WebGPU) says about your graphics chip.',
+    how: 'WebGPU is the newest way for pages to use the graphics chip. When asked, it describes the chip\'s maker and family, which optional features it has, and its limits. The lab only asks; it does not run anything on the chip.',
     technical: 'Browsers bucket adapter info and limits to reduce entropy, but vendor/architecture plus feature sets still distinguish hardware classes. Research (DrawnApart, NDSS 2022) showed GPU timing can distinguish identical GPU models; WebGPU compute makes such timing easier. This lab does <em>not</em> run timing workloads.',
     exposes: 'GPU vendor/architecture (bucketed), supported features, limits.', dataType: 'object', apis: ['navigator.gpu', 'GPUAdapter.info'],
     purpose: ['identification'], relevance: 'medium', relevanceBasis: 'New surface; entropy depends on browser bucketing.', stability: 'stable',
@@ -265,8 +265,8 @@ export default [
 
   define({
     id: 'fonts', version: '1.0.0', category: 'rendering', name: 'Font availability (inference)',
-    simple: 'Which fonts seem to be installed, guessed by measuring how text looks.',
-    how: 'For each candidate font, text is measured in <code>"Candidate", fallback</code> for three fallbacks (monospace, serif, sans-serif). If width or height differs from the fallback alone, the candidate is <em>probably</em> available. The candidate list is fixed and shown below.',
+    simple: 'Which fonts seem to be installed on your computer, guessed by measuring text.',
+    how: 'Pages cannot list your fonts, so they measure them: text is written in a fallback font, then again with a font name in front. If the size changes, that font is probably installed. Office, design tools and language packs all add fonts.',
     technical: 'Classic offset-measurement technique. Installed software (Office, Adobe, IDEs) and language packs add fonts. A match is an <strong>inference</strong>: a web font or font alias can produce false positives, and identical metrics can produce false negatives. Safari restricts web content to OS-bundled fonts.',
     exposes: 'A list of probably available fonts from a 40-font candidate list.', dataType: 'list', apis: ['HTMLElement.offsetWidth', 'CSS font-family'],
     purpose: ['identification', 'fraud-prevention'], relevance: 'high', relevanceBasis: 'Font lists were among the most identifying attributes in EFF and AmIUnique studies.', stability: 'stable',
@@ -301,8 +301,8 @@ export default [
 
   define({
     id: 'text-metrics', version: '2.0.0', category: 'rendering', name: 'Canvas text metrics', tier: 'advanced',
-    simple: 'How wide and tall text is drawn in the default fonts, which depends on your OS fonts and font settings.',
-    how: 'Uses <code>CanvasRenderingContext2D.measureText()</code> on a fixed pangram in the generic families (serif, sans-serif, monospace, system-ui, cursive) and on a set of emoji/symbols, recording width and bounding-box values.',
+    simple: 'How wide and tall text and emoji are drawn in your system\'s default fonts.',
+    how: 'The page measures a sentence in the standard font styles (serif, sans-serif, monospace and so on) and a few emoji. The exact sizes depend on which fonts your system uses by default and which emoji version it has.',
     technical: 'Generic family names map to OS- and user-configured default fonts, so their metrics reveal font preferences (FingerprintJS\'s <code>font_preferences</code> source uses this idea). Emoji metrics reveal the emoji font version. This works even when the UA is altered.',
     exposes: 'Text metrics for default font families, emoji and symbols.', dataType: 'object', apis: ['CanvasRenderingContext2D.measureText'],
     purpose: ['identification', 'bot-detection'], relevance: 'medium', relevanceBasis: 'Correlates strongly with OS version.', stability: 'stable',
@@ -326,8 +326,8 @@ export default [
 
   define({
     id: 'svg-support', version: '1.0.0', category: 'rendering', name: 'SVG rendering & API support', tier: 'advanced',
-    simple: 'Whether SVG graphics features exist, and how your browser measures SVG text and shapes.',
-    how: 'Checks SVG interfaces (<code>SVGGeometryElement</code>, <code>SVGTextContentElement</code>, filters, <code>SVGAnimationElement</code>), then lays out a hidden SVG with text and a path and reads <code>getComputedTextLength()</code>, <code>getBBox()</code> and <code>getTotalLength()</code>.',
+    simple: 'Whether vector graphics features exist, and how your browser measures vector text and shapes.',
+    how: 'The page checks for a few vector graphics (SVG) features and measures the length of a hidden line of text and a curve. The exact numbers depend on fonts and the browser.',
     technical: 'SVG text length depends on font rasterization like canvas text, and path length on the engine\'s curve approximation. Both are rarely noised by anti-fingerprinting defenses. The SVG element is removed immediately.',
     exposes: 'SVG API presence and geometry measurements.', dataType: 'object', apis: ['SVGTextContentElement.getComputedTextLength', 'SVGGraphicsElement.getBBox', 'SVGGeometryElement.getTotalLength'],
     purpose: ['identification', 'compatibility'], relevance: 'low', relevanceBasis: 'Correlates with fonts and engine; largely redundant with canvas text.', stability: 'semi-stable',
@@ -357,8 +357,8 @@ export default [
 
   define({
     id: 'dom-rect', version: '1.0.0', category: 'rendering', name: 'Sub-pixel layout (DOMRect)', tier: 'advanced',
-    simple: 'Exact sizes of transformed text on the page, measured to many decimal places.',
-    how: 'Lays out a rotated, skewed text element off-screen and reads <code>getClientRects()</code>. Values like <code>113.97727966308594</code> depend on the layout engine and font rasterizer.',
+    simple: 'Exact sizes of tilted text on the page, measured to many decimal places.',
+    how: 'The page places a hidden, slightly rotated piece of text and asks for its exact size. The tiny decimals depend on your browser version and how it renders fonts, and privacy tools rarely change them.',
     technical: 'Layout uses floating-point math influenced by fonts, zoom and engine version. Unlike canvas, these APIs are rarely noised, so it is a useful complementary signal.',
     exposes: 'High-precision layout geometry.', dataType: 'object', apis: ['Element.getClientRects', 'Element.getBoundingClientRect'],
     purpose: ['identification'], relevance: 'medium', relevanceBasis: 'Varies with fonts and engine; rarely protected.', stability: 'semi-stable',

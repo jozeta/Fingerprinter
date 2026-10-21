@@ -24,8 +24,8 @@ async function renderAudio() {
 export default [
   define({
     id: 'audio-offline', version: '1.0.0', category: 'media', name: 'OfflineAudioContext processing', repeatable: true,
-    simple: 'Your browser silently processes a synthetic sound. Tiny numeric differences in the result can distinguish setups.',
-    how: 'An <code>OfflineAudioContext</code> renders 5,000 samples of a 10 kHz triangle wave through a <code>DynamicsCompressor</code>, entirely in memory. No speakers or microphone are involved. A sum over part of the output and a digest of sample values are computed, and the render is repeated to detect randomization.',
+    simple: 'Your browser processes a silent sound. Tiny number differences in the result can tell setups apart.',
+    how: 'The page creates a tone and runs it through a sound effect entirely in memory. Nothing plays and no microphone is used. The resulting numbers differ slightly between browsers, systems and processors.',
     technical: 'Differences come from floating-point implementation details (SIMD paths, FMA, denormal handling) and audio engine versions, so they mostly separate browser/OS/CPU families rather than individuals. Englehardt & Narayanan (2016) first observed this in the wild.',
     exposes: 'A numeric signature of the audio processing stack.', dataType: 'hash', apis: ['OfflineAudioContext', 'DynamicsCompressorNode'],
     purpose: ['identification', 'fraud-prevention'], relevance: 'medium', relevanceBasis: 'Used by FingerprintJS; mostly reflects platform rather than individual device.', stability: 'stable',
@@ -49,7 +49,7 @@ export default [
   define({
     id: 'speech-voices', version: '1.0.0', category: 'media', name: 'Speech synthesis voices',
     simple: 'The text-to-speech voices installed on your system.',
-    how: 'Reads <code>speechSynthesis.getVoices()</code> (name, language, local or network voice). No speech is played.',
+    how: 'Pages can list the voices your system can read text aloud with, including their language. Extra voice packs you have downloaded show up here. Nothing is spoken.',
     technical: 'Voice lists depend on OS, installed language packs and optional premium voices. macOS and Windows differ substantially; network voices reveal vendor services.',
     exposes: 'Installed TTS voices and languages.', dataType: 'list', apis: ['speechSynthesis.getVoices'],
     purpose: ['identification'], relevance: 'medium', relevanceBasis: 'Optional voice downloads vary between users.', stability: 'stable',
@@ -69,8 +69,8 @@ export default [
 
   define({
     id: 'media-codecs', version: '1.0.0', category: 'media', name: 'Media codec support',
-    simple: 'Which audio and video formats your browser says it can play.',
-    how: 'Calls <code>HTMLMediaElement.canPlayType()</code> and <code>MediaSource.isTypeSupported()</code> for a fixed list of codecs.',
+    simple: 'Which video and audio formats your browser can play.',
+    how: 'The page asks whether your browser could play a list of video and audio formats. The answers depend on your browser, system and graphics hardware. Nothing is downloaded or played.',
     technical: 'HEVC, AV1 and Dolby support depend on hardware decoders, OS codec licenses and browser builds.',
     exposes: 'Codec support answers ("probably", "maybe", "").', dataType: 'object', apis: ['HTMLMediaElement.canPlayType', 'MediaSource.isTypeSupported'],
     purpose: ['compatibility', 'identification'], relevance: 'low', relevanceBasis: 'Mostly determined by browser + OS.', stability: 'stable',
@@ -90,8 +90,8 @@ export default [
 
   define({
     id: 'media-devices', version: '2.0.0', category: 'media', name: 'Media device API surface (no enumeration)',
-    simple: 'Which camera/microphone/screen-capture APIs exist. No devices are listed or counted.',
-    how: 'Checks for <code>navigator.mediaDevices</code>, <code>getUserMedia</code>, <code>getDisplayMedia</code>, <code>enumerateDevices</code>, <code>selectAudioOutput</code> and reads <code>getSupportedConstraints()</code>, which lists constraint <em>names</em> the browser understands. <strong><code>enumerateDevices()</code> is never called</strong>, and no permission is requested.',
+    simple: 'Which camera, microphone and screen-sharing features exist. No devices are listed or counted.',
+    how: 'The page checks whether these features exist and which settings names the browser understands. It never lists your cameras or microphones and never asks for permission.',
     technical: 'Device enumeration can reveal device counts (and, after a granted permission, labels and persistent per-site IDs). This lab deliberately avoids it. The supported-constraints list differs between engines and versions, so it acts as a capability signal.',
     exposes: 'Media API presence and supported constraint names.', dataType: 'object', apis: ['navigator.mediaDevices', 'MediaDevices.getSupportedConstraints'],
     purpose: ['compatibility', 'identification'], relevance: 'low', relevanceBasis: 'Shared by all users of the same browser version.', stability: 'stable',
@@ -109,8 +109,8 @@ export default [
 
   define({
     id: 'audio-capabilities', version: '1.0.0', category: 'media', name: 'Audio engine capability profile',
-    simple: 'What the browser\'s audio engine reports: sample rate, latency, channel count and available audio features.',
-    how: 'Creates an <code>AudioContext</code> (which stays suspended because no user gesture is involved, so nothing plays), reads <code>sampleRate</code>, <code>baseLatency</code>, <code>outputLatency</code>, <code>destination.maxChannelCount</code> and <code>state</code>, checks for <code>AudioWorklet</code> and other audio interfaces, then closes the context.',
+    simple: 'What your sound system reports: sample rate, delay and number of speaker channels.',
+    how: 'The page creates a sound object that stays silent, reads its settings (sample rate, delay, channel count) and closes it. These follow your sound hardware and system.',
     technical: 'The sample rate follows the OS audio device (44.1/48/96 kHz). <code>baseLatency</code> depends on OS audio stack and buffer sizes (FingerprintJS\'s <code>audio_base_latency</code> source). <code>maxChannelCount</code> reveals surround/multichannel outputs. No microphone is involved.',
     exposes: 'Audio hardware/stack characteristics.', dataType: 'object', apis: ['AudioContext', 'AudioDestinationNode.maxChannelCount', 'AudioWorklet'],
     purpose: ['identification'], relevance: 'medium', relevanceBasis: 'Sample rate and latency vary with audio hardware and OS.', stability: 'semi-stable',

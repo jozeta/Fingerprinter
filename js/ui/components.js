@@ -2,6 +2,7 @@
 import { esc, short } from '../core/util.js';
 import { STATUSES, PROTECTION, EVIDENCE_LEVELS, CATEGORIES, RELEVANCE, RELATIONS } from '../core/constants.js';
 import { icon } from './icons.js';
+import { commonness, identifiability, LEVELS } from '../analysis/commonness.js';
 
 export const statusChip = (status) => {
   const s = STATUSES[status] || STATUSES.skipped;
@@ -66,10 +67,29 @@ export function explainBlock(def, result, interpretation) {
       <div><h4>Your data</h4>${result?.image ? `<img class="render-preview mb-2" src="${esc(result.image)}" alt="Image your browser rendered for this check">` : ''}${kvTable(result?.rawResult ?? null)}</div>
       <div>
         <h4>What this means</h4><p>${esc(interpretation || def.simple)}</p>
-        <h4>Why it matters</h4><p>${esc(def.privacyImpact)} <span class="text-muted">How identifying: ${esc(def.relevance)}. ${esc(def.relevanceBasis)}</span></p>
+        ${commonBlock(def, result)}
+        <h4>Why it matters</h4><p>${esc(def.privacyImpact)}</p>
         <h4>How to hide or blur it</h4><ul>${hide.map((m) => `<li>${esc(m)}</li>`).join('')}</ul>
         <p class="small text-muted mb-0">Browsers that already help: ${esc(def.defenses)}</p>
       </div>
     </div>
   </div>`;
+}
+
+/** Small "how common" badge for lists and tooltips. */
+export function commonBadge(def, result) {
+  const c = commonness(def, result);
+  return c.level === 'unknown' ? '' : `<span class="common-badge c-${c.level}" title="${esc(c.reason)} (${esc(c.basis)})">${esc(c.label)}</span>`;
+}
+
+/** "How common is your value" + "How identifying is this check" panel. */
+export function commonBlock(def, result) {
+  const c = commonness(def, result), id = identifiability(def);
+  const rank = LEVELS[c.level].rank, bars = [0, 1, 2, 3].map((i) => `<span class="${rank >= 0 && i <= rank ? 'on' : ''}"></span>`).join('');
+  return `<h4>How common is your value?</h4>
+    <p class="mb-1"><span class="common-badge c-${c.level}">${esc(c.label)}</span> ${esc(c.reason)}</p>
+    ${rank >= 0 ? `<div class="meter c-${c.level}" role="img" aria-label="Commonness: ${esc(c.label)} on a scale from very common to rare">${bars}</div><div class="d-flex justify-content-between small text-muted"><span>very common</span><span>rare</span></div>` : ''}
+    <p class="small text-muted">${esc(c.basis)}</p>
+    <h4>How identifying is this check?</h4>
+    <p>${esc(id.text)}${id.study ? ` ${esc(id.study)}` : ''}</p>`;
 }

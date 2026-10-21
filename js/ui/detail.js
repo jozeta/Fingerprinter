@@ -4,6 +4,7 @@ import { getTest } from '../core/registry.js';
 import { MATURITY, STABILITY, CONFIDENCE, PROTECTION, PURPOSES } from '../core/constants.js';
 import { statusChip, protectionChip, evidenceChip, relevanceChip, categoryLabel, kvTable, rawView, sourceLink, relationLabel } from './components.js';
 import { interpret } from '../analysis/interpret.js';
+import { commonBlock } from './components.js';
 
 const CONCERN = {
   privacy: 'Privacy consideration: the value can contribute to identification. It is not a security vulnerability.',
@@ -47,7 +48,7 @@ function renderBody(app, d, body) {
     ${sec(5, 'Raw / structured data', r ? `<details><summary>Show full result object (schema ${esc(r.schemaVersion)})</summary>${rawView({ ...r, image: r.image ? '[preview image omitted]' : null })}</details>` : '<p class="text-muted mb-0">—</p>')}
     ${sec(6, 'In plain language', `<p>${esc(d.simple)} ${esc(d.privacyImpact)}</p>`)}
     ${sec(7, 'Technical explanation', `<div>${d.technical}</div>`)}
-    ${sec(8, 'Why it can contribute to fingerprinting', `<p class="mb-0">Relevance <strong>${esc(d.relevance)}</strong>: ${esc(d.relevanceBasis)}</p>`)}
+    ${sec(8, 'Why it can contribute to fingerprinting', `<p>Relevance <strong>${esc(d.relevance)}</strong>: ${esc(d.relevanceBasis)}</p><div class="explain-body p-0">${commonBlock(d, r)}</div>`)}
     ${sec(9, 'Commonly combined with', combos ? `<ul class="mb-0">${combos}</ul>` : '<p class="text-muted mb-0">No combinations recorded.</p>')}
     ${sec(10, 'Stability', `<p class="mb-0">${esc(STABILITY[d.stability])}. ${d.stability === 'volatile' ? 'Changes frequently; excluded from the default fingerprint profile.' : d.stability === 'semi-stable' ? 'Can change with settings, updates or environment.' : 'Usually constant for a device/browser until updates or hardware changes.'}${r?.protectionIndicator ? ` Protection indicator: ${esc(PROTECTION[r.protectionIndicator]?.label)}.` : ''}</p>`)}
     ${sec(11, 'Defenses that may alter the result', `<p class="mb-0">${esc(d.defenses)}</p>`)}

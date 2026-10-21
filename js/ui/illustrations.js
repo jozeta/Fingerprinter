@@ -16,7 +16,7 @@ export const ILLUSTRATIONS = {
     <rect x="10" y="28" width="60" height="70" rx="10" class="fill-wash"/><circle cx="40" cy="62" r="16" class="fill-amber"/><circle cx="34" cy="58" r="2.5" class="fill-frost"/><circle cx="45" cy="66" r="2.5" class="fill-frost"/>
     <text x="80" y="54">stored on your device</text><text x="80" y="72">→ you can delete it</text>
     <circle cx="250" cy="60" r="30" class="fill-wash"/>${[10, 18, 26].map((r) => `<path class="accent" d="M${250 - r} 66 a${r} ${r} 0 1 1 ${2 * r} 0"/>`).join('')}
-    <text x="200" y="112">recomputed on every visit, nothing to delete</text>`, 'Cookies are stored and deletable; fingerprints are recomputed'),
+    <text x="250" y="112" text-anchor="middle">recomputed each visit</text>`, 'Cookies are stored and deletable; fingerprints are recomputed'),
 
   ip: svg(340, 110, `${box(6, 10, 96, 34, 'Home Wi-Fi')}${box(6, 62, 96, 34, 'Phone network')}<path class="stroke" d="M104 27 L150 50 M104 79 L150 56"/>
     ${box(152, 34, 70, 36, 'Laptop', 'fill-wash')}<path class="accent flow" d="M224 52 L262 52"/>${box(264, 34, 70, 36, 'Same ID', 'fill-wash')}
@@ -41,4 +41,17 @@ export const ILLUSTRATIONS = {
   defenses: svg(340, 110, `<g>${[0, 1, 2].map((i) => `<circle cx="${30 + i * 26}" cy="40" r="10" class="fill-accent"/>`).join('')}<text x="56" y="80" text-anchor="middle">Uniformity</text><text x="56" y="96" text-anchor="middle">all identical</text></g>
     <g>${[0, 1, 2].map((i) => `<circle cx="${144 + i * 26}" cy="${34 + i * 7}" r="10" class="${['fill-accent', 'fill-amber', 'fill-pine'][i]}"/>`).join('')}<text x="170" y="80" text-anchor="middle">Randomisation</text><text x="170" y="96" text-anchor="middle">always changing</text></g>
     <g><rect x="258" y="28" width="60" height="26" rx="6" class="fill-frost"/><path class="accent" d="M266 41 h44 M296 34 l-8 14"/><text x="288" y="80" text-anchor="middle">Blocking</text><text x="288" y="96" text-anchor="middle">never runs</text></g>`, 'Three defence strategies'),
+  timeline: svg(340, 116, `${[['0 ms', 'Page opens'], ['20 ms', 'Script loads'], ['60 ms', 'Reads ~50 traits'], ['90 ms', 'Sends a hash'], ['120 ms', 'Server matches you']].map(([t, l], i) => `<g style="font-size:10.5px"><circle cx="${40 + i * 65}" cy="44" r="9" class="${i === 4 ? 'fill-accent' : 'fill-wash'}"/><text x="${40 + i * 65}" y="22" text-anchor="middle">${t}</text><text x="${40 + i * 65}" y="72" text-anchor="middle">${l.split(' ').slice(0, 2).join(' ')}</text><text x="${40 + i * 65}" y="86" text-anchor="middle">${l.split(' ').slice(2).join(' ')}</text></g>`).join('')}<path class="accent flow" d="M50 44 H290"/><text x="170" y="110" text-anchor="middle">all invisible, faster than a blink</text>`, 'A tracking script runs in about a tenth of a second'),
+
+  fuzzy: svg(340, 110, `${['screen', 'fonts', 'GPU', 'time zone', 'language', 'canvas'].map((t, i) => `<g><rect x="12" y="${8 + i * 15}" width="96" height="12" rx="3" class="fill-wash"/><text x="18" y="${18 + i * 15}">${t}</text><rect x="232" y="${8 + i * 15}" width="96" height="12" rx="3" class="${i === 1 ? 'fill-amber' : 'fill-wash'}"/><text x="238" y="${18 + i * 15}">${i === 1 ? 'fonts (1 new)' : t}</text></g>`).join('')}
+    <path class="accent flow" d="M114 52 H226"/><text x="170" y="44" text-anchor="middle">5 of 6 match</text><text x="170" y="70" text-anchor="middle">→ same person</text>`, 'Five of six traits match, so the visits are still linked'),
+
+  vpn: svg(340, 110, `<text x="10" y="18">What hides what</text>${[['VPN', true, false], ['Private window', false, false], ['Clear cookies', false, false], ['Tor Browser', true, true]].map(([n, ip, fp], i) => `<g><text x="10" y="${42 + i * 18}">${n}</text><text x="150" y="${42 + i * 18}">${ip ? '✓' : '✗'} IP</text><text x="220" y="${42 + i * 18}">${fp ? '✓' : '✗'} fingerprint</text></g>`).join('')}`, 'Only uniformity browsers hide both your IP and your fingerprint'),
+
+  lies: svg(340, 100, `${Array.from({ length: 24 }, (_, k) => `<circle cx="${20 + (k % 12) * 26}" cy="${28 + Math.floor(k / 12) * 26}" r="9" class="${k === 17 ? 'fill-amber' : 'fill-wash'}"/>`).join('')}<text x="170" y="94" text-anchor="middle">the one who lies about their screen stands out</text>`, 'A rare lie makes you more unique, not less'),
+
+  mobile: svg(340, 104, `<rect x="40" y="12" width="44" height="74" rx="8" class="fill-wash"/><rect x="200" y="20" width="110" height="64" rx="6" class="fill-wash"/><rect x="190" y="84" width="130" height="6" rx="3" class="fill-frost"/>
+    <text x="62" y="100" text-anchor="middle">phones: few variants</text><text x="255" y="100" text-anchor="middle">computers: many variants</text>`, 'Phones of the same model look alike; computers vary more'),
+
+  evidence: svg(340, 110, `${[1, 2, 3, 4, 5].map((l, i) => `<g><rect x="${14 + i * 64}" y="${80 - (5 - i) * 13}" width="52" height="${(5 - i) * 13}" rx="5" style="fill:var(--s-ev${l})"/><text x="${40 + i * 64}" y="98" text-anchor="middle">L${l}</text></g>`).join('')}<text x="40" y="14" text-anchor="middle">strongest</text><text x="296" y="14" text-anchor="middle">weakest</text>`, 'Five evidence levels from confirmed to unverified'),
 };

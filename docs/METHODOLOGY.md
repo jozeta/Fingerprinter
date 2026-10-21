@@ -62,6 +62,11 @@ A changed fingerprint is **not** treated as improved privacy. Randomization and 
 
 A result code holds, per check: `[status, protection, testVersion, digest, value?]`. The digest is SHA-256 (first 20 hex characters) of the canonical normalized value, so two codes can be compared even when one is compact (digest only). The side-by-side view classifies each check as same, different, randomised, now blocked, now readable, result type changed, only in one result, or cannot compare (different major test version). Field-level highlighting compares the raw values one level deep; for lists such as fonts it shows which items exist only on one side. Checks marked volatile (window size, timing, battery) are hidden by default because they change on their own.
 
+### How common is your value? How identifying is the check?
+
+- **How common** is a rule-of-thumb *estimate* per check (`js/analysis/commonness.js`): for example 1920×1080, 60 Hz or a single en-US language are "very common"; a list of three languages or a long font list is "rare"; randomised or blocked values are "hidden or randomised". It is never presented as a measured percentage, because that would need a representative comparison dataset (see §2). Checks without a defensible rule show "Not estimated".
+- **How identifying** uses the literature-based relevance tier for every check, and adds the published mean entropy where a verified source exists: EFF Panopticlick (Eckersley 2010, Table 2, 470,161 browsers), e.g. user agent 10.0 bits, fonts 13.9, screen 4.83, time zone 3.04. These are labelled as an upper bound because the sample was self-selected and browsers expose less today. The plugin figure (15.4 bits) is shown for history only and never counted, since plugin lists are standardised in current browsers.
+
 ## 4. Privacy assessment
 
 The assessment is qualitative and separate from security severity. The rules are implemented in `js/analysis/assessment.js` and shown verbatim in the app:

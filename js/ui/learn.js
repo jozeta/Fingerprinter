@@ -6,6 +6,7 @@ import { runOne } from '../core/engine.js';
 import { buildProfile } from '../analysis/profile.js';
 import { mount, kvTable } from './components.js';
 import { ILLUSTRATIONS } from './illustrations.js';
+import { EFF_ENTROPY } from '../analysis/commonness.js';
 
 const B = { measured: '<span class="chip badge-measured-data">Uses your browser</span>', illustrative: '<span class="chip badge-illustrative">Illustrative example</span>', theory: '<span class="chip badge-theory">Theory</span>' };
 
@@ -19,6 +20,12 @@ const LESSONS = [
   ['canvas', 'Canvas and WebGL: drawing gives you away', 'A script draws text and shapes on a hidden canvas and reads back the pixels. The picture looks the same to you, but tiny differences in fonts, smoothing and the graphics chip make the pixels differ between devices. A hash of the pixels becomes a compact, stable ID, unless your browser adds noise or blocks the read-back.'],
   ['audio', 'Audio fingerprinting without sound', 'A script builds a small audio chain (a tone through a compressor) and processes it silently in memory. Nothing plays. Different browsers and processors round the numbers slightly differently, which mostly reveals your browser and system type.'],
   ['defenses', 'How browsers defend you', '<strong>Look the same</strong>: Tor and Mullvad Browser make every user report identical values. <strong>Shuffle</strong>: Brave, Safari and Firefox add small random changes so values differ per site or session. <strong>Hide</strong>: browsers reveal fewer details (fewer fonts, a frozen User-Agent). <strong>Block</strong>: tracking protection stops known fingerprinting scripts before they run.'],
+  ['timeline', 'What happens when a tracking script runs', 'A site includes a script from an analytics, advertising or anti-fraud company. Within a fraction of a second it reads dozens of traits, combines them into a short code and sends it home. The company compares the code with ones it has seen before. Nothing pops up and nothing is stored on your device.'],
+  ['fuzzy', 'Why small changes do not shake trackers off', 'Fingerprints drift: a browser update, a new font, an external monitor. Trackers know this, so they compare traits one by one and accept a close match. Changing one detail rarely helps; it usually just adds a "new version" of you to their records.'],
+  ['vpn', 'VPNs, private windows and fingerprints', 'A VPN hides your IP address but not your browser\'s traits. A private window forgets cookies and history when closed, but your screen, fonts and graphics chip stay the same. Only browsers built for uniformity (Tor Browser, Mullvad Browser) aim to hide both.'],
+  ['lies', 'Why faking your details can backfire', 'Extensions that fake your screen size or browser name often make you <em>more</em> unique: very few people tell exactly the same lie, and fakes rarely match your other traits. Built-in browser protections are safer because many people share them.'],
+  ['mobile', 'Phones and computers', 'Phones of the same model with the same system version look very alike, so they are harder to tell apart by traits alone; they are often tracked through apps and logins instead. Computers vary much more in screens, fonts, graphics and installed software.'],
+  ['evidence', 'How this lab rates evidence', 'Every link between a company and a technique carries a level. L1 means confirmed (for example in published source code), L2 documented by the company itself, L3 shown by independent research, L4 plausible for that kind of company but unverified, and L5 unverified. This keeps rumours apart from facts.'],
   [null, 'Why deleting cookies is not enough', 'Clearing cookies removes stored IDs, but your fonts, screen and graphics chip stay the same, so a fingerprint does too. Try Exercise 1: the result does not change after clearing.'],
   [null, 'Reading a fingerprint digest', 'A digest (like SHA-256) is a short code made from exactly the details you selected. Change one character and the whole code changes. Two equal codes mean equal inputs, but say nothing about how many other people share them. Real trackers compare details one by one and tolerate small changes.'],
   [null, 'Is this a security hole?', 'No. Sharing your screen size or graphics chip does not let anyone take over your computer. It is a <em>privacy</em> issue when used to follow you without your consent. In the EU, reading this information for tracking generally requires your consent, just like cookies.'],
@@ -47,11 +54,15 @@ export function render(view, app) {
           <input type="range" class="form-range" id="bits" min="0" max="34" value="3">
           <svg class="illus people" viewBox="0 0 300 76" aria-hidden="true">${Array.from({ length: 128 }, (_, k) => `<circle cx="${6 + (k % 32) * 9.2}" cy="${8 + Math.floor(k / 32) * 18}" r="3.6" data-k="${k}"/>`).join('')}</svg>
           <p class="small mb-0" id="bits-out" aria-live="polite"></p></section>
-        <section class="panel"><div class="panel-title">Exercise 4: Digest sensitivity ${B.measured}</div>
+        <section class="panel" id="bits-ex"><div class="panel-title">Exercise 4: Your signals in bits ${B.illustrative}</div>
+          <p class="small">How much the signals that the EFF study measured would narrow you down, using that study's average figures (2010, 470,161 browsers). Only signals your browser actually revealed are counted.</p>
+          <div id="bits-bars"></div>
+          <p class="small text-muted mb-0">An illustration, not a measurement of you: averages from an older, self-selected sample, and signals overlap, so real totals are lower.</p></section>
+        <section class="panel"><div class="panel-title">Exercise 5: Digest sensitivity ${B.measured}</div>
           <label class="form-label small" for="dg">Type anything. The SHA-256 digest is computed locally.</label>
           <input id="dg" class="form-control form-control-sm mb-2" value="Europe/Stockholm">
           <div class="mono small text-break" id="dg-out" aria-live="polite"></div></section>
-        <section class="panel"><div class="panel-title">Exercise 5: Behavior lab ${B.measured}</div>
+        <section class="panel"><div class="panel-title">Exercise 6: Behavior lab ${B.measured}</div>
           <p class="small">Nothing is recorded until you press <em>Start</em>. Pointer data comes only from the pad; for typing, only key-press <em>timings</em> are kept, never which keys. Data stays in memory and is cleared by <em>Reset</em>.</p>
           <div class="d-flex gap-2 mb-2"><button class="btn btn-sm btn-primary" data-lab-start aria-pressed="false">Start recording</button><button class="btn btn-sm btn-outline-secondary" data-lab-reset>Reset</button><button class="btn btn-sm btn-outline-primary" data-lab-analyze>Analyze</button></div>
           <canvas class="lab-pad mb-2" id="pad" aria-label="Pointer recording pad. Move your pointer here after pressing Start."></canvas>
@@ -97,6 +108,19 @@ export function render(view, app) {
     root.querySelectorAll('.people circle').forEach((c) => { const on = Number(c.dataset.k) < keep; c.style.fill = on ? 'var(--s-measured)' : 'var(--ice)'; });
     root.querySelector('#bits-out').textContent = crowd >= 1 ? `Illustration: about ${Math.round(crowd).toLocaleString()} people would share this combination.` : 'Illustration: fewer than one person on average. In theory, unique.'; };
   bits.addEventListener('input', showBits); showBits();
+
+  // Exercise 6: EFF 2010 bits for signals revealed in this browser (illustrative)
+  const host = root.querySelector('#bits-bars');
+  // Plugin lists are standardised in today's browsers, so the 2010 plugin figure is shown but never counted.
+  const OUTDATED = { 'plugins-mime': 'not counted: plugin lists are the same for everyone today' };
+  const rows = Object.entries(EFF_ENTROPY).map(([id, e]) => ({ id, ...e, name: app.defs.find((d) => d.id === id)?.name || id, on: !OUTDATED[id] && ['measured', 'inferred'].includes(app.results[id]?.executionStatus), note: OUTDATED[id] }));
+  if (!Object.keys(app.results).length) host.innerHTML = '<p class="small"><button class="btn btn-sm btn-primary" data-action="run">Run the checks</button> to fill this in.</p>';
+  else {
+    const total = rows.filter((r) => r.on).reduce((a, r) => a + r.bits, 0);
+    host.innerHTML = `<div class="bits-stack" role="img" aria-label="${total.toFixed(1)} bits out of 33">${rows.filter((r) => r.on).map((r, i) => `<span style="flex:${r.bits};--i:${i}" title="${esc(r.name)}: ${r.bits} bits"><em>${esc(r.name.split(' ')[0])}</em></span>`).join('')}<i class="bits-line" style="left:${Math.min(100, (33 / Math.max(33, total)) * 100)}%"></i></div>
+      <table class="table table-sm small mt-2 mb-1"><tbody>${rows.map((r) => `<tr class="${r.on ? '' : 'text-muted'}"><td>${esc(r.name)}</td><td>${r.bits} bits</td><td>${r.note ? esc(r.note) : r.on ? 'revealed here' : r.id.startsWith('srv-') ? 'server-only' : 'not revealed'}${r.id === 'fonts' && r.on ? ' (2010 figure via Flash; an upper bound today)' : ''}</td></tr>`).join('')}</tbody></table>
+      <p class="small mb-1"><strong>${total.toFixed(1)} bits</strong> from these signals alone; the line marks 33 bits, roughly enough to single out one person among 8 billion.</p>`;
+  }
 
   // Exercise 4
   const dg = root.querySelector('#dg');

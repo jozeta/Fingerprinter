@@ -1,6 +1,6 @@
 # Test coverage
 
-The required test list mapped to implemented techniques. Each id is checked by `tests/unit/coverage.test.mjs`. 93 techniques are implemented in total; the extras beyond this list are noted at the end.
+The required test list mapped to implemented techniques. Each id is checked by `tests/unit/coverage.test.mjs`. 98 techniques are implemented in total; the extras beyond this list are noted at the end.
 
 ## Browser identity
 
@@ -148,3 +148,8 @@ The required test list mapped to implemented techniques. Each id is checked by `
 - `webcodecs`: WebCodecs encoder support
 - `refresh-rate`: Display refresh rate
 - `css-scriptless`: Script-less CSS fingerprinting
+- `validation-message`: Browser interface language (form messages)
+- `font-smoothing`: Font smoothing (text edge colours)
+- `apple-pay`: Apple Pay availability
+- `locale-details`: Regional formats
+- `gamepads`: Game controller API

@@ -8,8 +8,8 @@ const nav = () => g.navigator || {};
 export default [
   define({
     id: 'user-agent', version: '1.0.0', category: 'browser', name: 'User-Agent string',
-    simple: 'The text your browser uses to introduce itself: browser name, version and operating system.',
-    how: 'Every HTTP request carries a <code>User-Agent</code> header, and scripts can read <code>navigator.userAgent</code>. Different browsers, versions and OSes produce different strings, which splits users into groups.',
+    simple: 'The name tag your browser sends to every website: browser, version and operating system.',
+    how: 'Every time your browser loads a page it sends a short line of text saying which browser and system it is. Scripts can read the same text. Many people share yours, but it is the first piece of the puzzle.',
     technical: 'Chromium freezes much of the string under UA Reduction (fixed OS version / device model tokens), moving detail into Client Hints. Firefox and Safari also cap OS version detail. The string is freely writable by extensions and automation, so it is a <em>claim</em> rather than a measurement.',
     exposes: 'Browser family and major version, OS family, sometimes device class.', dataType: 'string', apis: ['navigator.userAgent', 'navigator.appVersion'],
     purpose: ['identification', 'bot-detection', 'analytics', 'compatibility'], relevance: 'high',
@@ -30,8 +30,8 @@ export default [
 
   define({
     id: 'client-hints', version: '2.0.0', category: 'browser', name: 'User-Agent Client Hints (low entropy)',
-    simple: 'A newer, structured way for Chromium browsers to describe themselves: brand, major version, platform and mobile flag.',
-    how: 'Reads the low-entropy part of <code>navigator.userAgentData</code>: <code>brands</code>, <code>mobile</code> and <code>platform</code>. These are the same values Chromium sends by default as request headers. High-entropy values are a separate, opt-in test.',
+    simple: 'A short, structured name tag from Chrome-family browsers: brand, main version, system and whether it is a phone.',
+    how: 'Chrome, Edge and similar browsers share a few basic facts in a tidy format. Everyone with the same browser version shares the same answers.',
     technical: 'Low-entropy hints are always sent as <code>Sec-CH-UA</code>, <code>Sec-CH-UA-Mobile</code> and <code>Sec-CH-UA-Platform</code>. Brands include a deliberately randomized "GREASE" brand (e.g. "Not.A/Brand") to discourage brittle parsing. Only Chromium-based browsers implement the API.',
     exposes: 'Browser brand list with major versions, platform name, mobile flag.', dataType: 'object', apis: ['navigator.userAgentData'],
     purpose: ['identification', 'bot-detection', 'compatibility'], relevance: 'low', relevanceBasis: 'Coarse values, largely duplicating the reduced UA string.',
@@ -51,8 +51,8 @@ export default [
 
   define({
     id: 'client-hints-high', version: '1.0.0', category: 'browser', name: 'High-entropy Client Hints (opt-in local read)', tier: 'advanced', interaction: true,
-    simple: 'Extra Client Hints detail: exact OS version, CPU architecture, device model and full browser versions. Read only when you click Run.',
-    how: 'Calls <code>navigator.userAgentData.getHighEntropyValues()</code> for <code>platformVersion</code>, <code>architecture</code>, <code>bitness</code>, <code>model</code>, <code>fullVersionList</code>, <code>wow64</code> and <code>formFactors</code>. The values stay on this page.',
+    simple: 'Extra detail from Chrome-family browsers: exact system version, processor type, device model. Read only when you click Run.',
+    how: 'When asked, Chrome-family browsers can share more precise facts than their normal name tag. The lab only asks when you start this check, and the values stay on the page.',
     technical: 'Any script can request these without a prompt; browsers may decline individual hints. As request headers they require server opt-in (<code>Accept-CH</code>). They restore detail that UA Reduction removed from the User-Agent string, which is why this lab treats reading them as opt-in.',
     exposes: 'Exact OS version, CPU architecture/bitness, device model, full browser version list.', dataType: 'object', apis: ['NavigatorUAData.getHighEntropyValues'],
     purpose: ['identification', 'bot-detection', 'fraud-prevention'], relevance: 'medium', relevanceBasis: 'Restores detail removed from the UA string (e.g. exact platform version).',
@@ -77,8 +77,8 @@ export default [
 
   define({
     id: 'plugins-mime', version: '1.0.0', category: 'browser', name: 'Legacy plugins & MIME handlers',
-    simple: 'The list of browser plugins and file types they handle. Historically a big fingerprint; today mostly a fixed PDF list.',
-    how: 'Reads <code>navigator.plugins</code> (name, filename, description) and <code>navigator.mimeTypes</code>.',
+    simple: 'The list of browser add-ons for file types. It used to identify people very well; today it is mostly a fixed PDF list.',
+    how: 'Pages can read the list of plugins and the file types they handle. Years ago this list was long and very personal; modern browsers show the same short PDF list to everyone, or nothing.',
     technical: 'In the Flash/Java era plugin lists with exact versions were among the most identifying attributes (EFF 2010). The HTML standard now requires browsers to expose a fixed list of five PDF viewer entries (or none), so the list mostly reveals whether a built-in PDF viewer is enabled. An empty list in a desktop browser is a classic headless/automation tell.',
     exposes: 'Plugin and MIME-type lists.', dataType: 'list', apis: ['navigator.plugins', 'navigator.mimeTypes'],
     purpose: ['identification', 'bot-detection'], relevance: 'low', relevanceBasis: 'Standardized to a fixed list in modern browsers; was high in the Flash era.', stability: 'stable',
@@ -97,8 +97,8 @@ export default [
 
   define({
     id: 'pdf-support', version: '1.0.0', category: 'browser', name: 'PDF viewer & document support',
-    simple: 'Whether the browser shows PDF files itself.',
-    how: 'Reads <code>navigator.pdfViewerEnabled</code>, checks for the <code>application/pdf</code> MIME handler, and asks <code>&lt;object&gt;</code>/<code>&lt;embed&gt;</code> support for PDF via feature checks (no document is loaded).',
+    simple: 'Whether your browser opens PDF files itself.',
+    how: 'The page reads whether a built-in PDF viewer is turned on and whether the PDF file type is handled.',
     technical: 'Disabled PDF viewers are typical of some enterprise policies, kiosk setups and headless browsers. Mostly a binary signal.',
     exposes: 'PDF viewer status.', dataType: 'object', apis: ['navigator.pdfViewerEnabled', 'navigator.mimeTypes'],
     purpose: ['compatibility', 'bot-detection'], relevance: 'low', relevanceBasis: 'Near-binary.', stability: 'stable',
@@ -114,8 +114,8 @@ export default [
 
   define({
     id: 'platform', version: '1.0.0', category: 'browser', name: 'Platform & legacy navigator properties',
-    simple: 'Old navigator properties such as platform, vendor and productSub.',
-    how: 'Reads <code>navigator.platform</code>, <code>vendor</code>, <code>product</code>, <code>productSub</code>, <code>oscpu</code> and <code>buildID</code>.',
+    simple: 'Older name tags for your system, like "Win32" or "MacIntel".',
+    how: 'Browsers still answer a few old questions about the system they run on and who made them. The answers are often frozen or out of date, so they are most useful for catching browsers that pretend to be something else.',
     technical: '<code>navigator.platform</code> is deprecated and frequently frozen (e.g. "MacIntel" on Apple Silicon, "Win32" on 64-bit Windows). <code>productSub</code> is "20030107" in Chromium/Safari and "20100101" in Firefox, so it reveals the engine family. <code>oscpu</code> and <code>buildID</code> exist only in Firefox.',
     exposes: 'Coarse OS/engine identifiers.', dataType: 'object', apis: ['navigator.platform', 'navigator.vendor', 'navigator.productSub', 'navigator.oscpu'],
     purpose: ['identification', 'bot-detection'], relevance: 'low', relevanceBasis: 'Coarse values shared by large populations; useful mainly for consistency checks.',
@@ -135,8 +135,8 @@ export default [
 
   define({
     id: 'languages', version: '1.0.0', category: 'browser', name: 'Preferred languages',
-    simple: 'The languages you have chosen in your browser, in order of preference.',
-    how: '<code>navigator.language</code> and <code>navigator.languages</code> mirror the <code>Accept-Language</code> request header.',
+    simple: 'The languages you picked in your browser, in order of preference.',
+    how: 'Your browser tells websites which languages you prefer so they can show the right one. A single common language is shared by millions; several languages in a particular order narrow down where you might be from.',
     technical: 'Ordered lists such as <code>["sv-SE","en-US","de"]</code> are far less common than a single default locale. They correlate with region and the Intl locale.',
     exposes: 'Language preference list (hints at nationality and multilingualism).', dataType: 'list', apis: ['navigator.language', 'navigator.languages'],
     purpose: ['identification', 'bot-detection', 'advertising'], relevance: 'medium', relevanceBasis: 'Uncommon combinations are distinctive; single default locales are common.',
@@ -156,8 +156,8 @@ export default [
 
   define({
     id: 'intl-timezone', version: '1.0.0', category: 'browser', name: 'Timezone & Intl locale',
-    simple: 'Your timezone and how your browser formats dates and numbers.',
-    how: '<code>Intl.DateTimeFormat().resolvedOptions()</code> returns the IANA timezone (e.g. <code>Europe/Stockholm</code>), locale, calendar and numbering system. <code>Date.getTimezoneOffset()</code> gives the UTC offset.',
+    simple: 'Your time zone and how dates and numbers are written where you live.',
+    how: 'Your browser knows your time zone (for example Europe/Stockholm) and your local formats for dates and numbers, and shares them with any page that asks. This works even if you use a VPN.',
     technical: 'The IANA zone is more specific than the offset (many zones share an offset). Comparing January and July offsets reveals DST rules. Servers can compare the zone with IP geolocation; a mismatch suggests VPN or proxy use.',
     exposes: 'Approximate region (timezone), locale formatting preferences.', dataType: 'object', apis: ['Intl.DateTimeFormat', 'Date.prototype.getTimezoneOffset'],
     purpose: ['identification', 'fraud-prevention', 'bot-detection'], relevance: 'medium', relevanceBasis: 'Timezone is part of most fingerprint datasets; few zones hold most users.',
@@ -182,8 +182,8 @@ export default [
 
   define({
     id: 'browser-flags', version: '1.0.0', category: 'browser', name: 'Cookie, online & privacy flags',
-    simple: 'Simple on/off settings: cookies enabled, online status, PDF viewer, Do Not Track, Global Privacy Control.',
-    how: 'Reads <code>cookieEnabled</code>, <code>onLine</code>, <code>pdfViewerEnabled</code>, <code>doNotTrack</code> and <code>globalPrivacyControl</code>.',
+    simple: 'Simple on/off settings: are cookies allowed, are you online, and have you asked sites not to track you?',
+    how: 'Pages can read a few yes/no settings: whether cookies are on, whether you appear to be online, whether there is a built-in PDF viewer, and whether you turned on "Do Not Track" or "Global Privacy Control".',
     technical: 'Each is close to binary, so it carries at most ~1 bit. A minority enable DNT/GPC, so enabling them slightly <em>reduces</em> the crowd you are in. GPC has legal effect in some jurisdictions (e.g. California CCPA opt-out), which is usually worth the trade-off.',
     exposes: 'Privacy preference flags and basic capability flags.', dataType: 'object', apis: ['navigator.cookieEnabled', 'navigator.onLine', 'navigator.pdfViewerEnabled', 'navigator.doNotTrack', 'navigator.globalPrivacyControl'],
     purpose: ['identification', 'analytics'], relevance: 'low', relevanceBasis: 'Near-binary values.',
@@ -203,8 +203,8 @@ export default [
 
   define({
     id: 'webdriver', version: '1.0.0', category: 'browser', name: 'navigator.webdriver',
-    simple: 'A flag that is true when the browser is being remote-controlled by automation software.',
-    how: 'The WebDriver standard requires <code>navigator.webdriver</code> to be <code>true</code> under automation (Selenium, Puppeteer, Playwright).',
+    simple: 'A flag that says whether software, not a person, is controlling the browser.',
+    how: 'When a browser is driven by test or scraping software, it is supposed to raise a flag that pages can read. For real people the flag is off.',
     technical: 'Bot detection checks it first, but it is trivially hidden (e.g. Chromium flag <code>--disable-blink-features=AutomationControlled</code>), so vendors moved to deeper signals such as CDP side effects.',
     exposes: 'Whether the browser declares automation.', dataType: 'boolean', apis: ['navigator.webdriver'],
     purpose: ['bot-detection'], relevance: 'low', relevanceBasis: 'False for almost all humans.', stability: 'stable',
@@ -222,8 +222,8 @@ export default [
 
   define({
     id: 'touch', version: '1.0.0', category: 'browser', name: 'Touch support',
-    simple: 'Whether your device has a touchscreen and how many touch points it supports.',
-    how: 'Reads <code>navigator.maxTouchPoints</code> and checks for <code>TouchEvent</code> and <code>ontouchstart</code>.',
+    simple: 'Whether your screen is a touchscreen, and how many fingers it can track.',
+    how: 'Pages can ask whether touch is supported and how many touch points the screen handles. That quickly separates phones and tablets from desktop computers.',
     technical: 'Separates phones, tablets, touch laptops and desktops. iPadOS reports a Mac UA but <code>maxTouchPoints &gt; 1</code>, a well-known disambiguation.',
     exposes: 'Touch capability and maximum touch points.', dataType: 'object', apis: ['navigator.maxTouchPoints', 'TouchEvent'],
     purpose: ['identification', 'compatibility'], relevance: 'low', relevanceBasis: 'Few distinct values.', stability: 'stable',
@@ -237,8 +237,8 @@ export default [
   define({
     id: 'engine-inference', version: '1.0.0', category: 'browser', name: 'Browser engine & version inference',
     tier: 'advanced', maturity: 'demonstrated',
-    simple: 'A guess at your real browser engine based on how it behaves, not what it claims.',
-    how: 'Combines feature probes (<code>window.chrome</code>, <code>InstallTrigger</code>, <code>-moz-</code> CSS, Error formats, <code>productSub</code>) into an engine guess and compares it with the User-Agent claim.',
+    simple: 'A guess at which browser you really use, based on how it behaves rather than what it says.',
+    how: 'Browsers can claim to be anything, but each one words its error messages and handles small details in its own way. Comparing those habits with the browser\'s claim reveals the real engine behind it.',
     technical: 'Feature detection is harder to fake than strings because it requires reimplementing APIs. Error-message wording ("Cannot read properties of null" vs "null has no properties" vs "null is not an object") reliably separates V8, SpiderMonkey and JavaScriptCore.',
     exposes: 'Engine family; whether the UA claim is consistent.', dataType: 'object', apis: ['Error.prototype.message', 'CSS.supports', 'navigator.productSub'],
     purpose: ['bot-detection', 'fraud-prevention', 'compatibility'], relevance: 'low', relevanceBasis: 'Few engines exist; value is in contradiction detection.', stability: 'stable',

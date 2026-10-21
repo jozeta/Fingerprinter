@@ -36,7 +36,8 @@ test('no eval or dynamic code execution', () => {
 
 test('index.html loads only self-hosted assets and declares a restrictive CSP', () => {
   const html = read(path.join(root, 'index.html'));
-  assert.doesNotMatch(html.replace(/<!--[\s\S]*?-->/g, ''), /(src|href)="https?:/);
+  // Resource-loading tags must be same-origin; plain <a href> navigation links are allowed (they load nothing by themselves).
+  assert.doesNotMatch(html.replace(/<!--[\s\S]*?-->/g, ''), /<(script|link|img|iframe|source|video|audio)\b[^>]*\b(src|href)="https?:/i);
   assert.match(html, /Content-Security-Policy/);
   assert.match(html, /connect-src 'self'/);
   assert.match(html, /script-src 'self'/);
@@ -64,6 +65,9 @@ test('the clipboard is only ever written on a click, never read', () => {
 test('behavioral listeners exist only in the Learning Center lab widgets', () => {
   for (const f of jsFiles) {
     const src = read(f);
-    if (/addEventListener\(['"](pointermove|mousemove|keydown|keyup)/.test(src)) assert.equal(path.basename(f), 'learn.js', f);
+    if (/addEventListener\(['"](pointermove|mousemove|keydown|keyup)/.test(src)) assert.ok(['learn.js', 'tooltip.js'].includes(path.basename(f)), f);
   }
+  // The tooltip only positions its box (pointer) and closes on Escape (key); it must not collect anything.
+  const tip = read(path.join(root, 'js/ui/tooltip.js'));
+  assert.doesNotMatch(tip, /\.push\(|localStorage|sessionStorage|indexedDB|e\.key(?! === 'Escape')/);
 });

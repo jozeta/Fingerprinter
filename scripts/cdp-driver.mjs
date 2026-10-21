@@ -112,6 +112,25 @@ const viewShot = async (name) => { const r = await send('Page.captureScreenshot'
 await evaluate(`location.hash = '#/settings'`); await sleep(400);
 await evaluate(`document.querySelector('#th-light').click()`); await sleep(200);
 for (const route of ['overview', 'tests', 'learn', 'entities']) { await evaluate(`location.hash = '#/${route}'`); await sleep(1200); await evaluate('window.scrollTo(0, 0)'); await viewShot(`light-${route}`); }
+// Hover boxes: a fingerprint segment and a category-bar segment.
+const hover = async (selector, name) => {
+  await evaluate(`document.querySelector('${selector}')?.scrollIntoView({ block: 'center', behavior: 'instant' })`);
+  await sleep(900); // let the scroll-reveal transition finish before measuring
+  // A point ON the shape: mid-length of a path stroke, or the centre of a rect.
+  const c = await evaluate(`(() => { const el = document.querySelector('${selector}'); if (!el) return null;
+    if (el.getTotalLength && el.tagName === 'path') { const p = el.getPointAtLength(el.getTotalLength() / 2).matrixTransform(el.getScreenCTM()); return [p.x, p.y]; }
+    const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; })()`);
+  if (!c) { console.log(`HOVER ${name}: element not found`); return; }
+  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: c[0], y: c[1] }); await sleep(120);
+  console.log(`  under pointer (${name}):`, await evaluate(`(() => { const e = document.elementFromPoint(${c[0]}, ${c[1]}); return e ? e.tagName + ' tip=' + (e.closest('[data-tip]')?.dataset.tip || 'none') + ' box=' + document.getElementById('tipbox').className : 'nothing'; })()`));
+  await sleep(280);
+  console.log(`HOVER ${name}:`, await evaluate(`document.querySelector('#tipbox.show') ? document.querySelector('#tipbox').innerText.replace(/\\s+/g, ' ').slice(0, 140) : 'no tooltip'`));
+  await viewShot(`tooltip-${name}`);
+  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 5, y: 5 });
+};
+await evaluate(`location.hash = '#/overview'`); await sleep(1400);
+await hover('.ridge path[data-tip="ridge:screen"]', 'ridge');
+await hover('.chart rect[data-tip]', 'bars');
 await evaluate(`location.hash = '#/tests'`); await sleep(800);
 await evaluate(`document.querySelector('[data-action="detail"][data-id="canvas-2d"]').click()`); await sleep(900); await viewShot('light-detail');
 await evaluate(`bootstrap.Offcanvas.getInstance('#detail').hide()`); await sleep(400);

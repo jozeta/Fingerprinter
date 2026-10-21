@@ -1,6 +1,6 @@
 # Technique Reference
 
-Generated from the test registry (catalogue 2026.10.19-2, 93 techniques). Do not edit by hand: run `node scripts/generate-docs.mjs`.
+Generated from the test registry (catalogue 2026.10.21, 98 techniques). Do not edit by hand: run `node scripts/generate-docs.mjs`.
 
 ## Browser & environment
 
@@ -8,9 +8,9 @@ Generated from the test registry (catalogue 2026.10.19-2, 93 techniques). Do not
 
 `user-agent` v1.0.0 · basic · Demonstrated technique · relevance **high** · semi-stable
 
-The text your browser uses to introduce itself: browser name, version and operating system.
+The name tag your browser sends to every website: browser, version and operating system.
 
-**How it works.** Every HTTP request carries a User-Agent header, and scripts can read navigator.userAgent. Different browsers, versions and OSes produce different strings, which splits users into groups.
+**How it works.** Every time your browser loads a page it sends a short line of text saying which browser and system it is. Scripts can read the same text. Many people share yours, but it is the first piece of the puzzle.
 
 **Technical.** Chromium freezes much of the string under UA Reduction (fixed OS version / device model tokens), moving detail into Client Hints. Firefox and Safari also cap OS version detail. The string is freely writable by extensions and automation, so it is a claim rather than a measurement.
 
@@ -34,9 +34,9 @@ The text your browser uses to introduce itself: browser name, version and operat
 
 `client-hints` v2.0.0 · basic · Demonstrated technique · relevance **low** · semi-stable · secure context
 
-A newer, structured way for Chromium browsers to describe themselves: brand, major version, platform and mobile flag.
+A short, structured name tag from Chrome-family browsers: brand, main version, system and whether it is a phone.
 
-**How it works.** Reads the low-entropy part of navigator.userAgentData: brands, mobile and platform. These are the same values Chromium sends by default as request headers. High-entropy values are a separate, opt-in test.
+**How it works.** Chrome, Edge and similar browsers share a few basic facts in a tidy format. Everyone with the same browser version shares the same answers.
 
 **Technical.** Low-entropy hints are always sent as Sec-CH-UA, Sec-CH-UA-Mobile and Sec-CH-UA-Platform. Brands include a deliberately randomized "GREASE" brand (e.g. "Not.A/Brand") to discourage brittle parsing. Only Chromium-based browsers implement the API.
 
@@ -59,9 +59,9 @@ A newer, structured way for Chromium browsers to describe themselves: brand, maj
 
 `client-hints-high` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · semi-stable · user-initiated · secure context
 
-Extra Client Hints detail: exact OS version, CPU architecture, device model and full browser versions. Read only when you click Run.
+Extra detail from Chrome-family browsers: exact system version, processor type, device model. Read only when you click Run.
 
-**How it works.** Calls navigator.userAgentData.getHighEntropyValues() for platformVersion, architecture, bitness, model, fullVersionList, wow64 and formFactors. The values stay on this page.
+**How it works.** When asked, Chrome-family browsers can share more precise facts than their normal name tag. The lab only asks when you start this check, and the values stay on the page.
 
 **Technical.** Any script can request these without a prompt; browsers may decline individual hints. As request headers they require server opt-in (Accept-CH). They restore detail that UA Reduction removed from the User-Agent string, which is why this lab treats reading them as opt-in.
 
@@ -84,9 +84,9 @@ Extra Client Hints detail: exact OS version, CPU architecture, device model and 
 
 `plugins-mime` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-The list of browser plugins and file types they handle. Historically a big fingerprint; today mostly a fixed PDF list.
+The list of browser add-ons for file types. It used to identify people very well; today it is mostly a fixed PDF list.
 
-**How it works.** Reads navigator.plugins (name, filename, description) and navigator.mimeTypes.
+**How it works.** Pages can read the list of plugins and the file types they handle. Years ago this list was long and very personal; modern browsers show the same short PDF list to everyone, or nothing.
 
 **Technical.** In the Flash/Java era plugin lists with exact versions were among the most identifying attributes (EFF 2010). The HTML standard now requires browsers to expose a fixed list of five PDF viewer entries (or none), so the list mostly reveals whether a built-in PDF viewer is enabled. An empty list in a desktop browser is a classic headless/automation tell.
 
@@ -108,9 +108,9 @@ The list of browser plugins and file types they handle. Historically a big finge
 
 `pdf-support` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Whether the browser shows PDF files itself.
+Whether your browser opens PDF files itself.
 
-**How it works.** Reads navigator.pdfViewerEnabled, checks for the application/pdf MIME handler, and asks <object>/<embed> support for PDF via feature checks (no document is loaded).
+**How it works.** The page reads whether a built-in PDF viewer is turned on and whether the PDF file type is handled.
 
 **Technical.** Disabled PDF viewers are typical of some enterprise policies, kiosk setups and headless browsers. Mostly a binary signal.
 
@@ -132,9 +132,9 @@ Whether the browser shows PDF files itself.
 
 `platform` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Old navigator properties such as platform, vendor and productSub.
+Older name tags for your system, like "Win32" or "MacIntel".
 
-**How it works.** Reads navigator.platform, vendor, product, productSub, oscpu and buildID.
+**How it works.** Browsers still answer a few old questions about the system they run on and who made them. The answers are often frozen or out of date, so they are most useful for catching browsers that pretend to be something else.
 
 **Technical.** navigator.platform is deprecated and frequently frozen (e.g. "MacIntel" on Apple Silicon, "Win32" on 64-bit Windows). productSub is "20030107" in Chromium/Safari and "20100101" in Firefox, so it reveals the engine family. oscpu and buildID exist only in Firefox.
 
@@ -157,9 +157,9 @@ Old navigator properties such as platform, vendor and productSub.
 
 `languages` v1.0.0 · basic · Demonstrated technique · relevance **medium** · stable
 
-The languages you have chosen in your browser, in order of preference.
+The languages you picked in your browser, in order of preference.
 
-**How it works.** navigator.language and navigator.languages mirror the Accept-Language request header.
+**How it works.** Your browser tells websites which languages you prefer so they can show the right one. A single common language is shared by millions; several languages in a particular order narrow down where you might be from.
 
 **Technical.** Ordered lists such as ["sv-SE","en-US","de"] are far less common than a single default locale. They correlate with region and the Intl locale.
 
@@ -181,9 +181,9 @@ The languages you have chosen in your browser, in order of preference.
 
 `intl-timezone` v1.0.0 · basic · Demonstrated technique · relevance **medium** · stable
 
-Your timezone and how your browser formats dates and numbers.
+Your time zone and how dates and numbers are written where you live.
 
-**How it works.** Intl.DateTimeFormat().resolvedOptions() returns the IANA timezone (e.g. Europe/Stockholm), locale, calendar and numbering system. Date.getTimezoneOffset() gives the UTC offset.
+**How it works.** Your browser knows your time zone (for example Europe/Stockholm) and your local formats for dates and numbers, and shares them with any page that asks. This works even if you use a VPN.
 
 **Technical.** The IANA zone is more specific than the offset (many zones share an offset). Comparing January and July offsets reveals DST rules. Servers can compare the zone with IP geolocation; a mismatch suggests VPN or proxy use.
 
@@ -205,9 +205,9 @@ Your timezone and how your browser formats dates and numbers.
 
 `browser-flags` v1.0.0 · basic · Demonstrated technique · relevance **low** · semi-stable
 
-Simple on/off settings: cookies enabled, online status, PDF viewer, Do Not Track, Global Privacy Control.
+Simple on/off settings: are cookies allowed, are you online, and have you asked sites not to track you?
 
-**How it works.** Reads cookieEnabled, onLine, pdfViewerEnabled, doNotTrack and globalPrivacyControl.
+**How it works.** Pages can read a few yes/no settings: whether cookies are on, whether you appear to be online, whether there is a built-in PDF viewer, and whether you turned on "Do Not Track" or "Global Privacy Control".
 
 **Technical.** Each is close to binary, so it carries at most ~1 bit. A minority enable DNT/GPC, so enabling them slightly reduces the crowd you are in. GPC has legal effect in some jurisdictions (e.g. California CCPA opt-out), which is usually worth the trade-off.
 
@@ -229,9 +229,9 @@ Simple on/off settings: cookies enabled, online status, PDF viewer, Do Not Track
 
 `webdriver` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-A flag that is true when the browser is being remote-controlled by automation software.
+A flag that says whether software, not a person, is controlling the browser.
 
-**How it works.** The WebDriver standard requires navigator.webdriver to be true under automation (Selenium, Puppeteer, Playwright).
+**How it works.** When a browser is driven by test or scraping software, it is supposed to raise a flag that pages can read. For real people the flag is off.
 
 **Technical.** Bot detection checks it first, but it is trivially hidden (e.g. Chromium flag --disable-blink-features=AutomationControlled), so vendors moved to deeper signals such as CDP side effects.
 
@@ -253,9 +253,9 @@ A flag that is true when the browser is being remote-controlled by automation so
 
 `touch` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Whether your device has a touchscreen and how many touch points it supports.
+Whether your screen is a touchscreen, and how many fingers it can track.
 
-**How it works.** Reads navigator.maxTouchPoints and checks for TouchEvent and ontouchstart.
+**How it works.** Pages can ask whether touch is supported and how many touch points the screen handles. That quickly separates phones and tablets from desktop computers.
 
 **Technical.** Separates phones, tablets, touch laptops and desktops. iPadOS reports a Mac UA but maxTouchPoints > 1, a well-known disambiguation.
 
@@ -277,9 +277,9 @@ Whether your device has a touchscreen and how many touch points it supports.
 
 `engine-inference` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
 
-A guess at your real browser engine based on how it behaves, not what it claims.
+A guess at which browser you really use, based on how it behaves rather than what it says.
 
-**How it works.** Combines feature probes (window.chrome, InstallTrigger, -moz- CSS, Error formats, productSub) into an engine guess and compares it with the User-Agent claim.
+**How it works.** Browsers can claim to be anything, but each one words its error messages and handles small details in its own way. Comparing those habits with the browser's claim reveals the real engine behind it.
 
 **Technical.** Feature detection is harder to fake than strings because it requires reimplementing APIs. Error-message wording ("Cannot read properties of null" vs "null has no properties" vs "null is not an object") reliably separates V8, SpiderMonkey and JavaScriptCore.
 
@@ -369,15 +369,63 @@ Counts how many calendars, currencies, time zones and units the browser knows. T
 
 **Sources:** [Mitigating Browser Fingerprinting in Web Specifications](https://www.w3.org/TR/fingerprinting-guidance/)
 
+### Browser interface language (form messages)
+
+`validation-message` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · stable
+
+Every browser has built-in messages like "Please fill out this field." Their wording reveals which browser you use and the language its menus are in.
+
+**How it works.** Creates two invisible form fields (one required and empty, one with an invalid e-mail address) that are never shown or sent, and reads the message the browser would display.
+
+**Technical.** Reads HTMLInputElement.validationMessage. The text comes from the browser's own interface translations, so it reflects the UI language even when navigator.languages or Accept-Language were changed, and its wording differs between Chrome, Firefox and Safari.
+
+**Exposes:** Built-in validation message texts. · **APIs:** HTMLInputElement.validationMessage
+
+**Limitations:**
+- Some browsers follow the OS language rather than the browser setting.
+
+**Defenses:** Tor Browser uses English messages for everyone when it spoofs English.
+
+**Mitigations:**
+- If you hide your language, also use the browser in the same language you report.
+
+**Documented associations:** none
+
+**Sources:** [Mitigating Browser Fingerprinting in Web Specifications](https://www.w3.org/TR/fingerprinting-guidance/)
+
+### Regional formats
+
+`locale-details` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
+
+How your browser formats lists, plurals, currencies and which day starts the week. These follow your region settings.
+
+**How it works.** Uses the built-in internationalisation API to format a short list, a price and a country name in your language, and reads the first day of the week for your locale.
+
+**Technical.** Reads Intl.Locale.prototype.getWeekInfo() (or weekInfo), Intl.ListFormat, Intl.PluralRules, Intl.NumberFormat with currency, and Intl.DisplayNames. Results depend on the locale and on the browser's CLDR data version.
+
+**Exposes:** Locale-dependent formats. · **APIs:** Intl.Locale, Intl.ListFormat, Intl.DisplayNames
+
+**Limitations:**
+- Redundant with language for most people.
+
+**Defenses:** Tor Browser normalises the locale to English.
+
+**Mitigations:**
+- No practical action besides language settings.
+
+**Documented associations:** none
+
+**Sources:** [Mitigating Browser Fingerprinting in Web Specifications](https://www.w3.org/TR/fingerprinting-guidance/)
+
 ## Screen & display
 
 ### Screen resolution & color depth
 
 `screen` v1.0.0 · basic · Demonstrated technique · relevance **medium** · stable
 
-Your monitor size, the usable area and how many colors it shows.
+Your screen size, the space left after the taskbar or dock, and how many colours it shows.
 
-**How it works.** Reads screen.width/height, availWidth/availHeight (excluding taskbar/dock), colorDepth and pixelDepth.
+**How it works.** Pages can read your screen's width and height, how much of it is free from taskbars and docks, and its colour depth. Popular sizes are shared by many people; the taskbar size and scaling add detail.
 
 **Technical.** The resolution itself is common; the difference between total and available area depends on taskbar position, size and OS scaling, which adds detail. Multi-monitor users report the screen the window is on.
 
@@ -399,9 +447,9 @@ Your monitor size, the usable area and how many colors it shows.
 
 `viewport` v1.0.0 · basic · Demonstrated technique · relevance **low** · volatile
 
-The size of the browser window and page area, and your zoom/pixel density.
+The size of your browser window and how much it is zoomed.
 
-**How it works.** Reads innerWidth/innerHeight, outerWidth/outerHeight, devicePixelRatio and visualViewport.
+**How it works.** Pages see the size of the window, how much space the toolbars take, and your zoom level. These change whenever you resize the window, so they only link visits that happen close together.
 
 **Technical.** outer − inner approximates toolbar, sidebar and bookmark-bar sizes. devicePixelRatio combines HiDPI scaling and page zoom. visualViewport.scale reflects pinch zoom. These values change whenever you resize the window or toggle browser UI, so they are excluded from the default profile.
 
@@ -423,9 +471,9 @@ The size of the browser window and page area, and your zoom/pixel density.
 
 `orientation` v1.0.0 · basic · Demonstrated technique · relevance **low** · semi-stable
 
-Whether your screen is in portrait or landscape and its natural orientation.
+Whether your screen is held upright (portrait) or sideways (landscape).
 
-**How it works.** Reads screen.orientation.type and angle.
+**How it works.** Pages can read the screen orientation and its angle. Desktops report landscape; phones and rotated monitors differ.
 
 **Technical.** Desktops report landscape-primary at angle 0. Rotated monitors and mobile devices differ. Mostly a device-class signal.
 
@@ -447,9 +495,9 @@ Whether your screen is in portrait or landscape and its natural orientation.
 
 `display-media` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-What your display can do: wide color, HDR, pointer type, hover.
+What your screen can do: extra-vivid colours, HDR, and what kind of pointer you use.
 
-**How it works.** Evaluates CSS media queries color-gamut, dynamic-range, pointer, any-pointer, hover and monochrome via matchMedia().
+**How it works.** Pages can ask your screen a few questions: does it show a wider range of colours, does it support HDR, is the main pointer a mouse or a finger, can it hover? Websites can even ask these without JavaScript.
 
 **Technical.** A P3/HDR display with fine pointer and hover is typical of recent Macs; coarse pointer without hover is typical of phones. These queries also work in pure CSS, so JavaScript is not required: a stylesheet can request different URLs per match.
 
@@ -497,9 +545,9 @@ Estimates how many times per second your screen refreshes (60, 90, 120, 144 Hz�
 
 `canvas-2d` v1.0.0 · basic · Demonstrated technique · relevance **high** · stable
 
-Your browser draws a small picture. Tiny differences in how it draws text and shapes can tell devices apart.
+Your browser draws a small picture. Tiny differences in how it draws can tell devices apart.
 
-**How it works.** A deterministic scene (gradient, text in two fonts, emoji, blended circles, a curve) is drawn on an off-screen <canvas>. The pixels are read with getImageData() and hashed locally with SHA-256. The scene is drawn several times and compared pixel by pixel.
+**How it works.** The page secretly draws some text, shapes and an emoji, then reads back the exact pixels and turns them into a short code. The picture looks the same to you, but fonts, graphics chip and system settings change a few pixels. The lab draws it several times to see if your browser adds random noise as a protection.
 
 **Technical.** Output depends on font rasterization and hinting, sub-pixel anti-aliasing, GPU/driver compositing, color management and the emoji font. Identical outputs across repeated draws but different across devices make it a strong signal. Differing outputs within one page load indicate noise injection (e.g. Brave farbling, Safari Advanced Fingerprinting Protection).
 
@@ -522,9 +570,9 @@ Your browser draws a small picture. Tiny differences in how it draws text and sh
 
 `webgl-info` v2.0.0 · basic · Demonstrated technique · relevance **high** · stable
 
-What your graphics card is and which WebGL features it supports.
+Which graphics chip you have and what it can do, as reported by the browser's 3D feature.
 
-**How it works.** Creates a WebGL context, reads version strings and the extension list. If WEBGL_debug_renderer_info is exposed, also reads the unmasked vendor and renderer strings. Shader precision and numeric limits are a separate test. The context is released afterwards.
+**How it works.** Pages can open the browser's 3D graphics feature (WebGL) and ask for its version, the list of extra features, and sometimes the exact name of your graphics chip. The lab closes it again right away.
 
 **Technical.** Unmasked renderer strings such as "ANGLE (NVIDIA, GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0)" are very specific. Limits and extensions vary with GPU, driver and browser. Software renderers (SwiftShader, llvmpipe) are typical of headless or virtualized environments. A missing renderer string does not identify a particular privacy product.
 
@@ -547,9 +595,9 @@ What your graphics card is and which WebGL features it supports.
 
 `webgl-precision` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · stable
 
-How precise your GPU's shader math is and how large its internal limits are.
+How precise your graphics chip's maths is and how big its internal limits are.
 
-**How it works.** Reads getShaderPrecisionFormat() for vertex and fragment shaders at low, medium and high precision (float and int), plus about 15 numeric limits such as MAX_TEXTURE_SIZE and MAX_VARYING_VECTORS. The context is released afterwards.
+**How it works.** The page asks the graphics chip about the precision of its calculations and the maximum sizes it supports. These come from the chip and its driver, and still work when the chip's name is hidden.
 
 **Technical.** Precision ranges and limits come from the GPU driver (often through ANGLE on Windows/macOS). They separate GPU families and driver generations, and still work when the renderer string itself is masked. Mobile GPUs often report reduced medium-precision ranges.
 
@@ -571,9 +619,9 @@ How precise your GPU's shader math is and how large its internal limits are.
 
 `webgl-context-attrs` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
 
-The settings your browser actually grants when a page asks for a WebGL drawing surface.
+The drawing settings your browser actually gives a page that asks for 3D graphics.
 
-**How it works.** Requests WebGL 1 and WebGL 2 contexts with default options and reads getContextAttributes() (antialias, alpha, depth, stencil, premultipliedAlpha, powerPreference, desynchronized). Also checks whether a context is refused with failIfMajorPerformanceCaveat, which indicates software rendering. Contexts are released afterwards.
+**How it works.** The page asks for a 3D drawing surface with default settings and reads back what it got. It also checks whether the browser refuses when only fast hardware would do, which happens with software-only graphics.
 
 **Technical.** Granted attributes depend on GPU, driver and browser policy. A refusal under failIfMajorPerformanceCaveat: true means the GPU is blocklisted or rendering falls back to software, common in VMs and headless servers.
 
@@ -595,9 +643,9 @@ The settings your browser actually grants when a page asks for a WebGL drawing s
 
 `emoji-render` v1.0.0 · basic · Demonstrated technique · relevance **medium** · stable
 
-Emoji and special characters are drawn and their pixels hashed. Emoji artwork differs by operating system and version.
+Emoji are drawn and their pixels turned into a code. Emoji artwork differs between systems and versions.
 
-**How it works.** Draws a fixed set of emoji and Unicode glyphs (including recent emoji that older systems lack) onto a small canvas, reads the pixels and hashes them locally. Rendered twice to detect randomization.
+**How it works.** The page draws a row of emoji and special characters, reads back the pixels and makes a short code from them. Your system's emoji style and version decide what they look like.
 
 **Technical.** Emoji come from the OS font (Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji) and change with OS releases. Missing glyphs render as "tofu" boxes. Unlike width metrics, pixel output also captures color and artwork, so it distinguishes OS versions very well.
 
@@ -619,9 +667,9 @@ Emoji and special characters are drawn and their pixels hashed. Emoji artwork di
 
 `webgl-render` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · stable
 
-Your graphics card draws a small 3D test image; the result is hashed.
+Your graphics chip draws a small 3D image, and the result is turned into a code.
 
-**How it works.** A shader draws a deterministic triangle with a math-heavy color function. readPixels() extracts the result, which is hashed locally. Repeated renders are compared to detect randomization. The context is released afterwards.
+**How it works.** The page asks the graphics chip to draw a coloured triangle with some maths in it and reads back the pixels. Different chips and drivers round the maths slightly differently, which changes the image.
 
 **Technical.** Floating-point precision in GPU shader cores, driver compilers and rasterization rules changes edge and gradient pixels. Cao et al. (NDSS 2017) used dozens of such rendering tasks for cross-browser device identification.
 
@@ -643,9 +691,9 @@ Your graphics card draws a small 3D test image; the result is hashed.
 
 `webgpu` v1.0.0 · advanced · Research concept · relevance **medium** · stable · secure context
 
-The newest graphics API can describe your GPU and its limits.
+What the newest graphics feature (WebGPU) says about your graphics chip.
 
-**How it works.** Calls navigator.gpu.requestAdapter() and reads adapter.info (vendor, architecture), the feature set and numeric limits. No GPU work is executed.
+**How it works.** WebGPU is the newest way for pages to use the graphics chip. When asked, it describes the chip's maker and family, which optional features it has, and its limits. The lab only asks; it does not run anything on the chip.
 
 **Technical.** Browsers bucket adapter info and limits to reduce entropy, but vendor/architecture plus feature sets still distinguish hardware classes. Research (DrawnApart, NDSS 2022) showed GPU timing can distinguish identical GPU models; WebGPU compute makes such timing easier. This lab does not run timing workloads.
 
@@ -667,9 +715,9 @@ The newest graphics API can describe your GPU and its limits.
 
 `fonts` v1.0.0 · basic · Demonstrated technique · relevance **high** · stable
 
-Which fonts seem to be installed, guessed by measuring how text looks.
+Which fonts seem to be installed on your computer, guessed by measuring text.
 
-**How it works.** For each candidate font, text is measured in "Candidate", fallback for three fallbacks (monospace, serif, sans-serif). If width or height differs from the fallback alone, the candidate is probably available. The candidate list is fixed and shown below.
+**How it works.** Pages cannot list your fonts, so they measure them: text is written in a fallback font, then again with a font name in front. If the size changes, that font is probably installed. Office, design tools and language packs all add fonts.
 
 **Technical.** Classic offset-measurement technique. Installed software (Office, Adobe, IDEs) and language packs add fonts. A match is an inference: a web font or font alias can produce false positives, and identical metrics can produce false negatives. Safari restricts web content to OS-bundled fonts.
 
@@ -693,9 +741,9 @@ Which fonts seem to be installed, guessed by measuring how text looks.
 
 `text-metrics` v2.0.0 · advanced · Demonstrated technique · relevance **medium** · stable
 
-How wide and tall text is drawn in the default fonts, which depends on your OS fonts and font settings.
+How wide and tall text and emoji are drawn in your system's default fonts.
 
-**How it works.** Uses CanvasRenderingContext2D.measureText() on a fixed pangram in the generic families (serif, sans-serif, monospace, system-ui, cursive) and on a set of emoji/symbols, recording width and bounding-box values.
+**How it works.** The page measures a sentence in the standard font styles (serif, sans-serif, monospace and so on) and a few emoji. The exact sizes depend on which fonts your system uses by default and which emoji version it has.
 
 **Technical.** Generic family names map to OS- and user-configured default fonts, so their metrics reveal font preferences (FingerprintJS's font_preferences source uses this idea). Emoji metrics reveal the emoji font version. This works even when the UA is altered.
 
@@ -717,9 +765,9 @@ How wide and tall text is drawn in the default fonts, which depends on your OS f
 
 `svg-support` v1.0.0 · advanced · Demonstrated technique · relevance **low** · semi-stable
 
-Whether SVG graphics features exist, and how your browser measures SVG text and shapes.
+Whether vector graphics features exist, and how your browser measures vector text and shapes.
 
-**How it works.** Checks SVG interfaces (SVGGeometryElement, SVGTextContentElement, filters, SVGAnimationElement), then lays out a hidden SVG with text and a path and reads getComputedTextLength(), getBBox() and getTotalLength().
+**How it works.** The page checks for a few vector graphics (SVG) features and measures the length of a hidden line of text and a curve. The exact numbers depend on fonts and the browser.
 
 **Technical.** SVG text length depends on font rasterization like canvas text, and path length on the engine's curve approximation. Both are rarely noised by anti-fingerprinting defenses. The SVG element is removed immediately.
 
@@ -741,9 +789,9 @@ Whether SVG graphics features exist, and how your browser measures SVG text and 
 
 `dom-rect` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · semi-stable
 
-Exact sizes of transformed text on the page, measured to many decimal places.
+Exact sizes of tilted text on the page, measured to many decimal places.
 
-**How it works.** Lays out a rotated, skewed text element off-screen and reads getClientRects(). Values like 113.97727966308594 depend on the layout engine and font rasterizer.
+**How it works.** The page places a hidden, slightly rotated piece of text and asks for its exact size. The tiny decimals depend on your browser version and how it renders fonts, and privacy tools rarely change them.
 
 **Technical.** Layout uses floating-point math influenced by fonts, zoom and engine version. Unlike canvas, these APIs are rarely noised, so it is a useful complementary signal.
 
@@ -761,15 +809,39 @@ Exact sizes of transformed text on the page, measured to many decimal places.
 
 **Sources:** [Mitigating Browser Fingerprinting in Web Specifications](https://www.w3.org/TR/fingerprinting-guidance/)
 
+### Font smoothing (text edge colours)
+
+`font-smoothing` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
+
+Checks whether your system smooths text with coloured edges (typical on Windows) or grey edges (typical on Macs and phones).
+
+**How it works.** Draws black text on a white, non-transparent canvas and looks at the edge pixels. Coloured fringes mean subpixel smoothing (ClearType-style); pure grey means greyscale smoothing.
+
+**Technical.** Subpixel anti-aliasing depends on OS, display (HiDPI screens usually disable it), user settings (ClearType tuning) and browser policy. Only drawn on an opaque canvas, because browsers disable subpixel AA on transparent backgrounds.
+
+**Exposes:** Subpixel vs greyscale anti-aliasing. · **APIs:** CanvasRenderingContext2D.fillText, CanvasRenderingContext2D.getImageData
+
+**Limitations:**
+- Canvas may not use subpixel smoothing even where web pages do.
+
+**Defenses:** Canvas noise also affects this check.
+
+**Mitigations:**
+- No practical action.
+
+**Documented associations:** none
+
+**Sources:** [Mitigating Browser Fingerprinting in Web Specifications](https://www.w3.org/TR/fingerprinting-guidance/)
+
 ## CSS & preferences
 
 ### Accessibility & appearance preferences
 
 `user-preferences` v1.0.0 · basic · Demonstrated technique · relevance **low** · semi-stable
 
-Dark mode, reduced motion, high contrast and similar settings you chose in your OS.
+Your appearance and accessibility choices: dark mode, reduced motion, high contrast and similar.
 
-**How it works.** Evaluates prefers-color-scheme, prefers-reduced-motion, prefers-contrast, forced-colors, prefers-reduced-transparency and inverted-colors.
+**How it works.** Your browser tells pages about settings like dark mode, reduced motion and higher contrast so they can adapt. These are good settings to keep if you need them; enabled accessibility settings are just less common.
 
 **Technical.** Each is low-entropy, but accessibility settings are used by minorities and are therefore more distinctive when enabled. These are legitimate user preferences, not vulnerabilities. Sites need them to render accessibly.
 
@@ -791,9 +863,9 @@ Dark mode, reduced motion, high contrast and similar settings you chose in your 
 
 `media-query-matrix` v1.0.0 · advanced · Demonstrated technique · relevance **low** · semi-stable
 
-A wide sweep of CSS media queries: scripting, display mode, update rate, resolution and more.
+A wide sweep of questions about your display and browser mode.
 
-**How it works.** Evaluates about 20 media features with matchMedia(), including scripting, update, overflow-block, display-mode, prefers-reduced-data, video-dynamic-range, grid, resolution buckets in dppx and aspect-ratio buckets.
+**How it works.** The page asks about twenty more questions about your display, such as how sharp it is, its shape, whether the page runs as an installed app, and whether you asked for reduced data use. Sites can ask these even without JavaScript.
 
 **Technical.** Every one of these can also be evaluated without JavaScript by CSS that loads a different URL per match, so a server can collect them from request logs. Unknown features never match, which itself reveals engine support.
 
@@ -815,9 +887,9 @@ A wide sweep of CSS media queries: scripting, display mode, update rate, resolut
 
 `css-features` v1.0.0 · basic · Demonstrated technique · relevance **low** · semi-stable
 
-Which modern CSS features your browser supports, which roughly reveals the browser and version.
+Which modern styling features your browser supports, which hints at its version.
 
-**How it works.** Calls CSS.supports() for a fixed list of properties and selectors introduced at different times.
+**How it works.** The page asks your browser whether it understands a list of newer design features. Each browser version supports a slightly different set, so the answers point to your browser and version.
 
 **Technical.** Support bitmasks map to browser release ranges. Vendor-prefixed properties (-moz-, -webkit-touch-callout) reveal the engine. Outdated support patterns indicate old (potentially unpatched) browsers.
 
@@ -839,9 +911,9 @@ Which modern CSS features your browser supports, which roughly reveals the brows
 
 `system-colors` v2.0.0 · advanced · Research concept · relevance **low** · semi-stable
 
-Special CSS color names that can take values from your OS theme (such as your accent color), plus default font and scrollbar styles.
+Colours your system uses for buttons and highlights, plus your default text size and scrollbar width.
 
-**How it works.** Applies keywords such as AccentColor, Highlight, ButtonFace and Canvas to a hidden element and reads getComputedStyle().color. Also reads computed defaults: the default font family and size, a default <button> font, and the scrollbar width of an overflowing element.
+**How it works.** Pages can ask for special colour names that may follow your system theme (such as your accent colour), and can measure your default text size and how wide scrollbars are. Many browsers now return fixed values here.
 
 **Technical.** CSS Color 4 system colors historically exposed OS theme colors; browsers increasingly hard-code them. Default font size reflects the user's browser font setting (16px unless changed). Scrollbar width differs between overlay scrollbars (0 px on macOS by default) and classic ones (~15–17 px on Windows), and with the OS "always show scrollbars" setting.
 
@@ -865,9 +937,9 @@ Special CSS color names that can take values from your OS theme (such as your ac
 
 `audio-offline` v1.0.0 · basic · Demonstrated technique · relevance **medium** · stable
 
-Your browser silently processes a synthetic sound. Tiny numeric differences in the result can distinguish setups.
+Your browser processes a silent sound. Tiny number differences in the result can tell setups apart.
 
-**How it works.** An OfflineAudioContext renders 5,000 samples of a 10 kHz triangle wave through a DynamicsCompressor, entirely in memory. No speakers or microphone are involved. A sum over part of the output and a digest of sample values are computed, and the render is repeated to detect randomization.
+**How it works.** The page creates a tone and runs it through a sound effect entirely in memory. Nothing plays and no microphone is used. The resulting numbers differ slightly between browsers, systems and processors.
 
 **Technical.** Differences come from floating-point implementation details (SIMD paths, FMA, denormal handling) and audio engine versions, so they mostly separate browser/OS/CPU families rather than individuals. Englehardt & Narayanan (2016) first observed this in the wild.
 
@@ -892,7 +964,7 @@ Your browser silently processes a synthetic sound. Tiny numeric differences in t
 
 The text-to-speech voices installed on your system.
 
-**How it works.** Reads speechSynthesis.getVoices() (name, language, local or network voice). No speech is played.
+**How it works.** Pages can list the voices your system can read text aloud with, including their language. Extra voice packs you have downloaded show up here. Nothing is spoken.
 
 **Technical.** Voice lists depend on OS, installed language packs and optional premium voices. macOS and Windows differ substantially; network voices reveal vendor services.
 
@@ -914,9 +986,9 @@ The text-to-speech voices installed on your system.
 
 `media-codecs` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Which audio and video formats your browser says it can play.
+Which video and audio formats your browser can play.
 
-**How it works.** Calls HTMLMediaElement.canPlayType() and MediaSource.isTypeSupported() for a fixed list of codecs.
+**How it works.** The page asks whether your browser could play a list of video and audio formats. The answers depend on your browser, system and graphics hardware. Nothing is downloaded or played.
 
 **Technical.** HEVC, AV1 and Dolby support depend on hardware decoders, OS codec licenses and browser builds.
 
@@ -938,9 +1010,9 @@ Which audio and video formats your browser says it can play.
 
 `media-devices` v2.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Which camera/microphone/screen-capture APIs exist. No devices are listed or counted.
+Which camera, microphone and screen-sharing features exist. No devices are listed or counted.
 
-**How it works.** Checks for navigator.mediaDevices, getUserMedia, getDisplayMedia, enumerateDevices, selectAudioOutput and reads getSupportedConstraints(), which lists constraint names the browser understands. enumerateDevices() is never called, and no permission is requested.
+**How it works.** The page checks whether these features exist and which settings names the browser understands. It never lists your cameras or microphones and never asks for permission.
 
 **Technical.** Device enumeration can reveal device counts (and, after a granted permission, labels and persistent per-site IDs). This lab deliberately avoids it. The supported-constraints list differs between engines and versions, so it acts as a capability signal.
 
@@ -962,9 +1034,9 @@ Which camera/microphone/screen-capture APIs exist. No devices are listed or coun
 
 `audio-capabilities` v1.0.0 · basic · Demonstrated technique · relevance **medium** · semi-stable
 
-What the browser's audio engine reports: sample rate, latency, channel count and available audio features.
+What your sound system reports: sample rate, delay and number of speaker channels.
 
-**How it works.** Creates an AudioContext (which stays suspended because no user gesture is involved, so nothing plays), reads sampleRate, baseLatency, outputLatency, destination.maxChannelCount and state, checks for AudioWorklet and other audio interfaces, then closes the context.
+**How it works.** The page creates a sound object that stays silent, reads its settings (sample rate, delay, channel count) and closes it. These follow your sound hardware and system.
 
 **Technical.** The sample rate follows the OS audio device (44.1/48/96 kHz). baseLatency depends on OS audio stack and buffer sizes (FingerprintJS's audio_base_latency source). maxChannelCount reveals surround/multichannel outputs. No microphone is involved.
 
@@ -1037,9 +1109,9 @@ Checks which video formats the browser can encode itself, which often depends on
 
 `cpu-memory` v1.0.0 · basic · Demonstrated technique · relevance **medium** · stable
 
-Roughly how many processor threads and how much memory the browser reports.
+Roughly how many processor threads and how much memory your device reports.
 
-**How it works.** Reads navigator.hardwareConcurrency and navigator.deviceMemory.
+**How it works.** Browsers tell pages an approximate number of processor threads and, in some browsers, a rounded memory size (capped at 8 GB). These are coarse, but separate phones, laptops and workstations.
 
 **Technical.** hardwareConcurrency is the number of logical processors the browser chooses to report. It is not the number of physical cores, and browsers may cap or round it. deviceMemory (Chromium only) is rounded to a power of two and capped at 8 GB, so it is not your installed RAM.
 
@@ -1062,9 +1134,9 @@ Roughly how many processor threads and how much memory the browser reports.
 
 `network-info` v1.0.0 · basic · Demonstrated technique · relevance **low** · volatile
 
-Your connection type and rough speed estimate.
+Your connection type and a rough speed estimate.
 
-**How it works.** Reads navigator.connection: effectiveType, downlink, rtt, saveData.
+**How it works.** Some browsers tell pages whether you are on a fast or slow connection and estimate its speed and delay. The values are rounded and change as your network changes.
 
 **Technical.** Values are rounded (rtt to 25 ms, downlink to 25 kbps) and change with network conditions, so they are volatile. Chromium-only.
 
@@ -1086,9 +1158,9 @@ Your connection type and rough speed estimate.
 
 `wasm-sab` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Whether advanced computation features are available.
+Whether your browser supports high-performance code features.
 
-**How it works.** Validates tiny WebAssembly modules for SIMD and threads support, and checks SharedArrayBuffer and crossOriginIsolated.
+**How it works.** The page checks for WebAssembly (fast compiled code in the browser) and a few related features. Support follows your browser version and the site's security settings.
 
 **Technical.** SharedArrayBuffer requires cross-origin isolation (COOP/COEP headers) since Spectre. WebAssembly feature support maps to browser versions and CPU capabilities. Validating a module does not execute code.
 
@@ -1110,9 +1182,9 @@ Whether advanced computation features are available.
 
 `timer-precision` v2.0.0 · advanced · Demonstrated technique · relevance **low** · semi-stable
 
-How precise the browser's clock is and how much it jitters. Privacy modes make it deliberately coarse.
+How precise your browser's clock is, and how much it jitters. Privacy modes make it deliberately blurry.
 
-**How it works.** Calls performance.now() in a bounded loop (max 20,000 iterations), records the smallest observed step and the distribution of step sizes (median and standard deviation = jitter).
+**How it works.** The page reads the browser's high-precision clock many times in a row and notes the smallest step and how much the steps vary. Privacy-focused browsers make the clock deliberately coarse, which shows up here.
 
 **Technical.** After Spectre, browsers coarsened timers (Chromium ~100 µs, ~5 µs when cross-origin isolated; Firefox 1 ms under RFP; Tor 100 ms). The step size can indicate privacy modes. Timing results are noisy: background load affects them.
 
@@ -1134,9 +1206,9 @@ How precise the browser's clock is and how much it jitters. Privacy modes make i
 
 `benchmark` v1.0.0 · advanced · Research concept · relevance **low** · volatile
 
-A tiny, fixed calculation is timed. Faster devices finish sooner.
+How long a tiny, fixed calculation takes. Faster devices finish sooner.
 
-**How it works.** Runs exactly 300,000 iterations of simple math three times and reports the median time. Total work is a few milliseconds.
+**How it works.** The page runs the same short calculation three times and notes the middle time. It takes a few milliseconds and varies with what else your device is doing.
 
 **Technical.** Relative speed separates phones from desktops and can expose overloaded cloud VMs. It is noisy (thermal state, background tabs, power saving) and therefore excluded from the default fingerprint profile.
 
@@ -1159,9 +1231,9 @@ A tiny, fixed calculation is timed. Faster devices finish sooner.
 
 `math-precision` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
 
-Some math functions give slightly different last digits on different browsers and systems.
+The last digits of some maths results, which differ between browsers and processors.
 
-**How it works.** Evaluates functions such as Math.tan(-1e300), Math.acosh(1e308) and Math.expm1(1).
+**How it works.** The page calculates a handful of maths functions. Browsers use slightly different methods, so the last digits of the answers reveal which browser engine you really use.
 
 **Technical.** Engines use different libm ports and CPU intrinsics for transcendental functions; the last bits differ between V8, SpiderMonkey and JavaScriptCore and sometimes between OS/CPU. Primarily an engine/platform signal.
 
@@ -1183,9 +1255,9 @@ Some math functions give slightly different last digits on different browsers an
 
 `battery` v2.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Whether the browser exposes the Battery Status API. Your battery level is not read.
+Whether your browser offers battery information. Your battery level is not read.
 
-**How it works.** Checks only whether navigator.getBattery and BatteryManager exist. getBattery() is not called, so level and charging state are never read.
+**How it works.** The lab only checks whether the battery feature exists. It does not ask for your battery level.
 
 **Technical.** Olejnik et al. (2015) showed battery level plus discharge time can link visits across sites over short periods, which led Firefox and Safari to remove the API. Chromium still exposes it. Presence mostly reveals the engine family.
 
@@ -1207,9 +1279,9 @@ Whether the browser exposes the Battery Status API. Your battery level is not re
 
 `js-heap` v1.0.0 · advanced · Demonstrated technique · relevance **low** · semi-stable
 
-How much JavaScript memory the browser reports this page may use.
+How much memory your browser lets scripts use on this page.
 
-**How it works.** Reads the non-standard performance.memory (Chromium): jsHeapSizeLimit, totalJSHeapSize, usedJSHeapSize. Checks whether performance.measureUserAgentSpecificMemory() exists (it requires cross-origin isolation; it is not called).
+**How it works.** Chrome-family browsers report a rounded memory limit for scripts and how much is in use. The limit hints at your device type. The other browsers do not share this.
 
 **Technical.** Chromium buckets these values to limit precision. jsHeapSizeLimit tends to reflect the device memory class and 32/64-bit builds (e.g. ~4 GB on 64-bit desktop). Used/total heap are volatile and describe this page, not your system.
 
@@ -1232,9 +1304,9 @@ How much JavaScript memory the browser reports this page may use.
 
 `wasm-features` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
 
-Which WebAssembly language features the engine supports.
+Which features of the browser's fast-code engine are supported.
 
-**How it works.** Builds seven tiny WebAssembly modules as plain byte arrays, one per feature (sign extension, saturating float-to-int, bulk memory, multi-value, reference types, tail calls, SIMD), and checks each with WebAssembly.validate(). Validation only parses; no code is compiled into a running instance or executed.
+**How it works.** The page builds seven tiny test programs as data and asks the browser whether it understands each one. Nothing runs. Support changes with browser versions.
 
 **Technical.** Feature support moved through engines at different releases (e.g. tail calls shipped in V8 well before JavaScriptCore). The resulting bitmask maps to engine and version ranges. Each probe module was verified against V8 when written.
 
@@ -1256,9 +1328,9 @@ Which WebAssembly language features the engine supports.
 
 `keyboard-layout` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · stable · secure context
 
-Your keyboard layout (e.g. Swedish, German, French) without you pressing any key.
+Your keyboard layout (for example Swedish, German or French), without you pressing a key.
 
-**How it works.** navigator.keyboard.getLayoutMap() maps physical key codes to the characters your layout produces. We read a handful of keys that differ between layouts.
+**How it works.** Some browsers let pages ask which character each physical key produces. Where the Q, Y or Ö keys sit reveals your layout and hints at your country.
 
 **Technical.** KeyQ→a indicates AZERTY, KeyY→z QWERTZ, Semicolon→ö Swedish/Finnish. Chromium-only; requires a top-level, focused, secure context.
 
@@ -1307,9 +1379,9 @@ Tells Intel/AMD (x86) processors apart from ARM ones (Apple M-series, phones) wi
 
 `api-availability` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Which powerful browser features exist (location, notifications, clipboard, Bluetooth…). Existing is not the same as being exposed.
+Which powerful browser features exist, like location, notifications or Bluetooth. Existing is not the same as being allowed.
 
-**How it works.** Checks only whether objects such as navigator.geolocation, Notification, navigator.clipboard, navigator.serviceWorker, RTCPeerConnection, navigator.gpu, navigator.bluetooth exist. Nothing is called.
+**How it works.** The page only checks whether these features exist in your browser; it does not use them or ask for permission. The set differs between browsers, versions and devices.
 
 **Technical.** The set of present APIs depends on browser, version, platform and enterprise policy. Presence does not mean the API can be used without permission, and it is not a vulnerability.
 
@@ -1331,9 +1403,9 @@ Which powerful browser features exist (location, notifications, clipboard, Bluet
 
 `permission-states` v1.0.0 · basic · Demonstrated technique · relevance **low** · semi-stable
 
-Which permissions you have previously granted or denied for this site. Checking does not show any prompt.
+Which permissions you have already allowed or blocked for this site. Checking shows no pop-up.
 
-**How it works.** Calls navigator.permissions.query() for common permission names. This API never prompts; it only reports granted, denied or prompt.
+**How it works.** Pages can quietly check whether you have previously allowed, blocked or never been asked about things like camera or notifications for this site. Asking this never shows a prompt.
 
 **Technical.** For a fresh origin almost everything is prompt. Unusual defaults (e.g. notifications globally blocked) and enterprise policies show up here. Inconsistencies between Notification.permission and the Permissions API were historically a headless-Chrome tell.
 
@@ -1355,9 +1427,9 @@ Which permissions you have previously granted or denied for this site. Checking 
 
 `api-surface` v1.0.0 · advanced · Demonstrated technique · relevance **low** · semi-stable
 
-Which newer JavaScript features exist, which narrows the browser version.
+Which newer browser features exist, which narrows down your browser version.
 
-**How it works.** Checks for ~20 globals introduced in different releases (e.g. scheduler, navigation, CompressionStream, EyeDropper, Sanitizer).
+**How it works.** The page checks for about twenty features that browsers added at different times. Which ones exist points to your browser and roughly which version you run.
 
 **Technical.** A presence bitmask maps to a release range and engine. Bot detectors compare it with the claimed UA version to detect spoofing.
 
@@ -1379,9 +1451,9 @@ Which newer JavaScript features exist, which narrows the browser version.
 
 `webrtc-presence` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Whether WebRTC (real-time audio/video/data) is exposed, and which codecs it advertises. No connection is made and no network candidates are collected.
+Whether video-call technology is available and which video and audio formats it offers. No connection is made.
 
-**How it works.** Checks for RTCPeerConnection, RTCDataChannel, RTCRtpTransceiver and insertable-streams interfaces, and reads RTCRtpSender.getCapabilities() codec lists. No peer connection is created.
+**How it works.** The page checks whether the browser's video-call feature exists and lists the formats it supports. It does not start a call or collect network addresses.
 
 **Technical.** Codec capability lists (VP8/VP9/AV1/H.264 profiles, Opus, RED, hardware-accelerated codecs) differ by browser, OS and hardware encoders. Presence of WebRTC does not mean network candidates are gathered; that only happens in the separate, user-initiated candidate test.
 
@@ -1403,9 +1475,9 @@ Whether WebRTC (real-time audio/video/data) is exposed, and which codecs it adve
 
 `device-posture` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Whether APIs for sensors, foldable-screen posture, multi-screen setups and on-screen keyboards exist. Nothing is read from sensors.
+Whether features for motion sensors, foldable screens, multiple monitors and on-screen keyboards exist. No sensor is read.
 
-**How it works.** Checks presence of navigator.devicePosture, DeviceOrientationEvent, DeviceMotionEvent, Generic Sensor classes (Accelerometer, Gyroscope, AmbientLightSensor…), navigator.virtualKeyboard, getScreenDetails and viewport segments. No sensor is started and no event listener is attached.
+**How it works.** The page only checks whether these features exist. It never starts a sensor or listens to movement.
 
 **Technical.** Sensor readings have been shown to enable device fingerprinting (e.g. accelerometer calibration errors), which is why this lab only checks presence. Posture/segments APIs indicate foldables; multi-screen APIs indicate desktop Chromium.
 
@@ -1427,9 +1499,9 @@ Whether APIs for sensors, foldable-screen posture, multi-screen setups and on-sc
 
 `webauthn` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Whether passkeys / Web Authentication are available, and whether a built-in authenticator (Touch ID, Windows Hello) is present. No credential is requested.
+Whether passkeys work here, and whether your device has a built-in fingerprint or face unlock. No login is started.
 
-**How it works.** Checks PublicKeyCredential, navigator.credentials, PasswordCredential and IdentityCredential (FedCM), and calls the prompt-free capability queries isUserVerifyingPlatformAuthenticatorAvailable(), isConditionalMediationAvailable() and getClientCapabilities() where present.
+**How it works.** The page asks your browser, without showing anything, whether passkeys are supported and whether a built-in unlock method (Touch ID, Face ID, Windows Hello) exists.
 
 **Technical.** These queries never show UI. Whether a platform authenticator exists (Touch ID, Face ID, Windows Hello, Android biometrics) is a hardware/OS signal. Client capabilities (hybrid transport, related origins, passkey sync) vary with browser and OS versions.
 
@@ -1451,9 +1523,9 @@ Whether passkeys / Web Authentication are available, and whether a built-in auth
 
 `observer-support` v1.0.0 · advanced · Demonstrated technique · relevance **low** · semi-stable
 
-Which observer and event APIs the browser implements, plus the performance entry types it records.
+Which page-watching and event features your browser has, which narrows down its version.
 
-**How it works.** Checks for observer classes (ResizeObserver, IntersectionObserver, MutationObserver, ReportingObserver, PressureObserver…), event constructors and handler properties, and reads PerformanceObserver.supportedEntryTypes.
+**How it works.** The page checks for features that let sites watch for changes on the page, and lists the kinds of performance measurements the browser supports. Browsers add these release by release.
 
 **Technical.** Supported performance entry types (e.g. largest-contentful-paint, long-animation-frame, soft-navigation) are added release by release and differ between engines, so the list narrows browser and version.
 
@@ -1475,9 +1547,9 @@ Which observer and event APIs the browser implements, plus the performance entry
 
 `dom-features` v1.0.0 · advanced · Demonstrated technique · relevance **low** · semi-stable
 
-Which HTML elements, attributes and input types the browser supports.
+Which page-building features your browser supports, like pop-up dialogs and date pickers.
 
-**How it works.** Checks for features such as <dialog>, the popover and inert attributes, declarative shadow DOM, custom elements and document.fonts, and tests which <input type> values are kept (date, color, month, week, datetime-local, range) using detached elements.
+**How it works.** The page checks a list of newer page elements and asks whether special input types, such as date or colour pickers, are supported. Unsupported ones silently fall back to plain text boxes.
 
 **Technical.** Unsupported input types silently fall back to text, so assigning a type and reading it back reveals support. Together with newer DOM APIs this maps to engine and release range.
 
@@ -1499,9 +1571,9 @@ Which HTML elements, attributes and input types the browser supports.
 
 `isolation-posture` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Whether this page runs in a secure context and how strongly it is isolated from other sites.
+Whether this page runs in a secure mode, and how well it is walled off from other sites.
 
-**How it works.** Reads isSecureContext, crossOriginIsolated, originAgentCluster, the page protocol, and the features allowed by the Permissions Policy (document.featurePolicy / permissionsPolicy where exposed).
+**How it works.** The page reads whether it was loaded securely and which protective settings are active. These depend mostly on how the site is set up, not on you, but they decide which other checks can run.
 
 **Technical.** These values describe the page and server configuration more than the user. They matter because they gate other APIs (high-resolution timers, SharedArrayBuffer, Storage, Web Crypto). The allowed-features list also differs between browser versions.
 
@@ -1523,9 +1595,9 @@ Whether this page runs in a secure context and how strongly it is isolated from 
 
 `permission-api-surface` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
 
-Which permission names and permission-related functions the browser recognizes. No permission is requested.
+Which permission types your browser knows about. Nothing is requested.
 
-**How it works.** Calls navigator.permissions.query() with ~25 permission names and records only whether each name is recognized (a TypeError means unknown). Also checks for Permissions.request/revoke, Notification.requestPermission and the <permission> element.
+**How it works.** The page asks about a list of permission names and only records which ones your browser recognises. Different browsers know different names. No prompt is shown.
 
 **Technical.** The set of recognized names differs by engine and version (e.g. "window-management", "local-fonts", "captured-surface-control" are Chromium-only). Querying never prompts. This is distinct from the permission states test.
 
@@ -1547,9 +1619,9 @@ Which permission names and permission-related functions the browser recognizes. 
 
 `webrtc-local` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · semi-stable · user-initiated
 
-Checks whether WebRTC would reveal your local network address. Runs only when you click it, and contacts no server.
+Checks whether video-call technology would reveal your home network address. Runs only when you click it, and contacts no server.
 
-**How it works.** Creates an RTCPeerConnection with no STUN/TURN servers, so no network request leaves your device. It gathers host ICE candidates and checks whether they are real IPs or obfuscated .local mDNS names. Addresses are not stored or exported unless you choose to export raw data.
+**How it works.** Browsers' video-call feature (WebRTC) collects network addresses to connect people. The lab starts it without any outside server and checks whether your local address is shown or hidden behind a random name. Nothing is stored.
 
 **Technical.** Since ~2019 browsers replace host IPs with random mDNS names unless media permission was granted. With a STUN server, a server-reflexive candidate would also expose the public IP; this lab deliberately does not do that. The 2025 "Local Mess" disclosure showed WebRTC being used to reach localhost apps.
 
@@ -1568,15 +1640,63 @@ Checks whether WebRTC would reveal your local network address. Runs only when yo
 
 **Sources:** [Online Tracking: A 1-million-site Measurement and Analysis (ACM CCS 2016)](https://www.cs.princeton.edu/~arvindn/publications/OpenWPM_1_million_site_tracking_measurement.pdf) · [Local Mess: covert web-to-app tracking via localhost on Android](https://localmess.github.io/)
 
+### Apple Pay availability
+
+`apple-pay` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
+
+Checks whether Apple Pay can be used in this browser. That reveals Safari on an Apple device, and sometimes whether a card is set up.
+
+**How it works.** Checks for the ApplePaySession object and, if present, asks whether payments are possible. No payment sheet is opened and nothing is charged.
+
+**Technical.** ApplePaySession.canMakePayments() returns whether the device supports Apple Pay (it does not reveal cards). FingerprintJS includes an apple_pay source; the API also throws in some contexts (e.g. inside cross-origin frames), and that state is recorded too.
+
+**Exposes:** Apple Pay support state. · **APIs:** ApplePaySession.canMakePayments
+
+**Limitations:**
+- Only present in Safari and some WebKit browsers.
+
+**Defenses:** None needed.
+
+**Mitigations:**
+- No action needed.
+
+**Documented associations:** none
+
+**Sources:** [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources)
+
+### Game controller API
+
+`gamepads` v1.0.0 · basic · Demonstrated technique · relevance **low** · semi-stable
+
+Checks whether the browser supports game controllers and whether one is already connected.
+
+**How it works.** Calls navigator.getGamepads(). Browsers only reveal a controller after you have pressed one of its buttons on this page, so most people see none.
+
+**Technical.** Gamepad IDs include vendor and product codes (e.g. "Xbox Wireless Controller (STANDARD GAMEPAD Vendor: 045e Product: 0b13)"), which are distinctive once exposed. The user-gesture requirement limits this.
+
+**Exposes:** Gamepad API presence and connected controller count. · **APIs:** navigator.getGamepads
+
+**Limitations:**
+- Requires a button press before controllers appear.
+
+**Defenses:** User-gesture gating in all browsers.
+
+**Mitigations:**
+- Disconnect controllers you are not using.
+
+**Documented associations:** none
+
+**Sources:** [Mitigating Browser Fingerprinting in Web Specifications](https://www.w3.org/TR/fingerprinting-guidance/)
+
 ## Storage & persistence
 
 ### Client-side storage mechanisms
 
 `storage-mechanisms` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Checks which ways of saving data in your browser work here. A temporary test value is written, read back and deleted.
+Which ways of saving data in your browser work here. A test value is saved, read back and deleted.
 
-**How it works.** For cookies, localStorage, sessionStorage, IndexedDB and the Cache API, the lab writes the value probe under the key fplab-probe, reads it back, then deletes it. Service Worker support is checked but no worker is registered.
+**How it works.** For each way websites can store data (cookies, local storage, a small database and a cache), the lab saves the word "probe", reads it back and deletes it immediately. No identifier is created.
 
 **Technical.** - Cookies: sent to the server; partitioned for third parties in modern browsers.
   - localStorage / IndexedDB / Cache: persist until cleared, per origin (and per top-level site when partitioned).
@@ -1602,9 +1722,9 @@ Checks which ways of saving data in your browser work here. A temporary test val
 
 `storage-availability` v1.0.0 · basic · Demonstrated technique · relevance **low** · stable
 
-Which storage technologies exist in this browser. Nothing is written by this test.
+Which ways of storing data exist in your browser. Nothing is saved by this check.
 
-**How it works.** Checks presence (and access without exceptions) of localStorage, sessionStorage, indexedDB, caches, cookieStore, the Origin Private File System (navigator.storage.getDirectory), Storage Buckets, Shared Storage, and the legacy WebSQL openDatabase.
+**How it works.** The page checks whether each storage feature exists and can be accessed, including an old database feature that only some browsers still have.
 
 **Technical.** Access to localStorage can throw when storage is disabled, which is itself a signal. WebSQL's presence (removed from Chromium in 2022–23) distinguishes older builds; FingerprintJS checks openDatabase for this reason.
 
@@ -1626,9 +1746,9 @@ Which storage technologies exist in this browser. Nothing is written by this tes
 
 `storage-policy` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
 
-What the browser reveals about its cookie and storage policy for this page.
+What your browser says about its cookie and storage rules for this page.
 
-**How it works.** Reads navigator.cookieEnabled, asks document.hasStorageAccess() (no prompt), checks for requestStorageAccess, and reads navigator.storage.persisted(). In a first-party context like this page, storage access is normally granted.
+**How it works.** The page asks whether cookies are on, whether it has access to its own storage, and whether its data is kept permanently. These answers matter most for embedded trackers; as a normal page the lab only sees its own view.
 
 **Technical.** These answers mainly matter in third-party iframes, where browsers that partition or block third-party storage return false from hasStorageAccess(). As a top-level page, this lab can only show the first-party view, which is why the result is an indicator.
 
@@ -1650,9 +1770,9 @@ What the browser reveals about its cookie and storage policy for this page.
 
 `storage-quota` v1.0.0 · basic · Demonstrated technique · relevance **medium** · semi-stable · secure context
 
-How much space the browser would let this site use. It is often derived from your disk size.
+How much space your browser would let this site use. It often depends on your disk size.
 
-**How it works.** Calls navigator.storage.estimate() and reports the quota and current usage. Nothing is written.
+**How it works.** The page asks how much storage it may use. Some browsers base this on your total disk size, which reveals roughly how big your disk is. Nothing is written.
 
 **Technical.** Chromium derives the quota from total disk size (a share of it), which leaks a disk-size bucket. In private windows quotas are often much smaller, a known private-mode heuristic. Safari and Firefox bucket the value.
 
@@ -1674,9 +1794,9 @@ How much space the browser would let this site use. It is often derived from you
 
 `storage-partitioning` v2.0.0 · advanced · Speculative inference · relevance **low** · stable
 
-Service worker support plus hints about whether your browser keeps third-party storage separate per website. Indicators only, not proof.
+Whether your browser keeps third-party data separate for each website, plus service-worker support. Hints only.
 
-**How it works.** Checks navigator.serviceWorker (and whether this page is controlled by one; none is registered), SharedWorker, BroadcastChannel, the Storage Access API (document.hasStorageAccess), cookieStore, and the ad-related Topics and Protected Audience APIs. Measuring partitioning reliably requires a cross-site test server, which this static app does not use.
+**How it works.** The page checks for features that browsers add when they keep embedded trackers from sharing data across sites. It cannot fully test this without a second website, so the result is an indication, not proof.
 
 **Technical.** Partitioning keys third-party storage by top-level site, defeating classic cross-site cookie/localStorage tracking. The Storage Access API usually exists because the browser partitions or blocks third-party storage. API presence is still only an indicator.
 
@@ -1700,9 +1820,9 @@ Service worker support plus hints about whether your browser keeps third-party s
 
 `consistency` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · stable
 
-Checks whether your browser tells a consistent story, e.g. a "Windows" browser with a Mac-only graphics chip would be suspicious.
+Checks whether your browser tells a consistent story. A "Windows" browser with a Mac-only graphics chip would be suspicious.
 
-**How it works.** Compares results already measured: the UA OS claim against navigator.platform, Client Hints platform, the WebGL renderer and detected fonts, and the inferred engine against the claimed one.
+**How it works.** The lab compares answers it already collected: does the system named in the name tag match the platform, the graphics chip and the fonts? Spoofing tools often get some of these wrong.
 
 **Technical.** Bot-management and fraud systems score contradictions because spoofing tools rarely change every layer consistently. Each check here is a simple rule; real systems use many more. Contradictions can also be legitimate (remote desktops, VMs, enterprise builds).
 
@@ -1724,9 +1844,9 @@ Checks whether your browser tells a consistent story, e.g. a "Windows" browser w
 
 `canvas-repeatability` v1.0.0 · advanced · Demonstrated technique · relevance **low** · volatile
 
-Draws the same canvas image five times and checks whether every copy is pixel-identical.
+Draws the same picture five times and checks whether every copy is identical.
 
-**How it works.** Renders a fixed scene (text, gradient, arcs) five times on fresh canvases, hashes each result locally with SHA-256, and compares them. Also counts how many bytes differ from the first render.
+**How it works.** If every copy is identical, the picture can be used to recognise you. If the copies differ, your browser is adding random noise on purpose to protect you.
 
 **Technical.** Deterministic rendering gives identical digests, the precondition for canvas fingerprinting. Different digests within one page load indicate noise injection (Brave farbling, Safari Advanced Fingerprinting Protection, Firefox FPP, CanvasBlocker-type extensions). Noise that is stable per site and session (Brave) still looks identical here; this test detects per-read noise only.
 
@@ -1748,9 +1868,9 @@ Draws the same canvas image five times and checks whether every copy is pixel-id
 
 `date-behavior` v1.0.0 · advanced · Research concept · relevance **low** · stable
 
-How the browser parses ambiguous date strings and prints dates. Engines disagree on several cases.
+How your browser reads unclear dates and writes dates out. Browsers disagree on some cases.
 
-**How it works.** Parses a fixed list of ambiguous strings with Date.parse() (date-only vs date-time ISO, slashes, two-digit years, month names, invalid input) and records the results, plus the shape of Date.prototype.toString() and the long timezone name.
+**How it works.** The page gives the browser a list of dates written in unusual ways and records how it understands them, plus how it writes a date and your time zone's name.
 
 **Technical.** The ECMAScript spec defines only the ISO format; everything else is implementation-defined, so V8, SpiderMonkey and JavaScriptCore differ (e.g. for "2026-1-2" or "01/02/26"). The timezone name in toString() is localized and reveals both timezone and locale data.
 
@@ -1772,9 +1892,9 @@ How the browser parses ambiguous date strings and prints dates. Engines disagree
 
 `error-stack` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
 
-How the JavaScript engine formats error messages and stack traces. Each engine has its own style.
+How your browser words error messages. Each browser has its own style.
 
-**How it works.** Triggers three harmless errors (reading a property of null, calling an undefined value, an invalid array length), records their messages, and classifies the stack-frame format. File paths are stripped. Also checks Error.captureStackTrace and Error.stackTraceLimit.
+**How it works.** The page triggers three harmless errors and records how the browser words them and how it lists where the error happened. File paths are removed.
 
 **Technical.** V8 frames look like     at fn (file:line:col); SpiderMonkey and JavaScriptCore use fn@file:line:col, with different column conventions and messages. Spoofed user agents rarely fake these, so bot detection compares them with the claimed browser.
 
@@ -1796,9 +1916,9 @@ How the JavaScript engine formats error messages and stack traces. Each engine h
 
 `native-tostring` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
 
-How built-in functions look when converted to text. Engines format them slightly differently.
+How built-in functions look when written out as text. Browsers format them slightly differently.
 
-**How it works.** Converts several functions to strings: a native method (Math.max), a native getter, a bound function, a class and an arrow function, and records the shape (whitespace, newlines, naming) with names masked.
+**How it works.** The page turns a few built-in functions into text and records their shape, such as line breaks and spacing, with names hidden.
 
 **Technical.** V8 and JavaScriptCore print function max() { [native code] } on one line; SpiderMonkey prints it over three lines with indentation. Getters show as function get userAgent(). Spoofing tools that override functions often get this shape wrong, which is why integrity checks rely on it.
 
@@ -1820,9 +1940,9 @@ How built-in functions look when converted to text. Engines format them slightly
 
 `prototype-surface` v1.0.0 · advanced · Demonstrated technique · relevance **low** · semi-stable
 
-How many properties key browser objects (Navigator, Document, HTMLElement…) have. Every browser version has its own count.
+How many properties some core browser objects have. Each browser version has its own count.
 
-**How it works.** Counts Object.getOwnPropertyNames() on the prototypes of Navigator, Document, HTMLElement, Element, Screen, CanvasRenderingContext2D and Window, and hashes the sorted name lists. Global variables added by pages or extensions are not counted.
+**How it works.** The page counts the properties of a few core browser objects and makes a short code from their names. The counts change with nearly every browser release.
 
 **Technical.** Property sets change with nearly every release and differ between engines, so counts plus a digest pin the browser version precisely. CreepJS-style tools use such surfaces to detect spoofed versions. Extensions that patch prototypes also change the result.
 
@@ -1844,9 +1964,9 @@ How many properties key browser objects (Navigator, Document, HTMLElement…) ha
 
 `third-party-requests` v1.0.0 · advanced · Demonstrated technique · relevance **low** · volatile
 
-Lists every request this page made to other websites, which is how trackers usually arrive. This lab should show zero.
+Lists every other website this page contacted. Trackers usually arrive this way. This lab should show none.
 
-**How it works.** Reads the browser's Resource Timing entries (performance.getEntriesByType("resource")) for this page and groups them by origin. Third-party = any origin other than this site.
+**How it works.** The browser keeps a list of everything a page loaded. The lab reads it and groups it by website. On a typical commercial site this list includes analytics, ads and bot-detection services.
 
 **Technical.** On a typical commercial site this list contains analytics, tag managers, ad networks and fraud/bot scripts. It is the client-side view of tracker activity. Requests blocked by an extension do not appear. Activity on other websites cannot be observed from here; that would require network inspection or a browser extension.
 
@@ -1869,9 +1989,9 @@ Lists every request this page made to other websites, which is how trackers usua
 
 `integrity` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
 
-Checks whether built-in browser functions were replaced, as spoofing extensions and some automation tools do.
+Checks whether built-in browser functions were replaced, as spoofing extensions and some bots do.
 
-**How it works.** Inspects Function.prototype.toString output and property descriptors of getters like navigator.userAgent, HTMLCanvasElement.prototype.toDataURL and WebGLRenderingContext.prototype.getParameter.
+**How it works.** Built-in functions describe themselves in a standard way. If an extension or script has replaced one, its description usually changes. Real browser-level protections work differently and stay invisible here.
 
 **Technical.** Native functions stringify as function x() { [native code] }. JavaScript overrides usually do not, unless carefully disguised. Overrides on the instance (instead of the prototype) are another tell. Browser-native protections (Brave, Firefox, Safari) change values inside the engine and pass this check.
 
@@ -1894,9 +2014,9 @@ Checks whether built-in browser functions were replaced, as spoofing extensions 
 
 `automation` v1.0.0 · advanced · Demonstrated technique · relevance **low** · stable
 
-Signs that the browser is driven by automation (Selenium, Puppeteer, Playwright) rather than a person.
+Signs that software, not a person, is driving the browser.
 
-**How it works.** Combines navigator.webdriver, "HeadlessChrome" in the UA, empty language lists, zero outer window size, software GPU renderers, known automation globals (cdc_*, __playwright*), and permission-state inconsistencies.
+**How it works.** The lab looks for traces that automation tools leave behind, such as a raised automation flag, a missing browser object, an empty language list or a software-only graphics chip. A virtual machine can trigger some of these for real people.
 
 **Technical.** Bot-management vendors document moving beyond navigator.webdriver to protocol-level side effects (e.g. CDP). These indicators are a teaching subset. Absence does not prove a human; presence does not prove a bot (VMs and remote desktops use software GPUs).
 
@@ -1918,9 +2038,9 @@ Signs that the browser is driven by automation (Selenium, Puppeteer, Playwright)
 
 `protection-indicators` v1.0.0 · advanced · Speculative inference · relevance **low** · semi-stable
 
-Summarizes signs that your browser actively protects against fingerprinting (noise, blocking, uniform values).
+A summary of signs that your browser actively protects you (noise, blocking, uniform values).
 
-**How it works.** Reads the protection indicators of earlier tests: randomized canvas/WebGL/audio output, blocked read-backs, UTC timezone, coarse timers, a masked WebGL renderer and very short font lists.
+**How it works.** The lab collects the protection signs from other checks: randomised images or audio, blocked read-backs, a UTC time zone, a blurry clock, a hidden graphics chip name and very few visible fonts. Each sign alone has innocent explanations.
 
 **Technical.** Each indicator has innocent explanations (e.g. people really live in UTC; GPUs without the debug extension). The combination is suggestive, not conclusive. This lab does not claim to identify a specific browser or extension from these indicators.
 
@@ -1942,9 +2062,9 @@ Summarizes signs that your browser actively protects against fingerprinting (noi
 
 `content-blockers` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · stable
 
-Detects whether a content/ad blocker hides elements that look like ads.
+Detects whether an ad or content blocker is hiding things on the page.
 
-**How it works.** Inserts invisible elements with ad-like class names (adsbox, ad-banner…) and checks whether they get hidden by cosmetic filter rules. They are removed immediately.
+**How it works.** The page adds invisible boxes with ad-like names and checks whether something hides them. Blockers hide such boxes, which gives them away. The boxes are removed straight after.
 
 **Technical.** FingerprintJS's dom_blockers source uses lists of selectors from regional filter lists to infer which lists are active, and therefore hints at region. Blockers are common (a large minority of users), so presence alone is a modest signal.
 
@@ -1966,9 +2086,9 @@ Detects whether a content/ad blocker hides elements that look like ads.
 
 `extension-indicators` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · stable
 
-Some extensions (crypto wallets, developer tools, writing assistants) add objects to every page. Those can be seen.
+Some extensions (crypto wallets, developer tools, writing helpers) add things to every page that sites can see.
 
-**How it works.** Checks for well-known injected globals and DOM markers: window.ethereum, window.solana, React/Redux/Vue DevTools hooks, Grammarly and Dark Reader markers.
+**How it works.** The page looks for a short list of objects and markers that popular extensions add to every website, such as a crypto wallet connector. Most extensions add nothing visible.
 
 **Technical.** Injected objects are visible to all page scripts. Malicious "drainer" pages target wallet users this way. Detection here is inference: other extensions can mimic these objects, and many extensions inject nothing. This lab cannot detect every extension.
 
@@ -1993,9 +2113,9 @@ Some extensions (crypto wallets, developer tools, writing assistants) add object
 
 `pointer-dynamics` v1.0.0 · advanced · Demonstrated technique · relevance **low** · volatile · user-initiated
 
-How you move your mouse (speed, smoothness, curvature) can tell a human from a script.
+How you move your mouse (speed, smoothness, curves) can tell a person from a script.
 
-**How it works.** Only inside the Learning Center pad, and only after you press Start, the lab records pointer coordinates and timestamps in memory and computes speed, variability and direction change.
+**How it works.** Only on the pad in the Learning center, and only after you press Start, the lab records where your pointer moves and how fast. The data stays on the page until you reset it.
 
 **Technical.** Bot-defense products score pointer telemetry: humans produce curved, accelerating, jittery paths, while naive bots produce straight or replayed ones. Research on behavioral biometrics shows partial re-identification is possible, but it is noisy and context-dependent.
 
@@ -2017,9 +2137,9 @@ How you move your mouse (speed, smoothness, curvature) can tell a human from a s
 
 `keystroke-timing` v1.0.0 · advanced · Demonstrated technique · relevance **low** · volatile · user-initiated
 
-Your typing rhythm: how long you hold keys and the gaps between them.
+Your typing rhythm: how long you hold keys and the pauses between them.
 
-**How it works.** Only in the Learning Center text box, after you press Start, the lab records key-down/key-up timestamps. It never records which keys were pressed, and the text is not read.
+**How it works.** Only in the Learning center text box, after you press Start, the lab records when keys go down and up. It never records which keys you pressed.
 
 **Technical.** "Dwell" (press→release) and "flight" (release→next press) times form a rhythm used in continuous-authentication and fraud products. Rhythm varies with keyboard, fatigue and language.
 
@@ -2043,9 +2163,9 @@ Your typing rhythm: how long you hold keys and the gaps between them.
 
 `srv-http-headers` v1.0.0 · basic · Demonstrated technique · relevance **medium** · semi-stable · server-only
 
-Information your browser sends with every request before any script runs.
+Details your browser sends with every request, before any script runs.
 
-**How it works.** Each request carries User-Agent, Accept, Accept-Language, Accept-Encoding and others. Their values and order differ between browsers.
+**How it works.** With every page and image it loads, your browser sends small labels: its name, the languages and file types it accepts, and more. Their wording and order differ between browsers. Only the server sees them.
 
 **Technical.** Header order and casing are passive fingerprints usable on the very first request. EFF Cover Your Tracks includes HTTP Accept headers in its measurements.
 
@@ -2067,9 +2187,9 @@ Information your browser sends with every request before any script runs.
 
 `srv-client-hint-headers` v1.0.0 · basic · Demonstrated technique · relevance **medium** · semi-stable · server-only
 
-Chromium browsers send extra "hint" headers about the device when a site asks.
+Extra device details some browsers send when a site asks.
 
-**How it works.** Low-entropy Sec-CH-UA* headers are sent by default; a site can request more with Accept-CH (e.g. Sec-CH-UA-Platform-Version, Sec-CH-UA-Model).
+**How it works.** Chrome-family browsers can send extra labels with each request, like platform and browser version, and more when a site asks for them. Only the server sees these.
 
 **Technical.** Unlike the JS API, header hints are observable by servers that never run scripts, including on navigation requests after opt-in.
 
@@ -2091,9 +2211,9 @@ Chromium browsers send extra "hint" headers about the device when a site asks.
 
 `srv-ip` v1.0.0 · basic · Demonstrated technique · relevance **high** · semi-stable · server-only
 
-Every server sees your IP address, which reveals your internet provider and approximate location.
+Your internet address, which reveals your provider and rough location to every server you visit.
 
-**How it works.** The TCP connection carries your public IP. Commercial databases map it to ISP/ASN, country/city and flags such as VPN, Tor or hosting provider.
+**How it works.** Every connection carries your public IP address. Databases map it to your internet provider, country and city, and flag VPNs and data centres. Combined with your time zone it can reveal a VPN.
 
 **Technical.** IP is not a browser fingerprint but is combined with one in nearly every identification system. Comparing IP geolocation with browser timezone/language is a common VPN/proxy indicator.
 
@@ -2117,7 +2237,7 @@ Every server sees your IP address, which reveals your internet provider and appr
 
 How your browser starts an encrypted connection identifies its software, before any page loads.
 
-**How it works.** The TLS ClientHello lists cipher suites, extensions, groups and ALPN. Hashing them yields JA3 or the newer JA4.
+**How it works.** Before anything else, your browser and the server agree on encryption. The list of options your browser offers, and their order, forms a pattern (called JA3 or JA4) that identifies the browser or tool.
 
 **Technical.** Separates browsers from scripts (curl, Python, Go) and detects UA spoofing. Chrome randomizes extension order, which motivated JA4's sorted format.
 
@@ -2139,9 +2259,9 @@ How your browser starts an encrypted connection identifies its software, before 
 
 `srv-http2-http3` v1.0.0 · advanced · Demonstrated technique · relevance **low** · semi-stable · server-only
 
-Low-level details of how your browser speaks HTTP/2 or HTTP/3 identify its implementation.
+Low-level habits of how your browser talks to servers.
 
-**How it works.** HTTP/2 SETTINGS values, WINDOW_UPDATE increments, PRIORITY frames and pseudo-header order form a passive fingerprint. QUIC transport parameters play a similar role for HTTP/3.
+**How it works.** Modern connections use HTTP/2 or HTTP/3, and each browser sets them up with slightly different settings and ordering. Servers can recognise the browser family from that pattern.
 
 **Technical.** Akamai researchers published an HTTP/2 fingerprint format based on more than 10 million connections (Black Hat EU 2017).
 
@@ -2163,9 +2283,9 @@ Low-level details of how your browser speaks HTTP/2 or HTTP/3 identify its imple
 
 `srv-tcp` v1.0.0 · advanced · Demonstrated technique · relevance **low** · semi-stable · server-only
 
-Your operating system's network stack has recognizable habits.
+Your operating system's network habits.
 
-**How it works.** Initial TTL, TCP window size, MSS and option order in the SYN packet indicate the OS (p0f-style passive fingerprinting).
+**How it works.** The very first network packet from your device carries settings chosen by your operating system. Servers can guess the system from them, and spot when it does not match what the browser claims.
 
 **Technical.** A Windows UA arriving with a Linux TCP signature suggests a proxy, VPN endpoint or bot infrastructure.
 
@@ -2187,9 +2307,9 @@ Your operating system's network stack has recognizable habits.
 
 `srv-cache-tracking` v1.0.0 · advanced · Demonstrated technique · relevance **high** · semi-stable · server-only
 
-Browser caches have been abused to store hidden identifiers that survive cookie clearing.
+Browser caches have been misused to hide identifiers that survive deleting cookies.
 
-**How it works.** ETag: a server returns a unique validator and reads it back from If-None-Match. HSTS: bits stored as HTTPS-only flags on subdomains. Favicon cache: bits stored by which favicons are cached.
+**How it works.** A server can tuck a unique tag into data your browser caches (images, security settings or site icons) and read it back on your next visit. Modern browsers keep these caches separate per site, which blocks most of it.
 
 **Technical.** ETag respawning was documented in 2011 (Ayenson et al.). Favicon-cache tracking surviving incognito was shown at NDSS 2021. Browsers have since partitioned HTTP, HSTS and favicon caches by top-level site. These require a cooperating server; this lab does not implement them.
 
@@ -2211,9 +2331,9 @@ Browser caches have been abused to store hidden identifiers that survive cookie 
 
 `srv-cross-visit` v1.0.0 · advanced · Demonstrated technique · relevance **high** · semi-stable · server-only
 
-Servers link your visits over time by comparing fingerprints, IPs, cookies and behaviour stored in their logs.
+Servers link your visits over time by comparing what they saw before.
 
-**How it works.** A server keeps a history of observations per visitor (fingerprint components, IP/ASN, cookies, login events, interaction telemetry) and matches each new visit against it, usually with fuzzy matching that tolerates some changed signals.
+**How it works.** A site can keep a history of what it observed about you (fingerprint, address, cookies, behaviour) and match each new visit against it, even when a few details have changed. That turns single visits into a profile.
 
 **Technical.** Fingerprints drift (browser updates, new fonts, a new monitor), so production systems link a new fingerprint to an old profile when most components match or when another identifier (cookie, account, IP) bridges the gap. Research on fingerprint evolution (e.g. Vastel et al.) studies exactly this. It requires server-side storage and event history; this lab stores nothing. The Comparison page lets you do the same comparison locally and explicitly.
 
@@ -2236,9 +2356,9 @@ Servers link your visits over time by comparing fingerprints, IPs, cookies and b
 
 `srv-localhost` v1.0.0 · advanced · Demonstrated technique · relevance **medium** · semi-stable · server-only
 
-Some scripts have contacted services on your own computer or phone to fingerprint or link you.
+Some scripts have contacted programs on your own computer or phone to recognise or link you.
 
-**How it works.** Pages can attempt WebSocket/HTTP/WebRTC connections to localhost ports. Responses (or timing) reveal locally running software, or deliver identifiers to native apps.
+**How it works.** A page can try to reach programs running on your own device. In 2020 a fraud script checked for remote-control software this way, and in 2025 a social media tracker passed IDs to its phone apps. This lab does not do this.
 
 **Technical.** In 2020, a ThreatMetrix script on eBay probed remote-desktop ports. In 2025 the "Local Mess" disclosure showed Meta Pixel passing identifiers to Android apps through localhost via WebRTC. Browsers are rolling out Local Network Access restrictions. This lab does not probe localhost.
 

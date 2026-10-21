@@ -1,5 +1,5 @@
 {
-  "catalogueVersion": "2026.10.19-2",
+  "catalogueVersion": "2026.10.21",
   "note": "dateChecked is set only for sources whose URL and cited claim were checked on that date. null = cited from prior knowledge and not re-verified; treat accordingly.",
   "sources": {
     "w3c-fp-guidance": {
@@ -71,8 +71,8 @@
       "publisher": "EFF",
       "url": "https://coveryourtracks.eff.org/static/browser-uniqueness.pdf",
       "type": "research paper",
-      "dateChecked": null,
-      "supports": "83.6% of sampled browsers had a unique fingerprint; entropy measured in bits against a self-selected dataset."
+      "dateChecked": "2026-10-21",
+      "supports": "83.6% of 470,161 sampled browsers had a unique fingerprint. Table 2, mean surprisal per variable in isolation: user agent 10.0 bits, plugins 15.4, fonts 13.9, video (screen) 4.83, supercookies 2.12, HTTP accept 6.09, timezone 3.04, cookies enabled 0.353."
     },
     "laperdrix-2016": {
       "title": "Beauty and the Beast: Diverting modern web browsers to build unique browser fingerprints (IEEE S&P 2016)",

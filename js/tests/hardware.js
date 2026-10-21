@@ -6,8 +6,8 @@ import { settleWithin } from '../core/util.js';
 export default [
   define({
     id: 'cpu-memory', version: '1.0.0', category: 'hardware', name: 'Logical processors & device memory (coarse)',
-    simple: 'Roughly how many processor threads and how much memory the browser reports.',
-    how: 'Reads <code>navigator.hardwareConcurrency</code> and <code>navigator.deviceMemory</code>.',
+    simple: 'Roughly how many processor threads and how much memory your device reports.',
+    how: 'Browsers tell pages an approximate number of processor threads and, in some browsers, a rounded memory size (capped at 8 GB). These are coarse, but separate phones, laptops and workstations.',
     technical: '<code>hardwareConcurrency</code> is the number of <em>logical</em> processors the browser chooses to report. It is not the number of physical cores, and browsers may cap or round it. <code>deviceMemory</code> (Chromium only) is rounded to a power of two and capped at 8 GB, so it is <em>not</em> your installed RAM.',
     exposes: 'Coarse compute and memory class.', dataType: 'object', apis: ['navigator.hardwareConcurrency', 'navigator.deviceMemory'],
     purpose: ['identification', 'bot-detection', 'fraud-prevention'], relevance: 'medium', relevanceBasis: 'A handful of common values; separates device classes.', stability: 'stable',
@@ -20,8 +20,8 @@ export default [
 
   define({
     id: 'network-info', version: '1.0.0', category: 'hardware', name: 'Network Information API',
-    simple: 'Your connection type and rough speed estimate.',
-    how: 'Reads <code>navigator.connection</code>: <code>effectiveType</code>, <code>downlink</code>, <code>rtt</code>, <code>saveData</code>.',
+    simple: 'Your connection type and a rough speed estimate.',
+    how: 'Some browsers tell pages whether you are on a fast or slow connection and estimate its speed and delay. The values are rounded and change as your network changes.',
     technical: 'Values are rounded (rtt to 25 ms, downlink to 25 kbps) and change with network conditions, so they are volatile. Chromium-only.',
     exposes: 'Connection quality class.', dataType: 'object', apis: ['navigator.connection'],
     purpose: ['analytics', 'bot-detection'], relevance: 'low', relevanceBasis: 'Volatile and coarse.', stability: 'volatile',
@@ -36,8 +36,8 @@ export default [
 
   define({
     id: 'wasm-sab', version: '1.0.0', category: 'hardware', name: 'WebAssembly & SharedArrayBuffer',
-    simple: 'Whether advanced computation features are available.',
-    how: 'Validates tiny WebAssembly modules for SIMD and threads support, and checks <code>SharedArrayBuffer</code> and <code>crossOriginIsolated</code>.',
+    simple: 'Whether your browser supports high-performance code features.',
+    how: 'The page checks for WebAssembly (fast compiled code in the browser) and a few related features. Support follows your browser version and the site\'s security settings.',
     technical: 'SharedArrayBuffer requires cross-origin isolation (COOP/COEP headers) since Spectre. WebAssembly feature support maps to browser versions and CPU capabilities. Validating a module does not execute code.',
     exposes: 'Feature flags.', dataType: 'object', apis: ['WebAssembly.validate', 'SharedArrayBuffer', 'crossOriginIsolated'],
     purpose: ['compatibility'], relevance: 'low', relevanceBasis: 'Shared by all users of a browser version.', stability: 'stable',
@@ -54,8 +54,8 @@ export default [
 
   define({
     id: 'timer-precision', version: '2.0.0', category: 'hardware', name: 'Timer precision & jitter sample', tier: 'advanced',
-    simple: 'How precise the browser\'s clock is and how much it jitters. Privacy modes make it deliberately coarse.',
-    how: 'Calls <code>performance.now()</code> in a bounded loop (max 20,000 iterations), records the smallest observed step and the distribution of step sizes (median and standard deviation = jitter).',
+    simple: 'How precise your browser\'s clock is, and how much it jitters. Privacy modes make it deliberately blurry.',
+    how: 'The page reads the browser\'s high-precision clock many times in a row and notes the smallest step and how much the steps vary. Privacy-focused browsers make the clock deliberately coarse, which shows up here.',
     technical: 'After Spectre, browsers coarsened timers (Chromium ~100 µs, ~5 µs when cross-origin isolated; Firefox 1 ms under RFP; Tor 100 ms). The step size can indicate privacy modes. <strong>Timing results are noisy</strong>: background load affects them.',
     exposes: 'Timer granularity.', dataType: 'number', apis: ['performance.now'],
     purpose: ['bot-detection', 'privacy-defense'], relevance: 'low', relevanceBasis: 'Few distinct values per browser.', stability: 'semi-stable',
@@ -77,8 +77,8 @@ export default [
 
   define({
     id: 'benchmark', version: '1.0.0', category: 'hardware', name: 'Bounded CPU timing', tier: 'advanced', maturity: 'research',
-    simple: 'A tiny, fixed calculation is timed. Faster devices finish sooner.',
-    how: 'Runs exactly 300,000 iterations of simple math three times and reports the median time. Total work is a few milliseconds.',
+    simple: 'How long a tiny, fixed calculation takes. Faster devices finish sooner.',
+    how: 'The page runs the same short calculation three times and notes the middle time. It takes a few milliseconds and varies with what else your device is doing.',
     technical: 'Relative speed separates phones from desktops and can expose overloaded cloud VMs. It is <strong>noisy</strong> (thermal state, background tabs, power saving) and therefore excluded from the default fingerprint profile.',
     exposes: 'Approximate CPU speed class.', dataType: 'number', apis: ['performance.now'],
     purpose: ['bot-detection', 'fraud-prevention'], relevance: 'low', relevanceBasis: 'High variance between runs.', stability: 'volatile',
@@ -96,8 +96,8 @@ export default [
 
   define({
     id: 'math-precision', version: '1.0.0', category: 'hardware', name: 'Math function precision', tier: 'advanced',
-    simple: 'Some math functions give slightly different last digits on different browsers and systems.',
-    how: 'Evaluates functions such as <code>Math.tan(-1e300)</code>, <code>Math.acosh(1e308)</code> and <code>Math.expm1(1)</code>.',
+    simple: 'The last digits of some maths results, which differ between browsers and processors.',
+    how: 'The page calculates a handful of maths functions. Browsers use slightly different methods, so the last digits of the answers reveal which browser engine you really use.',
     technical: 'Engines use different libm ports and CPU intrinsics for transcendental functions; the last bits differ between V8, SpiderMonkey and JavaScriptCore and sometimes between OS/CPU. Primarily an engine/platform signal.',
     exposes: 'Results of a fixed set of math evaluations.', dataType: 'object', apis: ['Math'],
     purpose: ['identification', 'bot-detection'], relevance: 'low', relevanceBasis: 'Mostly redundant with engine and OS.', stability: 'stable',
@@ -113,8 +113,8 @@ export default [
 
   define({
     id: 'battery', version: '2.0.0', category: 'hardware', name: 'Battery API exposure (presence only)',
-    simple: 'Whether the browser exposes the Battery Status API. Your battery level is not read.',
-    how: 'Checks only whether <code>navigator.getBattery</code> and <code>BatteryManager</code> exist. <code>getBattery()</code> is <strong>not called</strong>, so level and charging state are never read.',
+    simple: 'Whether your browser offers battery information. Your battery level is not read.',
+    how: 'The lab only checks whether the battery feature exists. It does not ask for your battery level.',
     technical: 'Olejnik et al. (2015) showed battery level plus discharge time can link visits across sites over short periods, which led Firefox and Safari to remove the API. Chromium still exposes it. Presence mostly reveals the engine family.',
     exposes: 'API presence only.', dataType: 'boolean', apis: ['navigator.getBattery', 'BatteryManager'],
     purpose: ['identification', 'compatibility'], relevance: 'low', relevanceBasis: 'Presence correlates with the engine; state is not read.', stability: 'stable',
@@ -129,8 +129,8 @@ export default [
 
   define({
     id: 'js-heap', version: '1.0.0', category: 'hardware', name: 'Runtime memory hints (JS heap)', tier: 'advanced',
-    simple: 'How much JavaScript memory the browser reports this page may use.',
-    how: 'Reads the non-standard <code>performance.memory</code> (Chromium): <code>jsHeapSizeLimit</code>, <code>totalJSHeapSize</code>, <code>usedJSHeapSize</code>. Checks whether <code>performance.measureUserAgentSpecificMemory()</code> exists (it requires cross-origin isolation; it is not called).',
+    simple: 'How much memory your browser lets scripts use on this page.',
+    how: 'Chrome-family browsers report a rounded memory limit for scripts and how much is in use. The limit hints at your device type. The other browsers do not share this.',
     technical: 'Chromium buckets these values to limit precision. <code>jsHeapSizeLimit</code> tends to reflect the device memory class and 32/64-bit builds (e.g. ~4 GB on 64-bit desktop). Used/total heap are volatile and describe this page, not your system.',
     exposes: 'Heap limit and coarse usage.', dataType: 'object', apis: ['performance.memory'],
     purpose: ['identification', 'bot-detection'], relevance: 'low', relevanceBasis: 'Bucketed; mostly a device-class signal.', stability: 'semi-stable',
@@ -149,8 +149,8 @@ export default [
 
   define({
     id: 'wasm-features', version: '1.0.0', category: 'hardware', name: 'WebAssembly feature surface', tier: 'advanced',
-    simple: 'Which WebAssembly language features the engine supports.',
-    how: 'Builds seven tiny WebAssembly modules as plain byte arrays, one per feature (sign extension, saturating float-to-int, bulk memory, multi-value, reference types, tail calls, SIMD), and checks each with <code>WebAssembly.validate()</code>. Validation only parses; <strong>no code is compiled into a running instance or executed</strong>.',
+    simple: 'Which features of the browser\'s fast-code engine are supported.',
+    how: 'The page builds seven tiny test programs as data and asks the browser whether it understands each one. Nothing runs. Support changes with browser versions.',
     technical: 'Feature support moved through engines at different releases (e.g. tail calls shipped in V8 well before JavaScriptCore). The resulting bitmask maps to engine and version ranges. Each probe module was verified against V8 when written.',
     exposes: 'WebAssembly feature bitmask.', dataType: 'object', apis: ['WebAssembly.validate'],
     purpose: ['compatibility', 'bot-detection'], relevance: 'low', relevanceBasis: 'Shared by all users of the same engine version.', stability: 'stable',
@@ -178,8 +178,8 @@ export default [
 
   define({
     id: 'keyboard-layout', version: '1.0.0', category: 'hardware', name: 'Keyboard layout map', tier: 'advanced', secureContext: true,
-    simple: 'Your keyboard layout (e.g. Swedish, German, French) without you pressing any key.',
-    how: '<code>navigator.keyboard.getLayoutMap()</code> maps physical key codes to the characters your layout produces. We read a handful of keys that differ between layouts.',
+    simple: 'Your keyboard layout (for example Swedish, German or French), without you pressing a key.',
+    how: 'Some browsers let pages ask which character each physical key produces. Where the Q, Y or Ö keys sit reveals your layout and hints at your country.',
     technical: '<code>KeyQ→a</code> indicates AZERTY, <code>KeyY→z</code> QWERTZ, <code>Semicolon→ö</code> Swedish/Finnish. Chromium-only; requires a top-level, focused, secure context.',
     exposes: 'Keyboard layout family (hints at country).', dataType: 'object', apis: ['Keyboard.getLayoutMap'],
     purpose: ['identification'], relevance: 'medium', relevanceBasis: 'Non-US layouts narrow region strongly.', stability: 'stable',

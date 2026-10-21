@@ -102,6 +102,14 @@ test('engine: every real test completes without a DOM and never fabricates value
   }
 });
 
+test('version: CHANGELOG newest entry, package.json and APP_VERSION match', async () => {
+  const { APP_VERSION } = await import('../../js/core/constants.js');
+  const log = fs.readFileSync(new URL('../../CHANGELOG.md', import.meta.url), 'utf8');
+  assert.equal(log.match(/^## (\d+\.\d+\.\d+)/m)?.[1], APP_VERSION);
+  assert.equal(JSON.parse(fs.readFileSync(new URL('../../package.json', import.meta.url))).version, APP_VERSION);
+  assert.ok(fs.readFileSync(new URL('../../README.md', import.meta.url), 'utf8').includes(`**${APP_VERSION}**`), 'README shows the current version');
+});
+
 test('hash: canonical JSON is key-order independent; SHA-256 matches a known vector', async () => {
   assert.equal(canonicalize({ b: 1, a: [2, { d: 3, c: 4 }] }), canonicalize({ a: [2, { c: 4, d: 3 }], b: 1 }));
   assert.equal(canonicalize({ a: undefined, b: NaN }), '{"b":"NaN"}');

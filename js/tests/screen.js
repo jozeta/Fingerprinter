@@ -5,8 +5,8 @@ import { measured, unsupported } from '../core/schema.js';
 export default [
   define({
     id: 'screen', version: '1.0.0', category: 'screen', name: 'Screen resolution & color depth',
-    simple: 'Your monitor size, the usable area and how many colors it shows.',
-    how: 'Reads <code>screen.width/height</code>, <code>availWidth/availHeight</code> (excluding taskbar/dock), <code>colorDepth</code> and <code>pixelDepth</code>.',
+    simple: 'Your screen size, the space left after the taskbar or dock, and how many colours it shows.',
+    how: 'Pages can read your screen\'s width and height, how much of it is free from taskbars and docks, and its colour depth. Popular sizes are shared by many people; the taskbar size and scaling add detail.',
     technical: 'The resolution itself is common; the difference between total and available area depends on taskbar position, size and OS scaling, which adds detail. Multi-monitor users report the screen the window is on.',
     exposes: 'Display dimensions, taskbar/dock size, color depth.', dataType: 'object', apis: ['screen.width', 'screen.availWidth', 'screen.colorDepth', 'screen.pixelDepth'],
     purpose: ['identification', 'bot-detection', 'fraud-prevention'], relevance: 'medium', relevanceBasis: 'Included in every major fingerprint dataset; common resolutions dominate.',
@@ -26,8 +26,8 @@ export default [
 
   define({
     id: 'viewport', version: '1.0.0', category: 'screen', name: 'Viewport, window & pixel ratio',
-    simple: 'The size of the browser window and page area, and your zoom/pixel density.',
-    how: 'Reads <code>innerWidth/innerHeight</code>, <code>outerWidth/outerHeight</code>, <code>devicePixelRatio</code> and <code>visualViewport</code>.',
+    simple: 'The size of your browser window and how much it is zoomed.',
+    how: 'Pages see the size of the window, how much space the toolbars take, and your zoom level. These change whenever you resize the window, so they only link visits that happen close together.',
     technical: '<code>outer − inner</code> approximates toolbar, sidebar and bookmark-bar sizes. <code>devicePixelRatio</code> combines HiDPI scaling and page zoom. <code>visualViewport.scale</code> reflects pinch zoom. <strong>These values change whenever you resize the window or toggle browser UI</strong>, so they are excluded from the default profile.',
     exposes: 'Window and viewport size, browser chrome size, zoom/pixel ratio.', dataType: 'object', apis: ['window.innerWidth', 'window.outerWidth', 'window.devicePixelRatio', 'VisualViewport'],
     purpose: ['identification', 'bot-detection'], relevance: 'low', relevanceBasis: 'Highly variable between sessions; useful short-term only.',
@@ -48,8 +48,8 @@ export default [
 
   define({
     id: 'orientation', version: '1.0.0', category: 'screen', name: 'Screen orientation',
-    simple: 'Whether your screen is in portrait or landscape and its natural orientation.',
-    how: 'Reads <code>screen.orientation.type</code> and <code>angle</code>.',
+    simple: 'Whether your screen is held upright (portrait) or sideways (landscape).',
+    how: 'Pages can read the screen orientation and its angle. Desktops report landscape; phones and rotated monitors differ.',
     technical: 'Desktops report landscape-primary at angle 0. Rotated monitors and mobile devices differ. Mostly a device-class signal.',
     exposes: 'Orientation type and angle.', dataType: 'object', apis: ['ScreenOrientation'],
     purpose: ['compatibility', 'identification'], relevance: 'low', relevanceBasis: 'Few values.', stability: 'semi-stable',
@@ -64,8 +64,8 @@ export default [
 
   define({
     id: 'display-media', version: '1.0.0', category: 'screen', name: 'Display media features',
-    simple: 'What your display can do: wide color, HDR, pointer type, hover.',
-    how: 'Evaluates CSS media queries <code>color-gamut</code>, <code>dynamic-range</code>, <code>pointer</code>, <code>any-pointer</code>, <code>hover</code> and <code>monochrome</code> via <code>matchMedia()</code>.',
+    simple: 'What your screen can do: extra-vivid colours, HDR, and what kind of pointer you use.',
+    how: 'Pages can ask your screen a few questions: does it show a wider range of colours, does it support HDR, is the main pointer a mouse or a finger, can it hover? Websites can even ask these without JavaScript.',
     technical: 'A P3/HDR display with fine pointer and hover is typical of recent Macs; coarse pointer without hover is typical of phones. These queries also work in pure CSS, so <strong>JavaScript is not required</strong>: a stylesheet can request different URLs per match.',
     exposes: 'Display gamut, HDR, input modality.', dataType: 'object', apis: ['window.matchMedia'],
     purpose: ['identification', 'compatibility'], relevance: 'low', relevanceBasis: 'Few distinct combinations; correlates with device class.', stability: 'stable',

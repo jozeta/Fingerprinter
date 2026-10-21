@@ -1,8 +1,8 @@
 // Versions, enumerations and shared vocabulary. Bump TEST_CATALOGUE_VERSION when test definitions change.
 export const APP_NAME = 'Browser Fingerprinting & Privacy Lab';
-export const APP_VERSION = '2.0.0';
+export const APP_VERSION = '2.2.0';
 export const RESULT_SCHEMA_VERSION = '1.0';
-export const TEST_CATALOGUE_VERSION = '2026.10.19-2';
+export const TEST_CATALOGUE_VERSION = '2026.10.21';
 export const EXPORT_FORMAT = 'fp-lab-export';
 
 export const STATUSES = {
