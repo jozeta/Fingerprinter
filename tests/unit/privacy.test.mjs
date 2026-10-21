@@ -56,6 +56,11 @@ test('served file names avoid content-blocker filter patterns', () => {
   for (const f of served) assert.doesNotMatch(f, /fingerprint|track|analytic|telemetry|beacon|pixel|metric|banner|\bads?\b|adserv|collect/i, f);
 });
 
+test('the clipboard is only ever written on a click, never read', () => {
+  for (const f of jsFiles) assert.doesNotMatch(read(f), /clipboard\.read|readText\(|execCommand\(['"]paste/, f);
+  assert.match(read(path.join(root, 'js/core/util.js')), /clipboard\?\.writeText/);
+});
+
 test('behavioral listeners exist only in the Learning Center lab widgets', () => {
   for (const f of jsFiles) {
     const src = read(f);

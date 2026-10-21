@@ -26,6 +26,9 @@ js/analysis/
   recommendations.js       Measured-result-driven, browser-aware mitigation engine
   filters.js               Composable filters, search and sorting (shared by all views)
   report.js                JSON exports, import validation, printable reports
+  result-code.js           Result codes: FPLAB1. + base64url(deflate-raw(JSON)), redaction, size-limited decoding
+  side-by-side.js          Field-level comparison of the current run with a pasted result code
+  interpret.js             Plain-language meaning of actual result values, per check
 js/adapters/server-adapter.js   Optional server adapter interface (disabled; null implementation)
 js/ui/*.js                 One module per view, plus charts.js (SVG charts, ridge figure), icons.js (custom icon set),
                            illustrations.js (lesson diagrams) and detail.js (technique panel)

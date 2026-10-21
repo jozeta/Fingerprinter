@@ -10,6 +10,7 @@ import { STATUSES } from '../core/constants.js';
 const label = (st) => (st ? STATUSES[st]?.label || st : '—');
 import { barChart } from './charts.js';
 import { printReport } from './print.js';
+import { codeSectionHTML, bindCodeSection } from './code-compare.js';
 
 const pick = { a: '', b: 'current' };
 
@@ -42,7 +43,9 @@ export async function render(view, app) {
 
   const root = mount(view, `
     <h1 class="page-title">Fingerprint comparison</h1>
-    <p class="lead-muted">Compare two local result profiles: this run against an earlier one, a privacy-hardened setting, another browser profile, or another browser (export a snapshot there, import it here). Snapshots contain statuses and per-signal digests only, never raw values.</p>
+    <p class="lead-muted">See what changes between two setups: before and after changing a setting, or between two computers or browsers. Copy a result code, keep it, then paste it here later.</p>
+    ${codeSectionHTML(app)}
+    <div class="section-head"><h2>Saved snapshots in this browser</h2><span class="small text-muted">Digests only, for quick before/after checks</span></div>
     <div class="row g-3 mb-3">
       <div class="col-lg-6"><section class="panel h-100"><div class="panel-title">Save or export the current run</div>
         ${current ? `<label class="form-label small" for="snap-label">Label</label><input id="snap-label" class="form-control form-control-sm mb-2" value="My browser, default settings" maxlength="80">
@@ -73,6 +76,7 @@ export async function render(view, app) {
       ${barChart(stab.filter((s) => s.distinct > 1).map((s) => ({ label: name(s.testId), value: s.distinct, note: `of ${s.observations}` })).slice(0, 20), { title: 'Distinct values per signal', desc: 'Signals that took more than one distinct value across the available snapshots. 1 distinct value = stable across these runs.' })}
       <p class="small text-muted mb-0">${stab.filter((s) => s.distinct === 1).length} signals had a single value across all snapshots (stable in this sample).</p></section>` : ''}` : (current ? emptyState('Save this run or import a snapshot to compare. Tip: save now, then change a privacy setting, run again and compare.') : '')}`);
 
+  bindCodeSection(root, app, () => render(view, app));
   root.querySelector('[data-save]')?.addEventListener('click', () => {
     const label = root.querySelector('#snap-label').value.trim() || 'Snapshot';
     saveSnapshot({ ...current, id: `s${Date.now()}`, label, source: 'saved' });

@@ -18,10 +18,10 @@ An educational, defensive privacy lab that runs real browser-fingerprinting tech
   - **Storage, permissions and APIs.**
   - **Cross-signal consistency and automation detection.**
   - **Server-side techniques** (TLS JA3/JA4, HTTP/2, IP, script-less CSS), explained but not measured.
-- **Clear results:** each check is marked *Revealed*, *Estimated*, *Blocked*, *Unavailable* or *Server-only*. It shows what your browser actually returned, how the technique works, who uses it, and how to protect yourself.
+- **Clear results:** each check is marked *Revealed*, *Estimated*, *Blocked*, *Unavailable* or *Server-only*. Expand any result to see your actual data, a plain-language explanation of what *your* value means, why it matters, and how to hide or blur it.
 - **Companies & adversaries:** a versioned catalogue (FingerprintJS, Google, Meta, Cloudflare, DataDome, Akamai, EFF, Tor Project, Brave, Mozilla, Apple, researchers and adversary categories). Every link to a technique carries an evidence level from *L1 Confirmed* to *L5 Unverified*, plus sources.
 - **Signal explorer:** choose which signals form your local fingerprint, watch the SHA-256 digest change, and see how signals connect.
-- **Comparison:** save a snapshot, change a setting or switch browsers, then compare what changed, what got blocked and what is randomised.
+- **Result codes & side-by-side comparison:** after a run, copy one line of text (`FPLAB1.…`) that holds the entire result. Change a setting or move to another computer, run again, paste the old code, and get a detailed side-by-side table with every difference highlighted and an "only differences" filter. Codes are compressed and base64url-encoded. A *full* code includes the actual values; a *compact* code only fingerprints of them. Local IP addresses are never included.
 - **Privacy assessment:** a rule-based rating with documented rules and a confidence level. It is explicitly not a security score.
 - **Learning center:** illustrated lessons and hands-on exercises, such as "Does clearing cookies change your fingerprint?"
 - **Reports:** JSON exports (raw data excluded by default) and a printable report (print to PDF).
@@ -34,6 +34,9 @@ An educational, defensive privacy lab that runs real browser-fingerprinting tech
 | **Fingerprint tests**: search, filter and see what each check returned | **Technique detail**: plain-language explanation, your actual result, evidence and how to protect yourself |
 | ![Learning center with illustrated lessons](docs/images/learning.png) | ![Companies and adversaries catalogue with evidence levels](docs/images/companies.png) |
 | **Learning center**: illustrated lessons and hands-on exercises | **Companies & adversaries**: documented use, each link with an evidence level and sources |
+
+![Side-by-side comparison of two setups using a pasted result code](docs/images/compare-codes.png)
+*Comparing two setups with a result code: rows and individual values that differ are highlighted.*
 
 ![Dark mode overview](docs/images/overview-dark.png)
 *Dark mode, with its own colour steps tuned for the dark background.*

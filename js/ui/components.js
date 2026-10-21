@@ -53,4 +53,23 @@ export function mount(view, html) {
   return root;
 }
 
-export const emptyState =(msg, action = '') => `<div class="panel text-center py-4"><p class="mb-2 text-muted">${msg}</p>${action}</div>`;
+export const emptyState = (msg, action = '') => `<div class="panel text-center py-4"><p class="mb-2 text-muted">${msg}</p>${action}</div>`;
+
+/**
+ * "Your data and what it means": the actual values, a plain-language interpretation, why it matters,
+ * and how to hide or blur it. Used in the test list and the detail panel.
+ */
+export function explainBlock(def, result, interpretation) {
+  const hide = [...def.mitigations];
+  return `<div class="explain-body">
+    <div class="explain-grid">
+      <div><h4>Your data</h4>${result?.image ? `<img class="render-preview mb-2" src="${esc(result.image)}" alt="Image your browser rendered for this check">` : ''}${kvTable(result?.rawResult ?? null)}</div>
+      <div>
+        <h4>What this means</h4><p>${esc(interpretation || def.simple)}</p>
+        <h4>Why it matters</h4><p>${esc(def.privacyImpact)} <span class="text-muted">How identifying: ${esc(def.relevance)}. ${esc(def.relevanceBasis)}</span></p>
+        <h4>How to hide or blur it</h4><ul>${hide.map((m) => `<li>${esc(m)}</li>`).join('')}</ul>
+        <p class="small text-muted mb-0">Browsers that already help: ${esc(def.defenses)}</p>
+      </div>
+    </div>
+  </div>`;
+}

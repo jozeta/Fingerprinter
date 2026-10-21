@@ -5,6 +5,8 @@ import { STATUSES, CATEGORIES } from '../core/constants.js';
 import { statusChip, mount } from './components.js';
 import { stackedBars, countMatrix, ridgeFigure, segmentOf, statusLegend, firstTime } from './charts.js';
 import { assess } from '../analysis/assessment.js';
+import { copyFullCode } from './code-compare.js';
+import { announce } from '../core/util.js';
 
 const VALUE = new Set(['measured', 'inferred']);
 const LEVEL_TEXT = { low: 'Low', moderate: 'Moderate', elevated: 'Elevated', indeterminate: 'Not enough data' };
@@ -72,6 +74,11 @@ export function render(view, app) {
     .filter((x, i, arr) => arr.findIndex((y) => [y.a.id, y.b.id].sort().join() === [x.a.id, x.b.id].sort().join()) === i); // each pair once
 
   const root = mount(view, `${hero}
+  <section class="panel mb-2 mt-3 d-flex flex-wrap gap-3 align-items-center justify-content-between">
+    <div><div class="panel-title">Save this result to compare later</div><div class="panel-sub mb-0">Copy one line of text that holds the whole result. Paste it on the Comparison page after changing settings, or on another computer.</div></div>
+    <div class="d-flex gap-2 align-items-center"><button class="btn btn-primary btn-sm" data-copy-code>Copy result code</button><a class="btn btn-outline-secondary btn-sm" href="#/compare">Compare</a></div>
+    <div class="small text-muted w-100" id="copy-status" role="status">The code includes your actual values (not your IP address). Only share it with people you trust.</div>
+  </section>
   <div class="section-head"><h2>Results by category</h2><a href="#/tests" class="small">Open the full list</a></div>
   <div class="row g-4">
     <div class="col-xl-8"><section class="panel h-100">
@@ -106,6 +113,12 @@ export function render(view, app) {
     <li>"Blocked" or "unavailable" means unknown, not pass or fail.</li>
   </ul>`);
 
+  root.querySelector('[data-copy-code]')?.addEventListener('click', async (e) => {
+    e.target.disabled = true;
+    const r = await copyFullCode(app);
+    const msg = r.ok ? `Copied (${r.length.toLocaleString()} characters). Paste it somewhere safe, then use it on the Comparison page.` : 'Could not copy automatically. Open the Comparison page to select and copy the code.';
+    root.querySelector('#copy-status').textContent = msg; announce(msg); e.target.disabled = false;
+  });
   root.querySelectorAll('[data-status-link]').forEach((el) => el.addEventListener('click', () => { app.filter.statuses = [el.dataset.statusLink]; }));
   if (firstTime('kpis')) countUp(root);
 }

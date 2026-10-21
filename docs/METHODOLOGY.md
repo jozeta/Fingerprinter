@@ -58,6 +58,10 @@ Snapshots store, per test, `{ status, protection, testVersion, digest(normalized
 
 A changed fingerprint is **not** treated as improved privacy. Randomization and inconsistent measurements are reported separately.
 
+### Result codes
+
+A result code holds, per check: `[status, protection, testVersion, digest, value?]`. The digest is SHA-256 (first 20 hex characters) of the canonical normalized value, so two codes can be compared even when one is compact (digest only). The side-by-side view classifies each check as same, different, randomised, now blocked, now readable, result type changed, only in one result, or cannot compare (different major test version). Field-level highlighting compares the raw values one level deep; for lists such as fonts it shows which items exist only on one side. Checks marked volatile (window size, timing, battery) are hidden by default because they change on their own.
+
 ## 4. Privacy assessment
 
 The assessment is qualitative and separate from security severity. The rules are implemented in `js/analysis/assessment.js` and shown verbatim in the app:

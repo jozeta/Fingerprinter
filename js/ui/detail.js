@@ -3,6 +3,7 @@ import { esc } from '../core/util.js';
 import { getTest } from '../core/registry.js';
 import { MATURITY, STABILITY, CONFIDENCE, PROTECTION, PURPOSES } from '../core/constants.js';
 import { statusChip, protectionChip, evidenceChip, relevanceChip, categoryLabel, kvTable, rawView, sourceLink, relationLabel } from './components.js';
+import { interpret } from '../analysis/interpret.js';
 
 const CONCERN = {
   privacy: 'Privacy consideration: the value can contribute to identification. It is not a security vulnerability.',
@@ -37,6 +38,7 @@ function renderBody(app, d, body) {
     ${sec(2, 'How it works', `<p>${d.how}</p>`)}
     ${sec(3, 'What the browser exposes', `<p class="mb-1">${esc(d.exposes)}</p><p class="small text-muted mb-0">APIs: ${d.apis.map((a) => `<code>${esc(a)}</code>`).join(', ') || 'none (derived)'} · Data type: ${esc(d.dataType)} · Purposes: ${d.purpose.map((p) => esc(PURPOSES[p])).join(', ')}</p>`)}
     ${sec(4, 'Your result', r ? `
+      <div class="lead-meaning"><strong>What this means:</strong> ${esc(interpret(d, r))}</div>
       <p class="mb-2">${statusChip(r.executionStatus)} <span class="small text-muted">at ${esc(new Date(r.executionTimestamp).toLocaleTimeString())} · ${esc(r.executionDuration)} ms · confidence <strong>${esc(r.confidence)}</strong> (${esc(CONFIDENCE[r.confidence])})</span></p>
       ${r.image ? `<img class="render-preview mb-2" src="${esc(r.image)}" alt="Rendering produced by this test in your browser">` : ''}
       ${kvTable(r.rawResult)}

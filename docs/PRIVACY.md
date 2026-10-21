@@ -26,6 +26,14 @@ Browser characteristics are read by the tests you start (see the in-app catalogu
 
 No hidden visitor identifier is created, and nothing is "respawned" if you clear storage.
 
+## Result codes
+
+A result code is created only when you click **Copy result code**. It is written to your clipboard; the app never reads your clipboard. You paste old codes into a text box yourself.
+- A **full** code contains the actual values of your results (e.g. screen size, graphics chip, fonts, languages, time zone) so comparisons can show them. Anyone you give the code to can read these values.
+- A **compact** code contains only fingerprints (hashes) of the values.
+- Local IP addresses from the WebRTC check are never included, in either kind.
+- Pasted codes are decoded on the page as data only: size-limited (including a decompression limit), schema-validated, never executed, and never sent anywhere.
+
 ## Exports
 
 JSON and printable reports are generated in your browser and downloaded by you. Raw values (e.g. exact GPU model, fonts, local IPs) are **excluded** unless you enable "Include raw data". Nothing is uploaded automatically.

@@ -87,6 +87,22 @@ await evaluate(`location.hash = '#/compare'`); await sleep(900);
 await evaluate(`document.querySelector('[data-save]').click()`); await sleep(1200);
 console.log('COMPARE classes:', await evaluate(`[...document.querySelectorAll('main tbody td.fw-semibold')].map(t => t.textContent).reduce((a,c)=>(a[c]=(a[c]||0)+1,a),{})`));
 await shot('compare-after-save');
+// Result code: create, paste back, compare. Same browser and session ⇒ no differences except self-changing checks.
+await evaluate(`document.querySelector('[data-code="full"]').click()`); await sleep(1500);
+const codeLen = await evaluate(`document.querySelector('#rc-out')?.value.length || 0`);
+console.log('RESULT CODE length:', codeLen, '| starts with FPLAB1.:', await evaluate(`document.querySelector('#rc-out')?.value.startsWith('FPLAB1.')`));
+await evaluate(`document.querySelector('#rc-in').value = document.querySelector('#rc-out').value; document.querySelector('[data-code="compare"]').click()`); await sleep(1800);
+console.log('CODE COMPARE (same run):', await evaluate(`document.querySelector('#sbs-root .fs-4')?.textContent`));
+await evaluate(`document.querySelector('#sbs-diff').click()`); await sleep(400);
+console.log('CODE COMPARE rows with "Only differences" off:', await evaluate(`document.querySelectorAll('#sbs-table tbody tr').length`));
+await shot('code-compare');
+// Bad code is rejected with a message, not a crash.
+await evaluate(`document.querySelector('#rc-in').value = 'not a code'; document.querySelector('[data-code="compare"]').click()`); await sleep(500);
+console.log('BAD CODE message:', await evaluate(`document.querySelector('#pc-msg').textContent`));
+// Explanation toggle in the test list.
+await evaluate(`location.hash = '#/tests'`); await sleep(900);
+await evaluate(`const d = document.querySelector('details[data-explain="canvas-2d"]'); d.open = true;`); await sleep(500);
+console.log('EXPLAIN block sections:', await evaluate(`document.querySelectorAll('details[data-explain="canvas-2d"] .explain-body h4').length`), '|', await evaluate(`document.querySelector('details[data-explain="canvas-2d"] .explain-body p')?.textContent.slice(0, 70)`));
 await evaluate(`location.hash = '#/settings'`); await sleep(500);
 await evaluate(`document.querySelector('#th-dark').click()`); await sleep(300);
 await evaluate(`location.hash = '#/overview'`); await sleep(700);
