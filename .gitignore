@@ -14,3 +14,13 @@ Thumbs.db
 node_modules/
 coverage/
 *.log
+
+# --- Baseline: macOS, Claude Code and secrets ---
+._*
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
