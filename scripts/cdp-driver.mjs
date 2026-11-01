@@ -149,7 +149,10 @@ console.log('UI cross-origin requests:', JSON.stringify(foreign));
 console.log('UI console errors/exceptions:', logs.length ? `\n  ${logs.join('\n  ')}` : 'none');
 failures += logs.filter((l) => l.startsWith('EXCEPTION')).length + (foreign.length ? 1 : 0) + (finished ? 0 : 1) + (d1 !== d2 ? 0 : 1);
 
-ws.close(); proc.kill();
-fs.rmSync(profile, { recursive: true, force: true });
+ws.close();
+// Wait for the browser to exit before deleting its profile: on Linux it can still be writing to
+// the profile right after kill(), which made rmSync fail with ENOTEMPTY. Retries cover the rest.
+await new Promise((resolve) => { proc.once('exit', resolve); proc.kill(); setTimeout(resolve, 5000); });
+fs.rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
 console.log(failures ? `FAILURES: ${failures}` : 'ALL CHECKS PASSED');
 process.exit(failures ? 1 : 0);
