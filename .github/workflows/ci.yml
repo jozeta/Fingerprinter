@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Unit tests
+        run: npm test
+      - name: Browser integration suite and UI walkthrough
+        run: |
+          python3 scripts/serve.py 8765 &
+          sleep 2
+          BROWSER="$(command -v google-chrome || command -v chromium)" npm run test:browser
