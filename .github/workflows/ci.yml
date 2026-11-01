@@ -18,7 +18,8 @@ jobs:
         with:
           node-version: 22
       - name: Unit tests
-        run: npm test
+        # Explicit file list: Node 22 doesn't accept a directory argument for --test.
+        run: node --test tests/unit/*.test.mjs
       - name: Browser integration suite and UI walkthrough
         run: |
           python3 scripts/serve.py 8765 &
