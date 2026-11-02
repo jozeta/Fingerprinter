@@ -151,8 +151,14 @@ failures += logs.filter((l) => l.startsWith('EXCEPTION')).length + (foreign.leng
 
 ws.close();
 // Wait for the browser to exit before deleting its profile: on Linux it can still be writing to
-// the profile right after kill(), which made rmSync fail with ENOTEMPTY. Retries cover the rest.
+// the profile right after kill(), which made rmSync fail with ENOTEMPTY. Its helper processes
+// (renderer, crashpad) can outlive the main process and keep writing for a moment, so cleanup is
+// best-effort: a leftover temp folder is not a test failure.
 await new Promise((resolve) => { proc.once('exit', resolve); proc.kill(); setTimeout(resolve, 5000); });
-fs.rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+try {
+  fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 });
+} catch (e) {
+  console.warn(`warning: could not remove temp profile ${profile}: ${e.code || e.message}`);
+}
 console.log(failures ? `FAILURES: ${failures}` : 'ALL CHECKS PASSED');
 process.exit(failures ? 1 : 0);
