@@ -36,7 +36,7 @@ export function render(view, app) {
           <li><strong>No other requests.</strong> No analytics, no advertising, no CDN, no IP lookup, no STUN/TURN servers. The WebRTC check uses no ICE servers.</li>
           <li>The optional server adapter is disabled and ships as a null implementation (see <code>docs/SERVER-ADAPTER.md</code>).</li>
           <li>Enforced by a Content Security Policy: <code>default-src 'self'; connect-src 'self'</code>.</li></ul></section>
-        <section class="panel"><h2 class="h6">Data handling</h2><ul class="small mb-0"><li>Results live in memory and vanish when the tab closes.</li><li>localStorage is used only for settings (when "remember settings" is on) and snapshots you save; both are under <code>fplab:</code> and removable in Settings.</li><li>The storage test writes and immediately deletes one probe value per mechanism.</li><li>Exports are generated locally and exclude raw values unless you choose to include them.</li></ul></section>
+        <section class="panel"><h2 class="h6">Data handling</h2><ul class="small mb-0"><li>Results live in memory and vanish when the tab closes.</li><li>localStorage is used only for settings (when "remember settings" is on) and result codes you save; both are under <code>fplab:</code> and removable in Settings.</li><li>The storage test writes and immediately deletes one probe value per mechanism.</li><li>Exports are generated locally and exclude raw values unless you choose to include them.</li></ul></section>
       </div>
     </div>
     <section class="panel mt-3"><h2 class="h6">Source registry (${src.length})</h2>

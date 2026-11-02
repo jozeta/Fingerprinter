@@ -1,6 +1,7 @@
-// Opt-in local persistence. Only settings (when "remember settings" is on) and snapshots the user saves explicitly.
+// Opt-in local persistence. Only settings (when "remember settings" is on) and result codes the user saves explicitly.
 const NS = 'fplab:';
-const KEYS = { settings: `${NS}settings`, snapshots: `${NS}snapshots` };
+const KEYS = { settings: `${NS}settings`, codes: `${NS}codes` };
+const MAX_CODES = 10;
 
 export const DEFAULT_SETTINGS = {
   remember: false, theme: 'system', repeat: 3, timeoutMs: 5000, includeAdvanced: true, exportRaw: false,
@@ -25,13 +26,17 @@ export function saveSettings(settings) {
   return false;
 }
 
-export const listSnapshots = () => read(KEYS.snapshots, []);
-export function saveSnapshot(snapshot) {
-  const list = listSnapshots().filter((s) => s.id !== snapshot.id);
-  list.push(snapshot);
-  return write(KEYS.snapshots, list.slice(-20));
+/** Saved result codes: [{ id, label, savedAt, code }]. Malformed entries are dropped on read; codes are decoded and validated when used. */
+export const listCodes = () => {
+  const list = read(KEYS.codes, []);
+  return Array.isArray(list) ? list.filter((c) => c && typeof c.code === 'string' && typeof c.label === 'string' && typeof c.id === 'string').slice(-MAX_CODES) : [];
+};
+export function saveCode(label, code) {
+  const list = listCodes();
+  list.push({ id: `c${Date.now()}`, label: String(label).slice(0, 80) || 'Saved result', savedAt: new Date().toISOString(), code });
+  return write(KEYS.codes, list.slice(-MAX_CODES));
 }
-export const deleteSnapshot = (id) => write(KEYS.snapshots, listSnapshots().filter((s) => s.id !== id));
+export const deleteCode = (id) => write(KEYS.codes, listCodes().filter((c) => c.id !== id));
 
 /** Remove every key this app ever wrote. */
 export function clearAll() {

@@ -4,6 +4,9 @@ import { CATEGORIES } from '../core/constants.js';
 import { encodeResultCode, decodeResultCode, buildPayload } from '../analysis/result-code.js';
 import { compareResults, KINDS, isDifference } from '../analysis/side-by-side.js';
 import { statusChip } from './components.js';
+import { listCodes, saveCode, deleteCode } from '../core/store.js';
+import { meta as exportMeta } from '../analysis/report.js';
+import { printReport } from './print.js';
 
 const state = { code: '', full: true, pasted: null, pastedText: '', onlyDiff: true, hideVolatile: true, q: '', cat: '' };
 
@@ -40,7 +43,7 @@ function table(app, cmp) {
 
 export function codeSectionHTML(app) {
   const ran = Object.keys(app.results).length > 0;
-  const p = state.pasted;
+  const p = state.pasted, saved = listCodes();
   return `
   <section class="panel mb-4" aria-labelledby="rc-h">
     <h2 class="h5" id="rc-h">Save this result as a code</h2>
@@ -52,17 +55,24 @@ export function codeSectionHTML(app) {
       </div>
       <p class="small text-muted mb-2"><strong>Full</strong> includes your actual values (screen, graphics chip, fonts, languages, time zone…) so the comparison can show them side by side. Anyone you share it with can read them. <strong>Compact</strong> contains only fingerprints of the values: it shows <em>whether</em> something changed, not what. Local IP addresses are never included.</p>
       ${state.code ? `<label class="visually-hidden" for="rc-out">Your result code</label><textarea id="rc-out" class="form-control code-box" rows="3" readonly>${esc(state.code)}</textarea>
-        <div class="small text-muted mt-1" role="status" id="rc-status">${state.full ? 'Full' : 'Compact'} code, ${state.code.length.toLocaleString()} characters.</div>` : '<div class="small" role="status" id="rc-status"></div>'}`
+        <div class="small text-muted mt-1" role="status" id="rc-status">${state.full ? 'Full' : 'Compact'} code, ${state.code.length.toLocaleString()} characters.</div>` : '<div class="small" role="status" id="rc-status"></div>'}
+      <div class="d-flex flex-wrap gap-2 align-items-end mt-3">
+        <div><label class="form-label small mb-1" for="rc-label">Save in this browser as</label><input id="rc-label" class="form-control form-control-sm" style="min-width:240px" maxlength="80" value="My browser, ${esc(new Date().toLocaleDateString())}"></div>
+        <button class="btn btn-outline-secondary btn-sm" data-code="save">Save full code here</button>
+      </div>
+      <p class="small text-muted mt-1 mb-0">Saved codes stay in this browser (up to ${10}) until you delete them or use Settings → Clear all local data.</p>`
       : '<p class="mb-0"><button class="btn btn-primary btn-sm" data-action="run">Run the checks</button> <span class="small text-muted">to create a result code.</span></p>'}
   </section>
 
   <section class="panel mb-4" aria-labelledby="pc-h">
     <h2 class="h5" id="pc-h">Compare with an earlier result</h2>
-    <p class="small text-muted">Paste a result code you saved before. It is read as plain data on this page and never sent anywhere.</p>
+    <p class="small text-muted">Paste a result code, load a saved .txt file, or pick one you saved in this browser. It is read as plain data on this page and never sent anywhere.</p>
+    ${saved.length ? `<ul class="saved-codes mb-3">${saved.slice().reverse().map((c) => `<li><span><strong>${esc(c.label)}</strong> <span class="text-muted small">${esc(new Date(c.savedAt).toLocaleString())}</span></span><span class="d-flex gap-1"><button class="btn btn-sm btn-outline-primary" data-use="${esc(c.id)}" ${ran ? '' : 'disabled'}>Compare</button><button class="btn btn-sm btn-link text-danger" data-del="${esc(c.id)}" aria-label="Delete ${esc(c.label)}">Delete</button></span></li>`).join('')}</ul>` : ''}
     <label class="visually-hidden" for="rc-in">Paste a result code</label>
     <textarea id="rc-in" class="form-control code-box mb-2" rows="3" placeholder="FPLAB1.…">${esc(state.pastedText)}</textarea>
     <div class="d-flex flex-wrap gap-2 align-items-center">
       <button class="btn btn-primary btn-sm" data-code="compare" ${ran ? '' : 'disabled'}>Compare with this run</button>
+      <label class="btn btn-outline-secondary btn-sm mb-0" for="rc-file">Load from file</label><input id="rc-file" type="file" accept=".txt,text/plain" class="visually-hidden" aria-label="Load a result code from a text file">
       ${p ? '<button class="btn btn-link btn-sm" data-code="clear">Clear</button>' : ''}
       ${ran ? '' : '<span class="small text-muted">Run the checks first, then compare.</span>'}
     </div>
@@ -93,8 +103,14 @@ async function renderComparison(root, app) {
       <select class="form-select form-select-sm" style="width:auto" id="sbs-cat" aria-label="Category"><option value="">All categories</option>${Object.entries(CATEGORIES).map(([k, c]) => `<option value="${k}" ${state.cat === k ? 'selected' : ''}>${esc(c.label)}</option>`).join('')}</select>
     </div>
     <div id="sbs-table">${table(app, cmp)}</div>
+    <div class="d-flex flex-wrap gap-2 mt-2"><button class="btn btn-sm btn-outline-secondary" data-cmp="print">Print / PDF comparison</button><button class="btn btn-sm btn-outline-secondary" data-cmp="json">Export comparison JSON</button></div>
     <p class="small text-muted mt-2 mb-0">Highlighted rows differ; highlighted fields show exactly which values changed. "Scrambled on purpose" means a browser protection changes the value every time. A difference does not automatically mean better privacy.</p>`;
   const redraw = () => { host.querySelector('#sbs-table').innerHTML = table(app, cmp); };
+  // Report shape shared with the printable report: counts and rows with plain-language result labels.
+  const forReport = () => ({ counts: Object.fromEntries(Object.entries(visibleCounts).map(([k, n]) => [KINDS[k], n])),
+    rows: considered.map((r) => ({ testId: r.def?.name || r.id, a: r.now ? { status: r.now[0] } : null, b: r.then ? { status: r.then[0] } : null, class: KINDS[r.kind] })) });
+  host.querySelector('[data-cmp="print"]').addEventListener('click', () => printReport(app, { title: 'Comparison report: this run vs pasted result', comparison: forReport() }));
+  host.querySelector('[data-cmp="json"]').addEventListener('click', () => download('fingerprint-comparison.json', JSON.stringify({ ...exportMeta(app.catalogue.catalogueVersion), kind: 'comparison', pastedFrom: meta.at, ...forReport() }, null, 2)));
   host.querySelector('#sbs-diff').addEventListener('change', (e) => { state.onlyDiff = e.target.checked; redraw(); });
   host.querySelector('#sbs-vol').addEventListener('change', (e) => { state.hideVolatile = e.target.checked; renderComparison(root, app); });
   host.querySelector('#sbs-q').addEventListener('input', (e) => { state.q = e.target.value; redraw(); });
@@ -116,16 +132,31 @@ export function bindCodeSection(root, app, rerender) {
     }
     if (what === 'download') download(`fingerprint-result-${new Date().toISOString().slice(0, 10)}.txt`, state.code, 'text/plain');
     if (what === 'clear') { state.pasted = null; state.pastedText = ''; rerender(); }
-    if (what === 'compare') {
-      const text = root.querySelector('#rc-in').value;
-      const res = await decodeResultCode(text);
-      const msg = root.querySelector('#pc-msg');
-      if (!res.ok) { msg.innerHTML = `<span class="text-danger">${esc(res.problems[0])}</span>${res.problems.length > 1 ? ` <span class="text-muted">(${res.problems.length - 1} more problem(s))</span>` : ''}`; return; }
-      state.pasted = res.data; state.pastedText = text.trim();
+    if (what === 'compare') await compareText(root.querySelector('#rc-in').value);
+    if (what === 'save') {
+      const code = state.full && state.code ? state.code : await encodeResultCode(app.results, { includeValues: true });
+      const ok = saveCode(root.querySelector('#rc-label').value.trim(), code);
       rerender();
-      announce('Comparison ready.');
+      status(ok ? 'Saved in this browser. Compare with it after your next change.' : 'Could not save (storage is full or disabled).');
     }
   }));
+  async function compareText(text) {
+    const res = await decodeResultCode(text);
+    const msg = root.querySelector('#pc-msg');
+    if (!res.ok) { msg.innerHTML = `<span class="text-danger">${esc(res.problems[0])}</span>${res.problems.length > 1 ? ` <span class="text-muted">(${res.problems.length - 1} more problem(s))</span>` : ''}`; return; }
+    state.pasted = res.data; state.pastedText = String(text).trim();
+    rerender();
+    announce('Comparison ready.');
+  }
+  root.querySelectorAll('[data-use]').forEach((b) => b.addEventListener('click', () => { const c = listCodes().find((x) => x.id === b.dataset.use); if (c) compareText(c.code); }));
+  root.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', () => { deleteCode(b.dataset.del); rerender(); announce('Saved code deleted.'); }));
+  root.querySelector('#rc-file')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    if (file.size > 2_000_000) { root.querySelector('#pc-msg').textContent = 'That file is too large to be a result code.'; return; }
+    const text = await file.text();
+    root.querySelector('#rc-in').value = text.trim();
+    compareText(text);
+  });
   root.querySelector('#rc-out')?.addEventListener('focus', (e) => e.target.select());
   renderComparison(root, app);
 }

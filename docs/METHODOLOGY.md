@@ -60,17 +60,7 @@ Timestamps, durations, random values and raw data never enter the digest.
 
 ## 3. Comparison
 
-Snapshots store, per test, `{ status, protection, testVersion, digest(normalizedResult) }`. They contain no raw values. Each pair of entries is classified as:
-
-| Class | Rule |
-|---|---|
-| added / removed | present in only one snapshot |
-| inconclusive | either side is error, skipped, interaction-required or permission-required, or the major test version differs |
-| randomized | either side has protection `randomized` |
-| newly-blocked / newly-available | value ↔ `blocked` |
-| changed / unchanged | digest comparison (or status comparison when neither side has a value) |
-
-A changed fingerprint is **not** treated as improved privacy. Randomization and inconsistent measurements are reported separately.
+Comparisons use result codes (see below): the current run is turned into the same payload as a code and compared check by check with a pasted, loaded or saved code. A changed fingerprint is **not** treated as improved privacy; scrambled values and checks that change by themselves are reported separately.
 
 ### Result codes
 

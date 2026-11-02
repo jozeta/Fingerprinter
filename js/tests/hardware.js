@@ -115,7 +115,7 @@ export default [
     id: 'battery', version: '2.0.0', category: 'hardware', name: 'Battery API exposure (presence only)',
     simple: 'Whether your browser offers battery information. Your battery level is not read.',
     how: 'The lab only checks whether the battery feature exists. It does not ask for your battery level.',
-    technical: 'Olejnik et al. (2015) showed battery level plus discharge time can link visits across sites over short periods, which led Firefox and Safari to remove the API. Chromium still exposes it. Presence mostly reveals the engine family.',
+    technical: 'Olejnik et al. (2015) showed battery readings can be used to track web users over short time intervals, which led Firefox and Safari to remove the API. Chromium still exposes it. Presence mostly reveals the engine family.',
     exposes: 'API presence only.', dataType: 'boolean', apis: ['navigator.getBattery', 'BatteryManager'],
     purpose: ['identification', 'compatibility'], relevance: 'low', relevanceBasis: 'Presence correlates with the engine; state is not read.', stability: 'stable',
     privacyImpact: 'Low (presence only). The underlying API allows short-term linkage.', concern: 'limitation',

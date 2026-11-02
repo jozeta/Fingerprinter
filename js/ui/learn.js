@@ -87,7 +87,7 @@ export function render(view, app) {
     const d2 = (await buildProfile(stableDefs, after, selection)).digest.hex;
     out.innerHTML = `<p class="mb-1">Before: <code>${esc(d1.slice(0, 24))}…</code><br>After clearing storage: <code>${esc(d2.slice(0, 24))}…</code></p>
       <p class="mb-0 fw-semibold">${d1 === d2 ? 'Identical. Clearing storage did not change the fingerprint.' : 'Different. Some signal changed between measurements (e.g. randomization or a volatile value); open the Signal Explorer to see which.'}</p>
-      <p class="text-muted mb-0">Note: this cleared the lab's saved settings and snapshots, if you had any.</p>`;
+      <p class="text-muted mb-0">Note: this cleared the lab's saved settings and saved result codes, if you had any.</p>`;
     e.target.disabled = false;
   });
 

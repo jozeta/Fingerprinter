@@ -6,7 +6,7 @@ import { defs, results, FIXTURE_LABEL } from './fixtures.mjs';
 import { buildProfile, defaultSelection, ineligibleReason, leaveOneOut } from '../../js/analysis/profile.js';
 import { classify, compareSnapshots, snapshotFromResults, stabilityAcross } from '../../js/analysis/compare.js';
 import { matches, filterAndSort, emptyFilter, indexAssociations, bestEvidence, filterEntities } from '../../js/analysis/filters.js';
-import { exportResults, exportSnapshot, validateImport } from '../../js/analysis/report.js';
+import { exportResults } from '../../js/analysis/report.js';
 import { assess } from '../../js/analysis/assessment.js';
 import { recommend } from '../../js/analysis/recommendations.js';
 import { evidenceChip, statusChip } from '../../js/ui/components.js';
@@ -76,28 +76,12 @@ test('filters: compose (AND) and sort', () => {
   assert.ok(filterEntities(catalogue.entities, { type: 'Adversary category' }).every((e) => e.adversaryCategory));
 });
 
-test('export: raw data excluded by default; snapshot round-trips through import validation', async () => {
+test('export: raw data excluded by default and metadata present', () => {
   const ex = exportResults(results, { entityCatalogueVersion: 'x' });
   assert.equal(ex.includesRawData, false);
   assert.ok(!JSON.stringify(ex).includes('value-b'));
   assert.ok(JSON.stringify(exportResults(results, { includeRaw: true, entityCatalogueVersion: 'x' })).includes('value-b'));
   for (const k of ['appVersion', 'testCatalogueVersion', 'entityCatalogueVersion', 'generatedAt', 'browserContext']) assert.ok(k in ex);
-  const snap = exportSnapshot('t', await snapshotFromResults(results), 'ab'.repeat(32), 'x');
-  const v = validateImport(JSON.stringify(snap));
-  assert.equal(v.ok, true, v.problems.join(', '));
-  assert.equal(Object.keys(v.snapshot.entries).length, Object.keys(results).length);
-});
-
-test('import: rejects malformed, oversized and hostile input', () => {
-  assert.equal(validateImport('not json').ok, false);
-  assert.equal(validateImport('[]').ok, false);
-  assert.equal(validateImport('x'.repeat(2_000_001)).ok, false);
-  const bad = { format: 'fp-lab-export', kind: 'snapshot', resultSchemaVersion: '1.0', entries: { '<img src=x>': { status: 'measured', digest: null } } };
-  assert.equal(validateImport(JSON.stringify(bad)).ok, false);
-  const badStatus = { ...bad, entries: { ok: { status: 'pwned', digest: null } } };
-  assert.equal(validateImport(JSON.stringify(badStatus)).ok, false);
-  const proto = '{"format":"fp-lab-export","kind":"snapshot","resultSchemaVersion":"1.0","entries":{"__proto__":{"status":"measured","digest":null}}}';
-  assert.equal(validateImport(proto).ok, false);
 });
 
 test('assessment: qualitative levels follow documented rules; indeterminate when coverage is low', () => {

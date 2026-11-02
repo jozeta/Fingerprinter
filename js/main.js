@@ -27,7 +27,7 @@ export const app = {
   defs: [], sources: {}, catalogue: { entities: [] }, assocIndex: {}, integrityProblems: [],
   results: {}, settings: loadSettings(), running: false, abort: null, progress: null,
   selection: null, // Set of test ids in the fingerprint profile; null = default selection
-  lab: { pointer: [], keys: [] }, snapshots: [], filter: emptyFilter(), route: 'overview', current: null,
+  lab: { pointer: [], keys: [] }, filter: emptyFilter(), route: 'overview', current: null,
   listeners: new Set(),
   on(fn) { this.listeners.add(fn); return () => this.listeners.delete(fn); },
   emit(what) { this.listeners.forEach((fn) => fn(what)); },

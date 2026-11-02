@@ -1,5 +1,5 @@
 {
-  "catalogueVersion": "2026.10.21",
+  "catalogueVersion": "2026.11.02",
   "note": "dateChecked is set only for sources whose URL and cited claim were checked on that date. null = cited from prior knowledge and not re-verified; treat accordingly.",
   "sources": {
     "w3c-fp-guidance": {
@@ -7,56 +7,56 @@
       "publisher": "W3C",
       "url": "https://www.w3.org/TR/fingerprinting-guidance/",
       "type": "standard",
-      "dateChecked": null,
-      "supports": "Definitions of passive/active fingerprinting, entropy, and mitigation principles for spec authors."
+      "dateChecked": "2026-11-02",
+      "supports": "W3C Group Note (25 September 2025): defines passive fingerprinting (\"based on characteristics observable in the contents of Web requests\") and active fingerprinting (running JavaScript on the client), notes that 30-some bits of entropy suffice to identify every person, and gives mitigation principles for specification authors."
     },
     "mdn-client-hints": {
       "title": "HTTP Client hints",
       "publisher": "MDN",
       "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Client_hints",
       "type": "documentation",
-      "dateChecked": null,
-      "supports": "Client Hint request headers and the Accept-CH opt-in mechanism."
+      "dateChecked": "2026-11-02",
+      "supports": "Low-entropy Sec-CH-UA* headers are sent by default; servers request more hints with the Accept-CH response header."
     },
     "mdn-uach": {
       "title": "User-Agent Client Hints API",
       "publisher": "MDN",
       "url": "https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API",
       "type": "documentation",
-      "dateChecked": null,
-      "supports": "navigator.userAgentData low- and high-entropy values; browser support."
+      "dateChecked": "2026-11-02",
+      "supports": "Low-entropy hints are easily accessible; high-entropy hints are gated, and getHighEntropyValues() returns only brands, mobile and platform when not permitted."
     },
     "mdn-audiocontext": {
       "title": "AudioContext",
       "publisher": "MDN",
       "url": "https://developer.mozilla.org/en-US/docs/Web/API/AudioContext",
       "type": "documentation",
-      "dateChecked": null,
-      "supports": "Web Audio API processing graph used by the offline audio test."
+      "dateChecked": "2026-11-02",
+      "supports": "AudioContext represents an audio-processing graph built from linked AudioNode modules; OfflineAudioContext is the related offline variant."
     },
     "mdn-canvas": {
       "title": "Canvas API",
       "publisher": "MDN",
       "url": "https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API",
       "type": "documentation",
-      "dateChecked": null,
-      "supports": "2D canvas drawing and pixel read-back APIs."
+      "dateChecked": "2026-11-02",
+      "supports": "The Canvas API draws graphics via JavaScript and the <canvas> element, including pixel read-back."
     },
     "mdn-webgl-debug": {
       "title": "WEBGL_debug_renderer_info extension",
       "publisher": "MDN",
       "url": "https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_debug_renderer_info",
       "type": "documentation",
-      "dateChecked": null,
-      "supports": "Unmasked vendor/renderer strings and their privacy implications."
+      "dateChecked": "2026-11-02",
+      "supports": "UNMASKED_VENDOR_WEBGL and UNMASKED_RENDERER_WEBGL return the graphics driver's vendor and renderer strings; depending on privacy settings the extension may be restricted, and Firefox disables it under privacy.resistFingerprinting."
     },
     "eff-cyt": {
       "title": "Cover Your Tracks",
       "publisher": "Electronic Frontier Foundation",
       "url": "https://coveryourtracks.eff.org/",
       "type": "tool",
-      "dateChecked": null,
-      "supports": "Public fingerprinting test tool."
+      "dateChecked": "2026-11-02",
+      "supports": "EFF tool: \"Cover Your Tracks shows you how trackers see your browser.\""
     },
     "eff-cyt-about": {
       "title": "About Cover Your Tracks",
@@ -87,16 +87,16 @@
       "publisher": "Gómez-Boix, Laperdrix, Baudry",
       "url": "https://hal.inria.fr/hal-01718234",
       "type": "research paper",
-      "dateChecked": null,
-      "supports": "On ~2 million fingerprints from a large French site, only 33.6% were unique, far lower than self-selected datasets. Shows population bias in uniqueness claims."
+      "dateChecked": "2026-11-02",
+      "supports": "WWW 2018: of 2,067,942 browser fingerprints collected on one of the top 15 French websites, \"only 33.6% of fingerprints are unique by opposition to over 80% in previous studies\" (verified against an author-version PDF; the HAL page blocks automated readers)."
     },
     "acar-2014": {
       "title": "The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)",
       "publisher": "Acar et al.",
-      "url": "https://securehomes.esat.kuleuven.be/~gacar/persistent/the_web_never_forgets.pdf",
+      "url": "https://collaborate.princeton.edu/en/publications/the-web-never-forgets-persistent-tracking-mechanisms-in-the-wild/",
       "type": "research paper",
-      "dateChecked": "2026-10-19",
-      "supports": "First large-scale study of canvas fingerprinting (over 5% of top 100k sites), evercookies/respawning and cookie syncing. Press coverage attributes ~95% of canvas scripts to AddThis."
+      "dateChecked": "2026-11-02",
+      "supports": "ACM CCS 2014: canvas fingerprinting found on over 5% of the top 100,000 websites (first report in the wild); first automated study of evercookies and respawning; IndexedDB found as a new evercookie vector. Press coverage attributes ~95% of canvas scripts to AddThis. (The original KU Leuven PDF link is gone.)"
     },
     "englehardt-2016": {
       "title": "Online Tracking: A 1-million-site Measurement and Analysis (ACM CCS 2016)",
@@ -119,32 +119,32 @@
       "publisher": "Cao, Li, Wijmans",
       "url": "https://www.ndss-symposium.org/ndss2017/ndss-2017-programme/cross-browser-fingerprinting-os-and-hardware-level-features/",
       "type": "research paper",
-      "dateChecked": null,
-      "supports": "WebGL rendering tasks that identify devices across browsers."
+      "dateChecked": "2026-11-02",
+      "supports": "Asks browsers to perform tasks that rely on OS- and hardware-level functionality (including rendering) to identify devices within and across browsers on the same machine; reports identifying 99.24% of users."
     },
     "drawnapart-2022": {
       "title": "DRAWNAPART: A Device Identification Technique based on Remote GPU Fingerprinting (NDSS 2022)",
       "publisher": "Laor et al.",
       "url": "https://arxiv.org/abs/2201.09956",
       "type": "research paper",
-      "dateChecked": null,
-      "supports": "GPU execution-timing differences distinguish devices with identical GPU models."
+      "dateChecked": "2026-11-02",
+      "supports": "NDSS 2022: speed variations among a GPU's execution units form a device signature collectable with unprivileged JavaScript, distinguishing devices with identical hardware and software configurations."
     },
     "olejnik-2015": {
       "title": "The leaking battery: A privacy analysis of the HTML5 Battery Status API",
       "publisher": "Olejnik, Acar, Castelluccia, Diaz",
       "url": "https://eprint.iacr.org/2015/616",
       "type": "research paper",
-      "dateChecked": null,
-      "supports": "Battery level and discharge time can act as a short-term cross-site identifier."
+      "dateChecked": "2026-11-02",
+      "supports": "Battery level and related readings \"expose a fingerprintable surface that can be used to track web users in short time intervals\"; battery capacity may serve as a tracking identifier."
     },
     "solomos-2021": {
       "title": "Tales of Favicons and Caches: Persistent Tracking in Modern Browsers (NDSS 2021)",
       "publisher": "Solomos, Kristoff, Kanich, Polakis",
       "url": "https://www.ndss-symposium.org/ndss-paper/tales-of-favicons-and-caches-persistent-tracking-in-modern-browsers/",
       "type": "research paper",
-      "dateChecked": null,
-      "supports": "Favicon cache used as a persistent identifier surviving incognito and cookie clearing."
+      "dateChecked": "2026-11-02",
+      "supports": "NDSS 2021: a tracking identifier stored as entries in the browser's favicon cache is persistent (not affected by clearing browser data) and even crosses the isolation of incognito mode."
     },
     "cloak-2016": {
       "title": "Cloak of Visibility: Detecting When Machines Browse a Different Web (IEEE S&P 2016)",
@@ -199,16 +199,16 @@
       "publisher": "FoxIO",
       "url": "https://github.com/FoxIO-LLC/ja4",
       "type": "specification / source code",
-      "dateChecked": null,
-      "supports": "JA4 TLS client fingerprint format and related JA4+ methods."
+      "dateChecked": "2026-11-02",
+      "supports": "FoxIO repository describing JA4 (TLS client fingerprinting) and the JA4+ family (JA4S, JA4H, JA4T, JA4X, JA4SSH and others)."
     },
     "p0f": {
       "title": "p0f v3 passive OS fingerprinting",
       "publisher": "Michal Zalewski",
       "url": "https://lcamtuf.coredump.cx/p0f3/",
       "type": "tool",
-      "dateChecked": null,
-      "supports": "Passive TCP/IP stack fingerprinting (TTL, window size, options)."
+      "dateChecked": "2026-11-02",
+      "supports": "\"P0f is a tool that utilizes an array of sophisticated, purely passive traffic fingerprinting mechanisms to identify the players behind any incidental TCP/IP communications.\""
     },
     "localmess": {
       "title": "Local Mess: covert web-to-app tracking via localhost on Android",
@@ -229,7 +229,7 @@
     "register-ebay": {
       "title": "eBay port scans your PC",
       "publisher": "The Register",
-      "url": "https://www.theregister.com/2020/05/26/ebay_port_scans_your_pc/",
+      "url": "https://www.theregister.com/security/2020/05/26/ebay-users-spot-the-online-auction-house-port-scanning-their-pcs-um-is-that-ok/470436",
       "type": "press",
       "dateChecked": "2026-10-19",
       "supports": "Press coverage of the eBay / ThreatMetrix localhost scan."
@@ -247,13 +247,13 @@
       "publisher": "The Chromium Projects",
       "url": "https://www.chromium.org/updates/ua-reduction/",
       "type": "first-party documentation",
-      "dateChecked": null,
-      "supports": "Chrome freezes/reduces OS and device details in the User-Agent string; detailed values move to Client Hints."
+      "dateChecked": "2026-11-02",
+      "supports": "Chrome reduces OS and device details in the User-Agent string to fixed values; all previous information remains available through high-entropy User-Agent Client Hints."
     },
     "tor-manual-fp": {
       "title": "Understanding browser fingerprinting (Tor Browser manual)",
       "publisher": "The Tor Project",
-      "url": "https://tb-manual.torproject.org/anti-fingerprinting/",
+      "url": "https://support.torproject.org/tor-browser/features/fingerprinting-protections/",
       "type": "first-party documentation",
       "dateChecked": "2026-10-19",
       "supports": "Uniformity strategy; letterboxing (window sizes in 200×100 multiples); font enumeration limits; canvas extraction blocking; limited languages; user-agent normalization."
@@ -293,7 +293,7 @@
     "webkit-pb2": {
       "title": "Private Browsing 2.0",
       "publisher": "WebKit",
-      "url": "https://webkit.org/?p=15697",
+      "url": "https://webkit.org/blog/15697/private-browsing-2-0/",
       "type": "first-party documentation",
       "dateChecked": "2026-10-19",
       "supports": "Safari 17 Advanced Fingerprinting Protection, including noise added to fingerprintable web APIs in Private Browsing."
@@ -301,26 +301,26 @@
     "guardian-tor-stinks": {
       "title": "'Tor Stinks' presentation",
       "publisher": "The Guardian",
-      "url": "https://www.theguardian.com/world/interactive/2013/oct/04/tor-stinks-nsa-presentation-document",
+      "url": "https://assets.aclu.org/live/uploads/document/foia/tor_stinks.pdf",
       "type": "press (leaked document)",
-      "dateChecked": null,
-      "supports": "Leaked NSA slides discuss de-anonymising Tor users, including via evercookie-style persistent identifiers."
+      "dateChecked": "2026-11-02",
+      "supports": "Leaked NSA \"Tor Stinks\" slides (published by The Guardian, 4 October 2013): \"Analytics: Cookie Leakage: Use cookies to identify Tor users when they are not using Tor\" and \"Investigate Evercookie persistence\". URL points to the ACLU-hosted copy whose text is readable."
     },
     "ayenson-2011": {
       "title": "Flash Cookies and Privacy II: Now with HTML5 and ETag Respawning",
       "publisher": "Ayenson, Wambach, Soltani, Good, Hoofnagle",
       "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1898390",
       "type": "research paper",
-      "dateChecked": null,
-      "supports": "Documented ETag-based and HTML5-storage respawning, including by KISSmetrics."
+      "dateChecked": "2026-11-02",
+      "supports": "SSRN paper (29 July 2011) on HTML5 and ETag respawning. Co-author Ashkan Soltani's write-up confirms that Hulu, Spotify and others respawned identifiers with KISSmetrics code and that \"KISSmetrics was exploiting the browser cache to store persistent identifiers via stored Javascript and ETags\" (SSRN blocks automated readers; claim verified via the author's post)."
     },
     "wicg-keyboard-map": {
       "title": "Keyboard Map",
       "publisher": "WICG",
       "url": "https://wicg.github.io/keyboard-map/",
       "type": "specification",
-      "dateChecked": null,
-      "supports": "navigator.keyboard.getLayoutMap() and its fingerprinting considerations."
+      "dateChecked": "2026-11-02",
+      "supports": "Defines Keyboard.getLayoutMap(); its privacy section warns \"there is a risk of using this API to create a larger fingerprint of the user\" and limits it to secure, top-level contexts."
     },
     "fpjs-architecture": {
       "title": "FingerprintJS architecture source (src/sources/architecture.ts)",

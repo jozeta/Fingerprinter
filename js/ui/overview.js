@@ -70,7 +70,7 @@ export function render(view, app) {
     <div>
       ${ridgeFigure(groups, { title: 'Your fingerprint, by category', desc: 'Each ridge is one category of checks and each segment one check. Colour shows the result: blue revealed, amber estimated, green hidden by your browser, grey not available or not run, violet only servers can see. Hover, tab to or click a segment for details.', tipFor: ridgeTip, scanning: app.running })}
       ${statusLegend()}
-      <p class="small text-muted mb-0">Each ridge is a category, each segment a check. Hover or tab to a segment to see what is behind it; click to open it.</p>
+      <p class="small text-muted mb-0">Each ridge is a category, each segment a check. Hover, tap or tab to a segment to see what is behind it; click it (or tap again) to open it.</p>
     </div>
   </section>`;
 

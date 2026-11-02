@@ -175,7 +175,7 @@ The languages you picked in your browser, in order of preference.
 
 **Documented associations:** Fingerprint (FingerprintJS) (uses, L1 Confirmed); Electronic Frontier Foundation (Cover Your Tracks) (measures, L1 Confirmed); The Tor Project (Tor Browser) (mitigates, L1 Confirmed)
 
-**Sources:** [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources) · [About Cover Your Tracks](https://coveryourtracks.eff.org/about) · [Understanding browser fingerprinting (Tor Browser manual)](https://tb-manual.torproject.org/anti-fingerprinting/)
+**Sources:** [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources) · [About Cover Your Tracks](https://coveryourtracks.eff.org/about) · [Understanding browser fingerprinting (Tor Browser manual)](https://support.torproject.org/tor-browser/features/fingerprinting-protections/)
 
 ### Timezone & Intl locale
 
@@ -441,7 +441,7 @@ Your screen size, the space left after the taskbar or dock, and how many colours
 
 **Documented associations:** Fingerprint (FingerprintJS) (uses, L1 Confirmed); Electronic Frontier Foundation (Cover Your Tracks) (measures, L1 Confirmed); The Tor Project (Tor Browser) (mitigates, L1 Confirmed)
 
-**Sources:** [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources) · [About Cover Your Tracks](https://coveryourtracks.eff.org/about) · [Understanding browser fingerprinting (Tor Browser manual)](https://tb-manual.torproject.org/anti-fingerprinting/)
+**Sources:** [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources) · [About Cover Your Tracks](https://coveryourtracks.eff.org/about) · [Understanding browser fingerprinting (Tor Browser manual)](https://support.torproject.org/tor-browser/features/fingerprinting-protections/)
 
 ### Viewport, window & pixel ratio
 
@@ -465,7 +465,7 @@ The size of your browser window and how much it is zoomed.
 
 **Documented associations:** The Tor Project (Tor Browser) (mitigates, L1 Confirmed)
 
-**Sources:** [Understanding browser fingerprinting (Tor Browser manual)](https://tb-manual.torproject.org/anti-fingerprinting/) · [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources)
+**Sources:** [Understanding browser fingerprinting (Tor Browser manual)](https://support.torproject.org/tor-browser/features/fingerprinting-protections/) · [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources)
 
 ### Screen orientation
 
@@ -564,7 +564,7 @@ Your browser draws a small picture. Tiny differences in how it draws can tell de
 
 **Documented associations:** Fingerprint (FingerprintJS) (uses, L1 Confirmed); AddThis (Oracle, discontinued) (uses, L3 Research); Electronic Frontier Foundation (Cover Your Tracks) (measures, L1 Confirmed); The Tor Project (Tor Browser) (mitigates, L1 Confirmed); Brave (mitigates, L1 Confirmed); Mozilla (Firefox) (mitigates, L4 Category); Apple (Safari / WebKit) (mitigates, L2 Documented); AmIUnique (Inria / University of Lille) (researched, L3 Research); Princeton WebTAP / OpenWPM (researched, L3 Research)
 
-**Sources:** [The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)](https://securehomes.esat.kuleuven.be/~gacar/persistent/the_web_never_forgets.pdf) · [Beauty and the Beast: Diverting modern web browsers to build unique browser fingerprints (IEEE S&P 2016)](https://hal.archives-ouvertes.fr/hal-01285470) · [Characterizing Canvas Fingerprinting Use Across the Web (IMC 2025)](https://cseweb.ucsd.edu/~savage/papers/IMC25Canvas.pdf) · [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) · [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources) · [Fingerprinting defenses 2.0](https://brave.com/privacy-updates/4-fingerprinting-defenses-2.0/) · [Understanding browser fingerprinting (Tor Browser manual)](https://tb-manual.torproject.org/anti-fingerprinting/) · [Private Browsing 2.0](https://webkit.org/?p=15697)
+**Sources:** [The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)](https://collaborate.princeton.edu/en/publications/the-web-never-forgets-persistent-tracking-mechanisms-in-the-wild/) · [Beauty and the Beast: Diverting modern web browsers to build unique browser fingerprints (IEEE S&P 2016)](https://hal.archives-ouvertes.fr/hal-01285470) · [Characterizing Canvas Fingerprinting Use Across the Web (IMC 2025)](https://cseweb.ucsd.edu/~savage/papers/IMC25Canvas.pdf) · [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) · [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources) · [Fingerprinting defenses 2.0](https://brave.com/privacy-updates/4-fingerprinting-defenses-2.0/) · [Understanding browser fingerprinting (Tor Browser manual)](https://support.torproject.org/tor-browser/features/fingerprinting-protections/) · [Private Browsing 2.0](https://webkit.org/blog/15697/private-browsing-2-0/)
 
 ### WebGL renderer & capabilities
 
@@ -735,7 +735,7 @@ Which fonts seem to be installed on your computer, guessed by measuring text.
 
 **Documented associations:** Fingerprint (FingerprintJS) (uses, L1 Confirmed); Electronic Frontier Foundation (Cover Your Tracks) (measures, L1 Confirmed); The Tor Project (Tor Browser) (mitigates, L1 Confirmed); Apple (Safari / WebKit) (mitigates, L1 Confirmed); AmIUnique (Inria / University of Lille) (researched, L3 Research)
 
-**Sources:** [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources) · [About Cover Your Tracks](https://coveryourtracks.eff.org/about) · [Tracking Prevention in WebKit](https://webkit.org/tracking-prevention/) · [Understanding browser fingerprinting (Tor Browser manual)](https://tb-manual.torproject.org/anti-fingerprinting/) · [How Unique Is Your Web Browser? (Eckersley, PETS 2010)](https://coveryourtracks.eff.org/static/browser-uniqueness.pdf)
+**Sources:** [FingerprintJS open-source entropy sources (src/sources)](https://github.com/fingerprintjs/fingerprintjs/tree/master/src/sources) · [About Cover Your Tracks](https://coveryourtracks.eff.org/about) · [Tracking Prevention in WebKit](https://webkit.org/tracking-prevention/) · [Understanding browser fingerprinting (Tor Browser manual)](https://support.torproject.org/tor-browser/features/fingerprinting-protections/) · [How Unique Is Your Web Browser? (Eckersley, PETS 2010)](https://coveryourtracks.eff.org/static/browser-uniqueness.pdf)
 
 ### Canvas text metrics
 
@@ -1259,7 +1259,7 @@ Whether your browser offers battery information. Your battery level is not read.
 
 **How it works.** The lab only checks whether the battery feature exists. It does not ask for your battery level.
 
-**Technical.** Olejnik et al. (2015) showed battery level plus discharge time can link visits across sites over short periods, which led Firefox and Safari to remove the API. Chromium still exposes it. Presence mostly reveals the engine family.
+**Technical.** Olejnik et al. (2015) showed battery readings can be used to track web users over short time intervals, which led Firefox and Safari to remove the API. Chromium still exposes it. Presence mostly reveals the engine family.
 
 **Exposes:** API presence only. · **APIs:** navigator.getBattery, BatteryManager
 
@@ -1716,7 +1716,7 @@ Which ways of saving data in your browser work here. A test value is saved, read
 
 **Documented associations:** Fingerprint (FingerprintJS) (uses, L1 Confirmed); State-level surveillance (uses, L3 Research)
 
-**Sources:** [The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)](https://securehomes.esat.kuleuven.be/~gacar/persistent/the_web_never_forgets.pdf) · [Tracking Prevention in WebKit](https://webkit.org/tracking-prevention/) · [Mitigating Browser Fingerprinting in Web Specifications](https://www.w3.org/TR/fingerprinting-guidance/)
+**Sources:** [The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)](https://collaborate.princeton.edu/en/publications/the-web-never-forgets-persistent-tracking-mechanisms-in-the-wild/) · [Tracking Prevention in WebKit](https://webkit.org/tracking-prevention/) · [Mitigating Browser Fingerprinting in Web Specifications](https://www.w3.org/TR/fingerprinting-guidance/)
 
 ### Storage API availability matrix
 
@@ -1862,7 +1862,7 @@ Draws the same picture five times and checks whether every copy is identical.
 
 **Documented associations:** none
 
-**Sources:** [Fingerprinting defenses 2.0](https://brave.com/privacy-updates/4-fingerprinting-defenses-2.0/) · [Private Browsing 2.0](https://webkit.org/?p=15697) · [The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)](https://securehomes.esat.kuleuven.be/~gacar/persistent/the_web_never_forgets.pdf)
+**Sources:** [Fingerprinting defenses 2.0](https://brave.com/privacy-updates/4-fingerprinting-defenses-2.0/) · [Private Browsing 2.0](https://webkit.org/blog/15697/private-browsing-2-0/) · [The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)](https://collaborate.princeton.edu/en/publications/the-web-never-forgets-persistent-tracking-mechanisms-in-the-wild/)
 
 ### Date parsing & serialization behavior
 
@@ -2056,7 +2056,7 @@ A summary of signs that your browser actively protects you (noise, blocking, uni
 
 **Documented associations:** none
 
-**Sources:** [Fingerprinting defenses 2.0](https://brave.com/privacy-updates/4-fingerprinting-defenses-2.0/) · [Understanding browser fingerprinting (Tor Browser manual)](https://tb-manual.torproject.org/anti-fingerprinting/) · [Resist Fingerprinting](https://support.mozilla.org/en-US/kb/resist-fingerprinting) · [Private Browsing 2.0](https://webkit.org/?p=15697)
+**Sources:** [Fingerprinting defenses 2.0](https://brave.com/privacy-updates/4-fingerprinting-defenses-2.0/) · [Understanding browser fingerprinting (Tor Browser manual)](https://support.torproject.org/tor-browser/features/fingerprinting-protections/) · [Resist Fingerprinting](https://support.mozilla.org/en-US/kb/resist-fingerprinting) · [Private Browsing 2.0](https://webkit.org/blog/15697/private-browsing-2-0/)
 
 ### Content-blocker detection (bait elements)
 
@@ -2325,7 +2325,7 @@ Browser caches have been misused to hide identifiers that survive deleting cooki
 
 **Documented associations:** KISSmetrics (uses, L3 Research)
 
-**Sources:** [Flash Cookies and Privacy II: Now with HTML5 and ETag Respawning](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1898390) · [Tales of Favicons and Caches: Persistent Tracking in Modern Browsers (NDSS 2021)](https://www.ndss-symposium.org/ndss-paper/tales-of-favicons-and-caches-persistent-tracking-in-modern-browsers/) · [The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)](https://securehomes.esat.kuleuven.be/~gacar/persistent/the_web_never_forgets.pdf)
+**Sources:** [Flash Cookies and Privacy II: Now with HTML5 and ETag Respawning](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1898390) · [Tales of Favicons and Caches: Persistent Tracking in Modern Browsers (NDSS 2021)](https://www.ndss-symposium.org/ndss-paper/tales-of-favicons-and-caches-persistent-tracking-in-modern-browsers/) · [The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)](https://collaborate.princeton.edu/en/publications/the-web-never-forgets-persistent-tracking-mechanisms-in-the-wild/)
 
 ### Cross-visit & behavioral correlation (server-side)
 
@@ -2350,7 +2350,7 @@ Servers link your visits over time by comparing what they saw before.
 
 **Documented associations:** none
 
-**Sources:** [The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)](https://securehomes.esat.kuleuven.be/~gacar/persistent/the_web_never_forgets.pdf) · [Fingerprinting the Fingerprinters: Learning to Detect Browser Fingerprinting Behaviors (IEEE S&P 2021)](https://arxiv.org/pdf/2008.04480) · [Hiding in the Crowd: an Analysis of the Effectiveness of Browser Fingerprinting at Large Scale (WWW 2018)](https://hal.inria.fr/hal-01718234) · [Beyond the Crawl: Unmasking Browser Fingerprinting in Real User Interactions](https://arxiv.org/html/2502.01608v1)
+**Sources:** [The Web Never Forgets: Persistent Tracking Mechanisms in the Wild (ACM CCS 2014)](https://collaborate.princeton.edu/en/publications/the-web-never-forgets-persistent-tracking-mechanisms-in-the-wild/) · [Fingerprinting the Fingerprinters: Learning to Detect Browser Fingerprinting Behaviors (IEEE S&P 2021)](https://arxiv.org/pdf/2008.04480) · [Hiding in the Crowd: an Analysis of the Effectiveness of Browser Fingerprinting at Large Scale (WWW 2018)](https://hal.inria.fr/hal-01718234) · [Beyond the Crawl: Unmasking Browser Fingerprinting in Real User Interactions](https://arxiv.org/html/2502.01608v1)
 
 ### Localhost probing & web-to-app bridges
 
@@ -2374,7 +2374,7 @@ Some scripts have contacted programs on your own computer or phone to recognise 
 
 **Documented associations:** Meta (Meta Pixel) (uses, L3 Research); LexisNexis ThreatMetrix (uses, L3 Research)
 
-**Sources:** [Why is This Website Port Scanning me?](https://nullsweep.com/why-is-this-website-port-scanning-me/) · [eBay port scans your PC](https://www.theregister.com/2020/05/26/ebay_port_scans_your_pc/) · [Local Mess: covert web-to-app tracking via localhost on Android](https://localmess.github.io/)
+**Sources:** [Why is This Website Port Scanning me?](https://nullsweep.com/why-is-this-website-port-scanning-me/) · [eBay port scans your PC](https://www.theregister.com/security/2020/05/26/ebay-users-spot-the-online-auction-house-port-scanning-their-pcs-um-is-that-ok/470436) · [Local Mess: covert web-to-app tracking via localhost on Android](https://localmess.github.io/)
 
 ### Script-less CSS fingerprinting
 

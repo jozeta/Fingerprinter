@@ -21,7 +21,7 @@ Browser characteristics are read by the tests you start (see the in-app catalogu
 | Item | When | Where | How to remove |
 |---|---|---|---|
 | Settings | Only if you enable "Remember settings" | `localStorage` key `fplab:settings` | Settings → Clear all local data |
-| Snapshots | Only when you click "Save in this browser" | `localStorage` key `fplab:snapshots` | Delete per snapshot, or Clear all local data |
+| Saved result codes | Only when you click "Save full code here" (up to 10) | `localStorage` key `fplab:codes` | Delete per code, or Clear all local data |
 | Storage-test probe | During the storage test only | One value `fplab-probe` in each mechanism | Deleted automatically before the test finishes |
 
 No hidden visitor identifier is created, and nothing is "respawned" if you clear storage.

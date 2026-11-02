@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -25,3 +26,52 @@ jobs:
           python3 scripts/serve.py 8765 &
           sleep 2
           BROWSER="$(command -v google-chrome || command -v chromium)" npm run test:browser
+
+  cross-browser:
+    # Chromium, Firefox, WebKit and two phone profiles, plus an axe-core accessibility scan.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Cross-browser suite
+        run: |
+          python3 scripts/serve.py 8765 &
+          sleep 2
+          node scripts/pw-suite.mjs http://localhost:8765 ./.test-output/pw
+      - name: Keep screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cross-browser-report
+          path: .test-output/pw
+          retention-days: 14
+
+  deploy:
+    # GitHub Pages is published from here, and only after both test jobs pass on main.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: [test, cross-browser]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4

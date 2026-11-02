@@ -2,7 +2,6 @@
 import { APP_NAME, APP_VERSION, RESULT_SCHEMA_VERSION, TEST_CATALOGUE_VERSION, EXPORT_FORMAT, STATUSES } from '../core/constants.js';
 import { esc } from '../core/util.js';
 
-const MAX_IMPORT_BYTES = 2_000_000;
 
 export function meta(entityCatalogueVersion) {
   return {
@@ -24,48 +23,10 @@ export function exportResults(results, { includeRaw = false, entityCatalogueVers
   return { ...meta(entityCatalogueVersion), kind: 'results', includesRawData: includeRaw, results: out };
 }
 
-export function exportSnapshot(label, entries, profileDigest, entityCatalogueVersion) {
-  return { ...meta(entityCatalogueVersion), kind: 'snapshot', label, profileDigest, entries };
-}
-
 export const exportProfile = (profile, entityCatalogueVersion) => ({ ...meta(entityCatalogueVersion), kind: 'profile',
   digest: profile.digest, included: profile.included, excluded: profile.excluded, perSignalDigests: profile.perSignal });
 
 export const exportAssociations = (catalogue, sources) => ({ ...meta(catalogue.catalogueVersion), kind: 'associations', policy: catalogue.policy, entities: catalogue.entities, sources });
-
-/**
- * Validate an imported snapshot. Never evaluates code; only checks shape and bounded sizes.
- * Returns { ok, problems, snapshot }.
- */
-export function validateImport(text) {
-  const problems = [];
-  if (typeof text !== 'string') return { ok: false, problems: ['Not text'] };
-  if (text.length > MAX_IMPORT_BYTES) return { ok: false, problems: ['File larger than 2 MB'] };
-  let data;
-  try { data = JSON.parse(text); } catch (e) { return { ok: false, problems: [`Invalid JSON: ${e.message}`] }; }
-  if (!data || typeof data !== 'object' || Array.isArray(data)) return { ok: false, problems: ['Top level must be an object'] };
-  if (data.format !== EXPORT_FORMAT) problems.push(`format must be "${EXPORT_FORMAT}"`);
-  if (data.kind !== 'snapshot') problems.push('kind must be "snapshot" (export one from the Comparison page)');
-  if (data.resultSchemaVersion !== RESULT_SCHEMA_VERSION) problems.push(`unsupported resultSchemaVersion "${data.resultSchemaVersion}"`);
-  const entries = data.entries;
-  if (!entries || typeof entries !== 'object' || Array.isArray(entries)) problems.push('entries must be an object');
-  else {
-    const keys = Object.keys(entries);
-    if (keys.length > 500) problems.push('too many entries');
-    for (const k of keys) {
-      const e = entries[k];
-      if (!/^[a-z0-9-]{1,64}$/.test(k)) { problems.push(`bad test id "${k.slice(0, 40)}"`); continue; }
-      if (!e || typeof e !== 'object') { problems.push(`${k}: entry must be an object`); continue; }
-      if (!STATUSES[e.status]) problems.push(`${k}: invalid status`);
-      if (e.digest !== null && !(typeof e.digest === 'string' && /^[0-9a-f]{8,128}$/.test(e.digest))) problems.push(`${k}: invalid digest`);
-      if (e.testVersion !== undefined && !/^\d+\.\d+\.\d+$/.test(String(e.testVersion))) problems.push(`${k}: invalid testVersion`);
-    }
-  }
-  if (problems.length) return { ok: false, problems };
-  const clean = {};
-  for (const [k, e] of Object.entries(entries)) clean[k] = { testId: k, testVersion: e.testVersion ?? null, status: e.status, protection: String(e.protection ?? 'unknown').slice(0, 20), digest: e.digest };
-  return { ok: true, problems: [], snapshot: { label: String(data.label ?? 'Imported').slice(0, 80), createdAt: String(data.generatedAt ?? '').slice(0, 40), profileDigest: String(data.profileDigest ?? '').slice(0, 130), entries: clean, imported: true } };
-}
 
 /** Printable HTML report body (escaped). Opened in the print view; the user prints to paper or PDF. */
 export function printableReport({ title, defs, results, assessment, recommendations, profile, sources, comparison, entityCatalogueVersion }) {

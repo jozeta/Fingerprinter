@@ -2,6 +2,17 @@
 
 All notable changes to this project. Versions follow [semantic versioning](https://semver.org/): new features bump the minor version, fixes bump the patch version. The version shown in the app's sidebar comes from `APP_VERSION` in `js/core/constants.js` and must match the newest entry here (checked by `npm test`).
 
+## Unreleased
+- Nothing yet.
+
+## 2.3.0 (2026-11-02)
+- Works on phones: no sideways scrolling, charts rebuilt in HTML so their text stays readable, and hover boxes open with a tap (tap again to open the details).
+- Accessibility: darker secondary text and accessible button colours so every view passes an automated WCAG 2.1 AA scan (axe-core) in light and dark mode.
+- Comparison now uses result codes only: save up to 10 codes in this browser, load a code from a file, print or export a comparison. The older "snapshot" feature was removed.
+- Sources re-checked: every cited source has been verified by hand and dated; dead and moved links fixed, three summaries corrected to say exactly what the source says.
+- Cross-browser test suite (Chromium, Firefox, WebKit and two phone profiles) with an accessibility scan, and a source link checker.
+- The live site is now published by CI only after all tests pass.
+
 ## 2.2.1 (2026-10-21)
 - Plain-language result labels everywhere: Hidden by browser, Not in this browser, Needs permission, Start it yourself, Only servers see this, Didn't finish, Not run; protection tags Scrambled on purpose, Same as everyone, No protection found, Unclear; comparison labels Now hidden, Now revealed, Cannot compare. Internal status codes in exports and result codes are unchanged.
 

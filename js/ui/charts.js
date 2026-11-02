@@ -9,23 +9,16 @@ const seen = new Set();
 export const firstTime = (key) => (seen.has(key) ? false : (seen.add(key), true));
 
 /**
- * Horizontal bar chart. rows: [{label, value, note?}]. Values are labeled numerically; color is not the only channel.
+ * Horizontal bar chart in HTML (labels stay readable on phones). rows: [{label, value, note?}].
+ * Values are labelled numerically; colour is not the only channel. A data table is always available.
  */
-export function barChart(rows, { title, desc, max, unit = '', compact = false }) {
-  const id = `c${++uid}`;
+export function barChart(rows, { title, desc, max, unit = '' }) {
   const anim = firstTime(`bar:${title}`);
   const m = max ?? Math.max(1, ...rows.map((r) => r.value));
-  // compact: for narrow columns, so the viewBox is not scaled down into unreadable text
-  const rowH = 26, labelW = compact ? 170 : 190, barW = compact ? 120 : 360, H = rows.length * rowH + 6;
-  const bars = rows.map((r, i) => {
-    const y = i * rowH + 4, w = (r.value / m) * barW;
-    return `<g><text x="0" y="${y + 14}">${esc(r.label)}</text>
-      <rect class="track" x="${labelW}" y="${y + 2}" width="${barW}" height="14" rx="3"></rect>
-      <rect class="bar${anim ? ' grow' : ''}" style="--i:${i}" x="${labelW}" y="${y + 2}" width="${Math.max(0, w)}" height="14" rx="3"><title>${esc(r.label)}: ${esc(r.value)}${esc(unit)}</title></rect>
-      <text x="${labelW + barW + 8}" y="${y + 14}" class="muted">${esc(r.value)}${esc(unit)}${r.note ? ` · ${esc(r.note)}` : ''}</text></g>`;
-  }).join('');
-  return `<figure class="mb-0"><svg class="chart w-100" style="max-width:${Math.round((labelW + barW + (compact ? 80 : 140)) * 1.12)}px" viewBox="0 0 ${labelW + barW + (compact ? 80 : 140)} ${H}" role="img" aria-labelledby="${id}-t ${id}-d" preserveAspectRatio="xMinYMin meet">
-    <title id="${id}-t">${esc(title)}</title><desc id="${id}-d">${esc(desc)}</desc>${bars}</svg>
+  const body = rows.map((r, i) => `<div class="hbar-row"><span class="hbar-label">${esc(r.label)}</span>
+      <span class="hbar-track"><span class="hbar-fill${anim ? ' grow' : ''}" style="--i:${i};width:${Math.max(0, (r.value / m) * 100)}%" title="${esc(r.label)}: ${esc(r.value)}${esc(unit)}"></span></span>
+      <span class="hbar-val">${esc(r.value)}${esc(unit)}${r.note ? ` · ${esc(r.note)}` : ''}</span></div>`).join('');
+  return `<figure class="mb-0"><div class="chart hbars" role="img" aria-label="${esc(title)}. ${esc(desc)}">${body}</div>
     <details class="chart-caption"><summary>Data table</summary><table class="table table-sm mb-0"><thead><tr><th>Item</th><th>Value</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${esc(r.label)}</td><td>${esc(r.value)}${esc(unit)}</td></tr>`).join('')}</tbody></table></details>
     <figcaption class="chart-caption">${esc(desc)}</figcaption></figure>`;
 }
@@ -80,27 +73,24 @@ export const segmentOf = (status) => STATUS_SEGMENTS.find((s) => s.statuses.incl
 export const statusLegend = (segs = STATUS_SEGMENTS) => `<div class="legend">${segs.map((s) => `<span><span class="sw ${s.cls.replace('seg-', 'swatch-')}" style="background:var(--s-${s.key})"></span>${esc(s.label)}</span>`).join('')}</div>`;
 
 /**
- * 100% stacked horizontal bars. rows: [{label, counts: {segKey: n}, href?}].
- * 2px surface gaps between segments; counts in text at the row end; tooltip per segment; table alternative.
+ * 100% stacked horizontal bars in HTML. rows: [{label, counts: {segKey: n}}].
+ * 2px gaps between segments; counts in text at the row end; optional hover/focus box per segment; table alternative.
  */
 export function stackedBars(rows, { title, desc, segs = STATUS_SEGMENTS, endLabel = null, tips = null }) {
   const id = `s${++uid}`, anim = firstTime(`stack:${title}`);
-  const rowH = 30, labelW = 200, barW = 420, H = rows.length * rowH + 4;
   const body = rows.map((r, i) => {
-    const total = segs.reduce((a, s) => a + (r.counts[s.key] || 0), 0) || 1;
-    let x = labelW;
+    const sum = segs.reduce((a, s) => a + (r.counts[s.key] || 0), 0);
     const parts = segs.map((s) => {
       const n = r.counts[s.key] || 0; if (!n) return '';
-      const w = (n / total) * barW, tipKey = tips ? `${id}:${i}:${s.key}` : null;
-      if (tipKey) setTip(tipKey, tips(r, s, n, total));
-      const rect = `<rect class="${s.cls}${anim ? ' grow' : ''}" style="--i:${i}" x="${x}" y="${i * rowH + 7}" width="${Math.max(0, w - 2)}" height="16" rx="3" ${tipKey ? `data-tip="${tipKey}" tabindex="0" aria-label="${esc(r.label)}: ${n} ${esc(s.label.toLowerCase())}"` : ''}>${tipKey ? '' : `<title>${esc(r.label)}: ${n} ${esc(s.label.toLowerCase())}</title>`}</rect>`;
-      x += w; return rect;
+      const tipKey = tips ? `${id}:${i}:${s.key}` : null;
+      if (tipKey) setTip(tipKey, tips(r, s, n, sum));
+      const aria = `${esc(r.label)}: ${n} ${esc(s.label.toLowerCase())}`;
+      return `<span class="seg ${s.cls}" style="flex:${n}" ${tipKey ? `data-tip="${tipKey}" tabindex="0" role="img" aria-label="${aria}"` : `title="${aria}"`}></span>`;
     }).join('');
-    const sum = segs.reduce((a, s) => a + (r.counts[s.key] || 0), 0);
     const tail = endLabel ? endLabel(r, sum) : `${(r.counts.measured || 0) + (r.counts.inferred || 0)}/${sum} readable`;
-    return `<g><text x="0" y="${i * rowH + 20}">${esc(r.label)}</text>${parts}<text x="${labelW + barW + 10}" y="${i * rowH + 20}" class="muted">${esc(tail)}</text></g>`;
+    return `<div class="hbar-row"><span class="hbar-label">${esc(r.label)}</span><span class="hbar-track stack${anim ? ' grow' : ''}" style="--i:${i}">${parts}</span><span class="hbar-val">${esc(tail)}</span></div>`;
   }).join('');
-  return `<figure class="mb-0">${statusLegend(segs)}<svg class="chart w-100" style="max-width:${Math.round((labelW + barW + 120) * 1.12)}px" viewBox="0 0 ${labelW + barW + 120} ${H}" role="img" aria-labelledby="${id}-t ${id}-d"><title id="${id}-t">${esc(title)}</title><desc id="${id}-d">${esc(desc)}</desc>${body}</svg>
+  return `<figure class="mb-0">${statusLegend(segs)}<div class="chart hbars" role="${tips ? 'group' : 'img'}" aria-label="${esc(title)}. ${esc(desc)}">${body}</div>
     <details class="chart-caption"><summary>Data table</summary><table class="table table-sm mb-0"><thead><tr><th>Row</th>${segs.map((s) => `<th>${esc(s.label)}</th>`).join('')}</tr></thead><tbody>${rows.map((r) => `<tr><td>${esc(r.label)}</td>${segs.map((s) => `<td>${r.counts[s.key] || 0}</td>`).join('')}</tr>`).join('')}</tbody></table></details>
     <figcaption class="chart-caption">${esc(desc)}</figcaption></figure>`;
 }
@@ -108,7 +98,7 @@ export function stackedBars(rows, { title, desc, segs = STATUS_SEGMENTS, endLabe
 /** Count matrix (heat table) with one-hue sequential fill; every cell shows its number. */
 export function countMatrix(rowLabels, colLabels, values, { title, desc }) {
   const max = Math.max(1, ...values.flat());
-  const cell = (v) => { const p = Math.round((v / max) * 85); return `<td style="background:color-mix(in srgb, var(--s-measured) ${p}%, var(--frost));color:${p > 50 ? '#fff' : 'var(--ink)'}" title="${v}">${v}</td>`; };
+  const cell = (v) => { const p = Math.round((v / max) * 100); return p > 55 ? `<td style="background:var(--s-measured);color:var(--on-accent)" title="${v}">${v}</td>` : `<td style="background:color-mix(in srgb, var(--s-measured) ${Math.round(p * 0.6)}%, var(--frost));color:var(--ink)" title="${v}">${v}</td>`; };
   return `<figure class="mb-0"><table class="matrix" aria-label="${esc(title)}"><thead><tr><th></th>${colLabels.map((c) => `<th scope="col">${esc(c)}</th>`).join('')}</tr></thead>
     <tbody>${rowLabels.map((r, i) => `<tr><th scope="row">${esc(r)}</th>${values[i].map(cell).join('')}</tr>`).join('')}</tbody></table>
     <figcaption class="chart-caption">${esc(desc)}</figcaption></figure>`;
@@ -136,7 +126,7 @@ export function ridgeFigure(groups, { title, desc, tipFor = null, scanning = fal
       return `<path class="${draw ? 'draw' : ''}" pathLength="1" style="stroke:var(--s-${seg});animation-delay:${draw ? (gi * 40 + k * 18) : 0}ms" d="M${x0.toFixed(1)} ${y0.toFixed(1)} A${rx} ${ry.toFixed(1)} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}" data-action="detail" data-id="${esc(it.id)}" ${tipFor ? `data-tip="ridge:${esc(it.id)}" tabindex="0" role="button" aria-label="${esc(it.name)}, ${esc(g.label)}"` : ''}>${tipFor ? '' : `<title>${esc(g.label)}: ${esc(it.name)}</title>`}</path>`;
     }).join('');
   }).join('');
-  return `<figure class="ridge-wrap mb-0"><svg class="ridge w-100" viewBox="0 0 400 430" role="img" aria-labelledby="${id}-t ${id}-d" style="max-width:440px;cursor:pointer">
+  return `<figure class="ridge-wrap mb-0"><svg class="ridge w-100" viewBox="0 0 400 430" role="${tipFor ? 'group' : 'img'}" aria-labelledby="${id}-t ${id}-d" style="max-width:440px;cursor:pointer">
     <title id="${id}-t">${esc(title)}</title><desc id="${id}-d">${esc(desc)}</desc>
     <ellipse class="core" cx="${cx}" cy="${cy + 4}" rx="18" ry="22"></ellipse><path class="core-ridge" d="M${cx - 8} ${cy + 12} C ${cx - 10} ${cy - 6}, ${cx + 10} ${cy - 6}, ${cx + 8} ${cy + 12}"></path>${paths}
     ${scanning ? `<g class="scan" style="transform-origin:${cx}px ${cy}px;animation-delay:-${Math.round((globalThis.performance?.now() ?? 0) % 2200)}ms"><path d="M${cx} ${cy} L${cx} ${cy - 200} A200 200 0 0 1 ${cx + 120} ${cy - 160} Z"></path></g>` : ''}</svg></figure>`;

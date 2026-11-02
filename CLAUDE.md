@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Fingerprinting Lab: an educational, defensive privacy lab that runs real browser-fingerprinting
 techniques against the visitor's own browser and explains what each one revealed. Static SPA in
 vanilla JS ES modules (Bootstrap 5, self-hosted), no build step, no backend. Live at
-https://jozeta.github.io/Fingerprinter/ (GitHub Pages from `main` root, `.nojekyll`). Version
+https://jozeta.github.io/Fingerprinter/ (GitHub Pages, deployed by `.github/workflows/ci.yml` after the tests pass; `.nojekyll`). Version
 lives in `js/core/constants.js` and `CHANGELOG.md`.
 
 ## Commands
@@ -17,6 +17,9 @@ python3 scripts/serve.py            # http://localhost:8765/ (no-cache server; E
 npm test                            # node:test unit suite, tests/unit/ (Node 22+, no deps)
 BROWSER="/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge" npm run test:browser
                                     # with serve.py running: CDP-driven integration suite + UI walkthrough
+npm run test:cross                  # with serve.py running: Playwright suite (Chromium, Firefox, WebKit, phones) + axe scan
+                                    # (needs `npm ci && npx playwright install chromium firefox webkit` once)
+npm run check-links                 # every source URL in data/sources.json still answers
 npm run docs                        # regenerate docs/TECHNIQUES.md (and coverage docs) from the registry
 ```
 
@@ -41,7 +44,7 @@ See `docs/ARCHITECTURE.md` for the full module map. Key points:
 - **No network:** no CDN, analytics or third-party requests; CSP is `connect-src 'self'`. No IP
   lookup or STUN. A static privacy scan in the unit tests checks this.
 - **Consent first:** nothing runs before the user clicks Run; nothing is stored unless they save
-  a snapshot or enable "remember settings". No permission prompts (camera, mic, location,
+  a result code or enable "remember settings". No permission prompts (camera, mic, location,
   clipboard, notifications).
 - **No fabricated values:** a technique that can't measure reports that status, never a guess.
   No uniqueness percentage (see `docs/METHODOLOGY.md`).

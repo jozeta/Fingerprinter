@@ -7,7 +7,7 @@
 
 :root, [data-bs-theme="light"] {
   --snow: #f6f8f9; --surface: #ffffff; --frost: #edf1f4; --ice: #e2e8ed; --line: #d3dbe2;
-  --ink: #15212c; --ink-2: #44525f; --ink-3: #6a7784;
+  --ink: #15212c; --ink-2: #44525f; --ink-3: #5d6a76; --on-accent: #ffffff;
   --fjord: #2a6fb5; --fjord-deep: #1d4f82; --fjord-wash: #e6eff8;
   /* status series (validated, light) */
   --s-measured: #2a6fb5; --s-inferred: #e08a2e; --s-blocked: #1e8a62; --s-none: #b8c1c9; --s-server: #7a5cc7; --s-pending: #e2e8ed;
@@ -22,7 +22,7 @@
 }
 [data-bs-theme="dark"] {
   --snow: #0f161d; --surface: #141c24; --frost: #1a242e; --ice: #223039; --line: #2b3946;
-  --ink: #e4ebf1; --ink-2: #b2bfca; --ink-3: #8696a5;
+  --ink: #e4ebf1; --ink-2: #b2bfca; --ink-3: #8696a5; --on-accent: #0f161d;
   --fjord: #6aa5e4; --fjord-deep: #9cc4ee; --fjord-wash: #182b3d;
   --s-measured: #4a8bd4; --s-inferred: #c98422; --s-blocked: #2a9468; --s-none: #4a5866; --s-server: #8a70d6; --s-pending: #223039;
   --s-error: #d9667a;
@@ -292,7 +292,6 @@ details.explain[open] > summary::before { transform: rotate(90deg); }
 @keyframes scan { to { transform: rotate(360deg); } }
 .bits-stack { position: relative; display: flex; gap: 2px; height: 34px; border-radius: 8px; overflow: hidden; background: var(--frost); margin-top: .4rem; }
 .bits-stack span { background: var(--s-measured); display: flex; align-items: center; justify-content: center; min-width: 0; transform-origin: left; animation: grow .7s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i) * 90ms); }
-.bits-stack span:nth-child(even) { background: color-mix(in srgb, var(--s-measured) 70%, var(--surface)); }
 .bits-stack em { font-style: normal; font-size: .72rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 .3rem; }
 .bits-line { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); }
 
@@ -317,3 +316,33 @@ details.explain[open] > summary::before { transform: rotate(90deg); }
 .lesson:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
 .section-head h2 { position: relative; }
 .section-head h2::after { content: ''; position: absolute; left: 0; bottom: -.58rem; height: 2px; width: 2.2rem; background: var(--fjord); border-radius: 2px; }
+.saved-codes { list-style: none; padding: 0; display: grid; gap: .35rem; }
+.saved-codes li { display: flex; justify-content: space-between; align-items: center; gap: .6rem; flex-wrap: wrap; padding: .45rem .7rem; border: 1px solid var(--line); border-radius: 10px; background: var(--frost); }
+
+/* Accessible button colours in both themes (Bootstrap defaults are below 4.5:1 on the dark surface). */
+.btn-outline-primary { --bs-btn-color: var(--fjord); --bs-btn-border-color: var(--fjord); --bs-btn-hover-bg: var(--fjord); --bs-btn-hover-border-color: var(--fjord); --bs-btn-hover-color: var(--on-accent); --bs-btn-active-bg: var(--fjord-deep); --bs-btn-active-color: var(--on-accent); }
+.btn-outline-danger { --bs-btn-color: var(--st-error); --bs-btn-border-color: var(--st-error); --bs-btn-hover-bg: var(--st-error); --bs-btn-hover-color: var(--surface); }
+.btn-link { --bs-btn-color: var(--fjord); }
+.text-danger { color: var(--st-error) !important; }
+.bits-stack em { color: var(--on-accent); }
+
+/* HTML bar charts: text stays full size at any width; label wraps above the bar on narrow screens */
+.hbars { display: grid; gap: .45rem; }
+.hbar-row { display: grid; grid-template-columns: minmax(8rem, 13rem) minmax(0, 1fr) minmax(5.5rem, auto); gap: .6rem; align-items: center; font-size: .84rem; }
+.hbar-label { color: var(--ink); overflow-wrap: anywhere; }
+.hbar-val { color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hbar-track { display: flex; gap: 2px; height: 14px; background: var(--frost); border-radius: 4px; overflow: hidden; }
+.hbar-track.stack { background: transparent; }
+.hbar-fill { display: block; height: 100%; background: var(--fjord); border-radius: 4px; }
+.hbar-track .seg { display: block; height: 100%; min-width: 3px; border-radius: 3px; transition: opacity .18s ease; }
+.seg-measured { background: var(--s-measured); } .seg-inferred { background: var(--s-inferred); } .seg-blocked { background: var(--s-blocked); }
+.seg-none { background: var(--s-none); } .seg-server { background: var(--s-server); } .seg-pending { background: var(--s-pending); } .seg-error { background: var(--s-error); }
+.seg-ev1 { background: var(--s-ev1); } .seg-ev2 { background: var(--s-ev2); } .seg-ev3 { background: var(--s-ev3); } .seg-ev4 { background: var(--s-ev4); } .seg-ev5 { background: var(--s-ev5); }
+.hbars .grow, .hbar-fill.grow { transform-origin: left center; animation: grow .8s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.hbars:has([data-tip]:hover) [data-tip]:not(:hover), .hbars:has([data-tip]:focus-visible) [data-tip]:not(:focus-visible) { opacity: .45; }
+.hbars [data-tip] { cursor: pointer; outline-offset: 1px; }
+@media (max-width: 575px) {
+  .hbar-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: .2rem; }
+  .hbar-label { grid-column: 1; } .hbar-val { grid-column: 2; grid-row: 1; text-align: right; }
+  .hbar-track { grid-column: 1 / -1; }
+}

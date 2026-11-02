@@ -2,7 +2,7 @@
 
 **See what any website can learn about your browser, without cookies.**
 
-**Live demo: https://jozeta.github.io/Fingerprinter/** · Current version: **2.2.1** ([changelog](CHANGELOG.md))
+**Live demo: https://jozeta.github.io/Fingerprinter/** · Current version: **2.3.0** ([changelog](CHANGELOG.md))
 
 An educational, defensive privacy lab that runs real browser-fingerprinting techniques against your own browser, shows exactly what each one revealed, and explains it in plain language. Every technique is linked to documented real-world use, with an explicit evidence level. Everything runs locally: nothing is sent anywhere.
 
@@ -50,7 +50,7 @@ Screenshots were taken in a headless test browser; your own results will differ.
 ## Privacy by design
 
 - No backend, analytics, CDN or third-party requests. All assets, including the font, are self-hosted. A Content Security Policy enforces `connect-src 'self'`.
-- Tests run only after you click **Run**. Nothing is stored unless you save a snapshot or enable "remember settings".
+- Tests run only after you click **Run**. Nothing is stored unless you save a result code or enable "remember settings".
 - No permission prompts: no camera, microphone, location, clipboard or notifications. No IP lookup and no STUN servers.
 - No uniqueness percentage is shown, because that would require a representative comparison dataset. See [docs/METHODOLOGY.md](docs/METHODOLOGY.md).
 
@@ -70,15 +70,15 @@ python3 scripts/serve.py        # http://localhost:8765/ (like http.server, but 
 
 ## Deploy
 
-It is a static site with no build step: copy the folder to any static host. This repo is published with **GitHub Pages** from the `main` branch root (`.nojekyll` keeps files served as-is). Serve over HTTPS, since secure-context APIs need it.
+It is a static site with no build step: copy the folder to any static host. This repo is published to **GitHub Pages** by the CI workflow, and only after the unit, browser and cross-browser tests pass on `main` (`.nojekyll` keeps files served as-is). Serve over HTTPS, since secure-context APIs need it.
 
 ## Tests
 
-Requires Node.js 22 or newer. No dependencies.
+Requires Node.js 22 or newer. The app has no dependencies; the cross-browser suite uses Playwright and axe-core as dev dependencies (`npm ci`).
 
 ```sh
 npm test                 # unit tests: registry, schema, engine, hashing, fingerprint, compare, filters,
-                         # export/import, assessment, recommendations, 65-item coverage, static privacy scan
+                         # result codes, assessment, recommendations, 65-item coverage, static privacy scan
 python3 scripts/serve.py &
 BROWSER="/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge" npm run test:browser
 ```
@@ -86,6 +86,14 @@ BROWSER="/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge" npm run
 `test:browser` drives a headless Chromium-based browser over the DevTools protocol. It runs two suites:
 - **Integration suite** (`tests/browser/index.html`): real APIs, schema validity, no fabricated values, storage and DOM cleanup, and no cross-origin requests.
 - **UI walkthrough:** visits every view and checks that tests don't run before consent and that there are no console errors. It also saves screenshots.
+
+```sh
+npm ci && npx playwright install chromium firefox webkit
+npm run test:cross       # with serve.py running: Chromium, Firefox, WebKit, iPhone and Android profiles
+npm run check-links      # checks that every cited source URL still answers
+```
+
+`test:cross` runs the integration suite and UI walkthrough in every engine, checks phone layouts for sideways scrolling and tap-to-show hover boxes, and runs an axe-core WCAG 2.1 AA scan of every view in light and dark mode.
 
 ## Project structure
 

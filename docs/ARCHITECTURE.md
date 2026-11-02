@@ -17,7 +17,7 @@ js/core/
   registry.js              Central test registry and definition validation
   schema.js                Result-object builder and validator (versioned result schema)
   engine.js                Execution engine: timeouts, cancellation, yielding, dependency results
-  store.js                 Opt-in local persistence (settings, saved snapshots only)
+  store.js                 Opt-in local persistence (settings, saved result codes only)
 js/tests/*.js              Technique definitions, one module per category (no DOM access at import)
 js/analysis/
   profile.js               Canonical profile, include/exclude, digest
@@ -35,6 +35,9 @@ js/ui/*.js                 One module per view, plus charts.js (SVG charts, ridg
 tests/unit/*.test.mjs      node:test suite for pure logic
 tests/browser/index.html   In-browser integration suite (real APIs, cleanup, no-network checks)
 scripts/generate-docs.mjs  Generates docs/TECHNIQUES.md from the registry
+scripts/cdp-driver.mjs     Headless Edge/Chrome over DevTools: integration suite + UI walkthrough
+scripts/pw-suite.mjs       Playwright: Chromium, Firefox, WebKit, phone profiles, axe-core scan
+scripts/check-links.mjs    Checks that every source URL still answers
 ```
 
 ## Test definition (catalogue entry)
@@ -93,5 +96,5 @@ Missing, blocked or unsupported results carry `rawResult: null`, never fabricate
 
 1. `main.js` loads both JSON catalogues and the test registry, and validates cross-references (source ids, technique ids).
 2. The user reads the pre-run explanation and starts a run. `engine.run()` executes tests sequentially with a per-test timeout and an `AbortSignal`, yields to the event loop between tests, and passes earlier results to dependent tests (`dependsOn`).
-3. Results go to an in-memory `state.results`. **Nothing is persisted** unless the user saves a snapshot or enables "remember settings".
+3. Results go to an in-memory `state.results`. **Nothing is persisted** unless the user saves a result code or enables "remember settings".
 4. Views (overview, tests, signals, entities, compare, assessment, learn) all read from the same registry, results and filter module.

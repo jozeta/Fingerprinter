@@ -1,6 +1,6 @@
 // Settings: theme, run parameters, export options, local data management, server adapter status.
 import { esc, download, announce } from '../core/util.js';
-import { clearAll, listSnapshots, STORAGE_NAMESPACE } from '../core/store.js';
+import { clearAll, listCodes, STORAGE_NAMESPACE } from '../core/store.js';
 import { activeAdapter } from '../adapters/server-adapter.js';
 import { exportResults } from '../analysis/report.js';
 import { mount } from './components.js';
@@ -32,8 +32,8 @@ export function render(view, app) {
       <div class="col-lg-6 d-grid gap-3 align-content-start">
         <section class="panel"><h2 class="h6">Local persistence</h2>
           <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="remember" ${s.remember ? 'checked' : ''}><label class="form-check-label" for="remember">Remember settings in this browser</label></div>
-          <p class="small text-muted">Stored under <code>${esc(STORAGE_NAMESPACE)}settings</code>. Saved snapshots: ${listSnapshots().length}.</p>
-          <button class="btn btn-sm btn-outline-danger" data-clear>Clear all local data (settings, snapshots, results in memory)</button>
+          <p class="small text-muted">Stored under <code>${esc(STORAGE_NAMESPACE)}settings</code>. Saved result codes: ${listCodes().length}.</p>
+          <button class="btn btn-sm btn-outline-danger" data-clear>Clear all local data (settings, saved result codes, results in memory)</button>
         </section>
         <section class="panel"><h2 class="h6">Server adapter</h2>
           <p class="small mb-1">Status: <strong>${activeAdapter.enabled ? 'enabled' : 'disabled'}</strong> (${esc(activeAdapter.id)})</p>
@@ -52,7 +52,7 @@ export function render(view, app) {
   root.querySelector('[data-export]').addEventListener('click', () => download('fingerprint-results.json', JSON.stringify(exportResults(app.results, { includeRaw: s.exportRaw, entityCatalogueVersion: app.catalogue.catalogueVersion }), null, 2)));
   root.querySelector('[data-print]').addEventListener('click', () => printReport(app));
   root.querySelector('[data-clear]').addEventListener('click', () => {
-    clearAll(); app.results = {}; app.selection = null; app.snapshots = []; app.lab.pointer = []; app.lab.keys = [];
+    clearAll(); app.results = {}; app.selection = null; app.lab.pointer = []; app.lab.keys = [];
     app.updateSettings({ remember: false }); announce('All local data cleared.'); render(view, app); app.emit('cleared');
   });
 }

@@ -67,7 +67,7 @@ for (const route of ['tests', 'signals', 'entities', 'compare', 'assessment', 'l
   console.log(`VIEW ${route}: h1="${h1}" chars=${await evaluate(`document.querySelector('main').innerText.length`)}`);
   await shot(`view-${route}`);
 }
-// Interactions: filter, detail panel, entity detail, signal toggle, save snapshot + compare.
+// Interactions: filter, detail panel, entity detail, signal toggle, save a result code + compare.
 await evaluate(`location.hash = '#/tests'`); await sleep(600);
 await evaluate(`const q = document.querySelector('#f-q'); q.value = 'canvas'; q.dispatchEvent(new Event('input', {bubbles:true}))`); await sleep(300);
 console.log('FILTER "canvas":', await evaluate(`document.querySelector('#count').textContent`));
@@ -84,8 +84,10 @@ await evaluate(`document.querySelector('[data-sig]:checked').click()`); await sl
 const d2 = await evaluate(`document.querySelector('main .mono').textContent`);
 console.log('SIGNAL toggle changes digest:', d1 !== d2, d1.slice(0, 12), '→', d2.slice(0, 12));
 await evaluate(`location.hash = '#/compare'`); await sleep(900);
-await evaluate(`document.querySelector('[data-save]').click()`); await sleep(1200);
-console.log('COMPARE classes:', await evaluate(`[...document.querySelectorAll('main tbody td.fw-semibold')].map(t => t.textContent).reduce((a,c)=>(a[c]=(a[c]||0)+1,a),{})`));
+await evaluate(`document.querySelector('[data-code="save"]').click()`); await sleep(1500);
+console.log('SAVED CODES:', await evaluate(`document.querySelectorAll('.saved-codes li').length`));
+await evaluate(`document.querySelector('[data-use]').click()`); await sleep(1800);
+console.log('SAVED CODE COMPARE:', await evaluate(`document.querySelector('#sbs-root .fs-4')?.textContent`));
 await shot('compare-after-save');
 // Result code: create, paste back, compare. Same browser and session ⇒ no differences except self-changing checks.
 await evaluate(`document.querySelector('[data-code="full"]').click()`); await sleep(1500);
@@ -130,7 +132,7 @@ const hover = async (selector, name) => {
 };
 await evaluate(`location.hash = '#/overview'`); await sleep(1400);
 await hover('.ridge path[data-tip="ridge:screen"]', 'ridge');
-await hover('.chart rect[data-tip]', 'bars');
+await hover('.hbars [data-tip]', 'bars');
 await evaluate(`location.hash = '#/tests'`); await sleep(800);
 await evaluate(`document.querySelector('[data-action="detail"][data-id="canvas-2d"]').click()`); await sleep(900); await viewShot('light-detail');
 await evaluate(`bootstrap.Offcanvas.getInstance('#detail').hide()`); await sleep(400);
