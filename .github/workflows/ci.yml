@@ -29,16 +29,16 @@ jobs:
 
   cross-browser:
     # Chromium, Firefox, WebKit and two phone profiles, plus an axe-core accessibility scan.
+    # Runs in Playwright's own image: its WebKit build is stable here, unlike `playwright install --with-deps`
+    # on the bare runner (where WebKit crashed mid-suite). Keep the tag in step with package.json.
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --user 1001
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium firefox webkit
       - name: Cross-browser suite
         run: |
           python3 scripts/serve.py 8765 &

@@ -123,9 +123,9 @@ a { color: var(--fjord); text-underline-offset: .18em; }
 [data-bs-theme="dark"] .badge-count { color: var(--snow); }
 
 /* Test rows */
-.test-row { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .85rem 1.05rem; display: grid; grid-template-columns: 1fr auto; gap: .35rem 1rem; transition: border-color .15s, box-shadow .2s, transform .2s; }
+.test-row { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .85rem 1.05rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; min-width: 0; gap: .35rem 1rem; transition: border-color .15s, box-shadow .2s, transform .2s; }
 .test-row:hover { border-color: color-mix(in srgb, var(--fjord) 45%, var(--line)); box-shadow: var(--shadow); }
-.test-row h3 { font-size: 1rem; margin: 0; font-weight: 650; }
+.test-row h3 { font-size: 1rem; margin: 0; font-weight: 650; overflow-wrap: anywhere; }
 .test-row h3 a { color: var(--ink); text-decoration: none; }
 .test-row h3 a:hover { color: var(--fjord); text-decoration: underline; }
 .test-row .meta { display: flex; flex-wrap: wrap; gap: .3rem; align-items: center; }
