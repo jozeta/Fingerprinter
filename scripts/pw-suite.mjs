@@ -96,7 +96,8 @@ for (const t of TARGETS.filter((x) => !only || only.includes(x.name))) {
           await ap.evaluate((x) => { location.hash = `#/${x}`; }, r);
           await ap.waitForTimeout(600);
           const res = await ap.evaluate(async (src) => {
-            if (!window.axe) (0, eval)(src); // test-only injection; the app itself never uses eval
+            // eslint-disable-next-line no-eval -- test-only: injects axe into the page; the app never uses eval
+            if (!window.axe) (0, eval)(src);
             const r = await window.axe.run(document, { resultTypes: ['violations'], runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] });
             return r.violations.filter((v) => ['serious', 'critical'].includes(v.impact)).map((v) => `${v.id} (${v.nodes.length}): ${v.nodes[0]?.target?.join(' ')}`);
           }, axeSource);

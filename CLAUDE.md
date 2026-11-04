@@ -51,3 +51,16 @@ See `docs/ARCHITECTURE.md` for the full module map. Key points:
 - Technique modules must not touch the DOM at import time, and must clean up any DOM/storage they
   create during `run()`.
 - Bump a technique's `version` when its output semantics change.
+
+## App standards
+
+This repo follows the app standards in `~/Desktop/code/tools/standards/STANDARDS.md` (rule IDs,
+severities; decisions and waivers in `.claude-standards`). `claude-check --repo .` checks it.
+
+```sh
+npm ci && npm run lint   # ESLint (dev-only), incl. the no-unsanitized rule; CI runs it too
+npm test                 # the tests CI runs
+```
+
+Unsafe DOM sinks and unused variables are lint **warnings** for now (existing code); new code
+shouldn't add any. Errors (eval, undefined names, parse errors) fail CI.

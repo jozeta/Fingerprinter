@@ -3,7 +3,8 @@
 All notable changes to this project. Versions follow [semantic versioning](https://semver.org/): new features bump the minor version, fixes bump the patch version. The version shown in the app's sidebar comes from `APP_VERSION` in `js/core/constants.js` and must match the newest entry here (checked by `npm test`).
 
 ## Unreleased
-- Nothing yet.
+
+- ESLint (flat config, with the no-unsanitized rule) as a dev-only tool; CI runs `npm run lint`
 
 ## 2.3.0 (2026-11-02)
 - Works on phones: no sideways scrolling, charts rebuilt in HTML so their text stays readable, and hover boxes open with a tap (tap again to open the details).
