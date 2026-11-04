@@ -13,6 +13,7 @@ export async function printReport(app, { title = 'Browser Fingerprinting & Priva
     profile: has && include.profile ? await buildProfile(app.defs, app.results, app.getSelection()) : null,
   });
   const root = document.getElementById('print-root');
+  // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
   root.innerHTML = html;
   window.print();
 }

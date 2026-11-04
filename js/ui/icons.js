@@ -30,10 +30,12 @@ const P = {
 /** Inline SVG icon. aria-hidden by default; pass a label for standalone meaningful icons. */
 export function icon(name, { cls = 'ico', label = '' } = {}) {
   const body = P[name] || P.advanced;
-  return `<svg class="${cls}" viewBox="0 0 24 24" ${label ? `role="img" aria-label="${label}"` : 'aria-hidden="true" focusable="false"'}>${body}</svg>`;
+  const attr = (v) => String(v).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  return `<svg class="${attr(cls)}" viewBox="0 0 24 24" ${label ? `role="img" aria-label="${attr(label)}"` : 'aria-hidden="true" focusable="false"'}>${body}</svg>`;
 }
 
 /** Replace every <span data-icon="name"> placeholder in static HTML (navigation) with its SVG. */
 export function hydrateIcons(root = document) {
+  // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
   root.querySelectorAll('[data-icon]').forEach((el) => { el.outerHTML = icon(el.dataset.icon, { cls: el.dataset.iconClass || 'ico' }); });
 }

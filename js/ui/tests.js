@@ -69,7 +69,9 @@ function list(view, app) {
   const items = filterAndSort(app.defs, app.filter, { results: app.results, assocIndex: app.assocIndex, catalogueOrder: app.defs.map((d) => d.id) });
   view.querySelector('#count').textContent = `${items.length} of ${app.defs.length} checks`;
   const counts = items.reduce((a, d) => { const st = app.results[d.id]?.executionStatus; if (st) { const k = segmentOf(st); a[k] = (a[k] || 0) + 1; } return a; }, {});
+  // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
   view.querySelector('#summary').innerHTML = Object.keys(counts).length ? stackedBars([{ label: 'Shown checks', counts }], { title: 'Results of the shown checks', desc: 'Results of the checks matching your filters.' }) : '';
+  // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
   view.querySelector('#test-list').innerHTML = items.length ? items.map((d) => row(app, d)).join('') : '<li class="panel text-muted">No techniques match these filters. <button class="btn btn-link p-0" data-clear>Clear all filters</button></li>';
 }
 
@@ -96,6 +98,7 @@ export function render(view, app) {
     const id = det.dataset.explain;
     if (det.open) {
       openExplain.add(id);
+      // eslint-disable-next-line no-unsanitized/method -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
       if (!det.querySelector('.explain-body')) { const d = app.defs.find((x) => x.id === id); det.insertAdjacentHTML('beforeend', explainBlock(d, app.results[id], interpret(d, app.results[id]))); }
     } else openExplain.delete(id);
   }, true);

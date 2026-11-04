@@ -3,6 +3,7 @@
   var view = document.getElementById('view');
   var firstError = null;
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
   function show(html) { if (view) view.innerHTML = '<div class="panel" role="alert">' + html + '</div>'; }
   if (location.protocol === 'file:') {
     show('<h1 class="h4">Open this lab through a local web server</h1>' +

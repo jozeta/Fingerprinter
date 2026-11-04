@@ -25,7 +25,7 @@ export function render(view, app) {
           <p class="small text-muted mt-2 mb-0">"Relevance" (high/medium/low) per technique is assigned from cited literature, not measured here. The assessment is qualitative and separate from security severity.</p></section>
         <section class="panel"><h2 class="h6">Execution statuses</h2><dl class="small mb-0">${Object.entries(STATUSES).map(([k, s]) => `<dt>${esc(s.label)} <code>${esc(k)}</code></dt><dd class="text-muted">${esc(s.help)}</dd>`).join('')}</dl></section>
         <section class="panel"><h2 class="h6">Confidence scale</h2><dl class="small mb-0">${Object.entries(CONFIDENCE).map(([k, v]) => `<dt>${esc(k)}</dt><dd class="text-muted">${esc(v)}</dd>`).join('')}</dl></section>
-        <section class="panel"><h2 class="h6">Protection indicators</h2><dl class="small mb-0">${Object.entries(PROTECTION).map(([k, v]) => `<dt>${esc(v.label)}</dt><dd class="text-muted">${esc(v.help)}</dd>`).join('')}</dl></section>
+        <section class="panel"><h2 class="h6">Protection indicators</h2><dl class="small mb-0">${Object.entries(PROTECTION).map(([, v]) => `<dt>${esc(v.label)}</dt><dd class="text-muted">${esc(v.help)}</dd>`).join('')}</dl></section>
       </div>
       <div class="col-lg-6 d-grid gap-3 align-content-start">
         <section class="panel"><h2 class="h6">Evidence levels for associations</h2><dl class="small mb-0">${Object.entries(EVIDENCE_LEVELS).map(([k, v]) => `<dt>L${k}: ${esc(v.label)}</dt><dd class="text-muted">${esc(v.help)}</dd>`).join('')}</dl>

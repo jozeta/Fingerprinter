@@ -90,6 +90,7 @@ async function renderComparison(root, app) {
   const visibleCounts = considered.reduce((a, r) => ((a[r.kind] = (a[r.kind] || 0) + 1), a), {});
   const diffs = considered.filter((r) => isDifference(r.kind)).length;
   const meta = state.pasted;
+  // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
   host.innerHTML = `
     <div class="d-flex flex-wrap gap-3 align-items-baseline mb-2">
       <div class="fs-4 fw-bold">${diffs} difference${diffs === 1 ? '' : 's'}</div>
@@ -105,6 +106,7 @@ async function renderComparison(root, app) {
     <div id="sbs-table">${table(app, cmp)}</div>
     <div class="d-flex flex-wrap gap-2 mt-2"><button class="btn btn-sm btn-outline-secondary" data-cmp="print">Print / PDF comparison</button><button class="btn btn-sm btn-outline-secondary" data-cmp="json">Export comparison JSON</button></div>
     <p class="small text-muted mt-2 mb-0">Highlighted rows differ; highlighted fields show exactly which values changed. "Scrambled on purpose" means a browser protection changes the value every time. A difference does not automatically mean better privacy.</p>`;
+  // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
   const redraw = () => { host.querySelector('#sbs-table').innerHTML = table(app, cmp); };
   // Report shape shared with the printable report: counts and rows with plain-language result labels.
   const forReport = () => ({ counts: Object.fromEntries(Object.entries(visibleCounts).map(([k, n]) => [KINDS[k], n])),
@@ -143,6 +145,7 @@ export function bindCodeSection(root, app, rerender) {
   async function compareText(text) {
     const res = await decodeResultCode(text);
     const msg = root.querySelector('#pc-msg');
+    // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
     if (!res.ok) { msg.innerHTML = `<span class="text-danger">${esc(res.problems[0])}</span>${res.problems.length > 1 ? ` <span class="text-muted">(${res.problems.length - 1} more problem(s))</span>` : ''}`; return; }
     state.pasted = res.data; state.pastedText = String(text).trim();
     rerender();

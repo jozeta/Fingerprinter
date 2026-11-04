@@ -5,6 +5,9 @@ All notable changes to this project. Versions follow [semantic versioning](https
 ## Unreleased
 
 - ESLint (flat config, with the no-unsanitized rule) as a dev-only tool; CI runs `npm run lint`
+- Reviewed all 20 `innerHTML`/`outerHTML` sites (imported compare codes only reach the page escaped
+  or through fixed lookups); unsafe DOM sinks are now lint errors. `icon()` escapes its class and label.
+  Removed unused code
 
 ## 2.3.0 (2026-11-02)
 - Works on phones: no sideways scrolling, charts rebuilt in HTML so their text stays readable, and hover boxes open with a tap (tap again to open the details).

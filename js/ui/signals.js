@@ -58,6 +58,7 @@ export async function render(view, app) {
   root.querySelector('[data-export]').addEventListener('click', () => download('fingerprint-profile.json', JSON.stringify(exportProfile(profile, app.catalogue.catalogueVersion), null, 2)));
   root.querySelector('[data-loo]').addEventListener('click', async () => {
     const res = await leaveOneOut(app.defs, app.results, app.getSelection());
+    // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
     root.querySelector('#loo').innerHTML = `<p class="small mb-1">Removing any single signal produces a completely different digest. That is why trackers compare signals individually (fuzzy matching) rather than relying on one hash.</p>
       <table class="table table-sm small"><thead><tr><th>Without</th><th>Digest</th></tr></thead><tbody>${res.variants.map((v) => `<tr><td>${esc(app.defs.find((d) => d.id === v.testId).name)}</td><td class="mono">${esc(v.digest.slice(0, 24))}…</td></tr>`).join('')}</tbody></table>`;
   });

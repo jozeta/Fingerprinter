@@ -32,6 +32,7 @@ function renderBody(app, d, body) {
   }).join('');
   const sec = (n, title, html) => `<section class="detail-section"><h3><span class="text-muted">${n}.</span> ${title}</h3>${html}</section>`;
 
+  // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
   body.innerHTML = `
     <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">${categoryLabel(d.category)} ${r ? statusChip(r.executionStatus) : statusChip('skipped')} ${r ? protectionChip(r.protectionIndicator, true) : ''}
       ${relevanceChip(d.relevance)} <span class="chip chip-outline">${esc(d.tier)}</span> <span class="chip chip-outline">${esc(MATURITY[d.maturity])}</span> <span class="chip chip-outline mono">${esc(d.id)} v${esc(d.version)}</span></div>

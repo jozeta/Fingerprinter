@@ -75,11 +75,13 @@ function renderRunBox() {
   const ran = Object.keys(app.results).length;
   if (app.running) {
     const p = app.progress;
+    // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
     box.innerHTML = `<div class="fw-semibold mb-1">Running ${p.done}/${p.total}</div>
       <div class="progress mb-2" role="progressbar" aria-label="Test progress" aria-valuenow="${p.done}" aria-valuemin="0" aria-valuemax="${p.total}" style="height:6px"><div class="progress-bar" style="width:${(p.done / p.total) * 100}%"></div></div>
       <div class="small text-muted text-truncate mb-2">${esc(p.current)}</div>
       <button class="btn btn-sm btn-outline-danger w-100" data-action="cancel"><i class="bi bi-stop-circle" aria-hidden="true"></i> Cancel run</button>`;
   } else {
+    // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
     box.innerHTML = ran
       ? `<div class="small mb-2">${ran} results in memory${app.lastRunAt ? ` · ${app.lastRunAt.toLocaleTimeString()}` : ''}</div><button class="btn btn-sm btn-primary w-100" data-action="run"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Run again</button>`
       : `<div class="small mb-2">No tests run yet.</div><a class="btn btn-sm btn-primary w-100" href="#/overview"><i class="bi bi-play" aria-hidden="true"></i> Review &amp; start</a>`;
@@ -139,6 +141,7 @@ async function init() {
     const [sources, catalogue] = await Promise.all([loadJSON('data/sources.json'), loadJSON('data/entities.json')]);
     app.sources = sources.sources; app.sourcesVersion = sources.catalogueVersion; app.catalogue = catalogue;
   } catch (e) {
+    // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
     $('#view').innerHTML = `<div class="alert alert-danger">Could not load catalogues (${esc(e.message)}). Serve this folder over HTTP, e.g. <code>python3 scripts/serve.py</code>; ES modules and fetch do not work from <code>file://</code>.</div>`;
     return;
   }

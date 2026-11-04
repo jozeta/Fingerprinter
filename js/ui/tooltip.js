@@ -16,6 +16,7 @@ function place(x, y) {
 function show(target, x, y) {
   const html = store.get(target.dataset.tip); if (!html) return;
   if (current !== target) {
+    // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
     box.innerHTML = html; current = target;
     const hint = box.querySelector('.t-hint');
     if (hint && lastPointer === 'touch') hint.textContent = hint.textContent.replace(/^Click/, 'Tap again');

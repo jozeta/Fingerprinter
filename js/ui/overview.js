@@ -4,7 +4,6 @@ import { esc } from '../core/util.js';
 import { STATUSES, CATEGORIES, PROTECTION } from '../core/constants.js';
 import { statusChip, mount, previewLine, commonBadge } from './components.js';
 import { interpret } from '../analysis/interpret.js';
-import { STATUS_SEGMENTS } from './charts.js';
 import { stackedBars, countMatrix, ridgeFigure, segmentOf, statusLegend, firstTime } from './charts.js';
 import { assess } from '../analysis/assessment.js';
 import { copyFullCode } from './code-compare.js';

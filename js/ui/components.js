@@ -49,6 +49,7 @@ export function previewLine(r) {
 /** Replace a view's content with a fresh root element so listeners never accumulate across re-renders. */
 export function mount(view, html) {
   const root = document.createElement('div');
+  // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
   root.innerHTML = html;
   view.replaceChildren(root);
   return root;

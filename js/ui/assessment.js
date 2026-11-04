@@ -19,7 +19,6 @@ export function render(view, app) {
   const a = assess(app.defs, app.results, { repeat: app.settings.repeat });
   const rec = recommend(app.results);
   const name = (id) => app.defs.find((d) => d.id === id)?.name || id;
-  const VALUE = ['measured', 'inferred'];
   const byRelevance = ['high', 'medium', 'low'].map((lv) => ({ label: `${lv[0].toUpperCase()}${lv.slice(1)} relevance`,
     counts: app.defs.filter((d) => d.relevance === lv && app.results[d.id]).reduce((acc, d) => { const r = app.results[d.id]; const k = r.protectionIndicator === 'randomized' ? 'blocked' : segmentOf(r.executionStatus); acc[k] = (acc[k] || 0) + 1; return acc; }, {}) }));
 

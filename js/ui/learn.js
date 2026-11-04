@@ -85,6 +85,7 @@ export function render(view, app) {
     document.cookie.split(';').map((c) => c.split('=')[0].trim()).filter((n) => n.startsWith('fplab')).forEach((n) => { document.cookie = `${n}=; max-age=0; path=/`; });
     const after = await measure();
     const d2 = (await buildProfile(stableDefs, after, selection)).digest.hex;
+    // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
     out.innerHTML = `<p class="mb-1">Before: <code>${esc(d1.slice(0, 24))}…</code><br>After clearing storage: <code>${esc(d2.slice(0, 24))}…</code></p>
       <p class="mb-0 fw-semibold">${d1 === d2 ? 'Identical. Clearing storage did not change the fingerprint.' : 'Different. Some signal changed between measurements (e.g. randomization or a volatile value); open the Signal Explorer to see which.'}</p>
       <p class="text-muted mb-0">Note: this cleared the lab's saved settings and saved result codes, if you had any.</p>`;
@@ -97,6 +98,7 @@ export function render(view, app) {
     const def = getTest('canvas-2d'); const ds = [];
     for (let i = 0; i < 5; i++) { const r = await runOne(def, { repeat: 1 }); ds.push(r.rawResult?.digest || r.executionStatus); }
     const uniq = new Set(ds).size;
+    // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
     root.querySelector('#ex2').innerHTML = `<ol class="mono mb-1">${ds.map((d) => `<li>${esc(String(d).slice(0, 32))}</li>`).join('')}</ol><strong>${uniq === 1 ? 'Stable: all five renders were identical.' : `${uniq} distinct digests: output appears randomized.`}</strong>`;
     e.target.disabled = false;
   });
@@ -117,6 +119,7 @@ export function render(view, app) {
   if (!Object.keys(app.results).length) host.innerHTML = '<p class="small"><button class="btn btn-sm btn-primary" data-action="run">Run the checks</button> to fill this in.</p>';
   else {
     const total = rows.filter((r) => r.on).reduce((a, r) => a + r.bits, 0);
+    // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
     host.innerHTML = `<div class="bits-stack" role="img" aria-label="${total.toFixed(1)} bits out of 33">${rows.filter((r) => r.on).map((r, i) => `<span style="flex:${r.bits};--i:${i}" title="${esc(r.name)}: ${r.bits} bits"><em>${esc(r.name.split(' ')[0])}</em></span>`).join('')}<i class="bits-line" style="left:${Math.min(100, (33 / Math.max(33, total)) * 100)}%"></i></div>
       <table class="table table-sm small mt-2 mb-1"><tbody>${rows.map((r) => `<tr class="${r.on ? '' : 'text-muted'}"><td>${esc(r.name)}</td><td>${r.bits} bits</td><td>${r.note ? esc(r.note) : r.on ? 'revealed here' : r.id.startsWith('srv-') ? 'server-only' : 'not revealed'}${r.id === 'fonts' && r.on ? ' (2010 figure via Flash; an upper bound today)' : ''}</td></tr>`).join('')}</tbody></table>
       <p class="small mb-1"><strong>${total.toFixed(1)} bits</strong> from these signals alone; the line marks 33 bits, roughly enough to single out one person among 8 billion.</p>`;
@@ -149,6 +152,7 @@ export function render(view, app) {
   });
   root.querySelector('[data-lab-analyze]').addEventListener('click', async () => {
     const p = await app.rerun('pointer-dynamics'), k = await app.rerun('keystroke-timing');
+    // eslint-disable-next-line no-unsanitized/property -- reviewed: dynamic values escaped with esc() or mapped through fixed tables; other markup is the app's own
     root.querySelector('#lab-out').innerHTML = `<div class="row g-2"><div class="col-sm-6"><strong>Pointer</strong>${p.rawResult ? kvTable(p.rawResult) : `<p class="mb-0 text-muted">${esc(p.notes[0])}</p>`}</div>
       <div class="col-sm-6"><strong>Typing</strong>${k.rawResult ? kvTable(k.rawResult) : `<p class="mb-0 text-muted">${esc(k.notes[0])}</p>`}</div></div>
       <p class="text-muted mb-0 mt-1">Humans show high speed variability and frequent direction changes; scripted movement is often straight and regular.</p>`;
