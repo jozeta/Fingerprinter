@@ -1,0 +1,28 @@
+/* Låda Glass family look (design=family in .claude-standards). Loaded last: points the app's own
+   variables at the Låda Glass tokens (vendor/lada-glass/), so every view follows the same theme.
+   The chart and status colours (--s-*, --st-*) keep their meaning and stay as they are. */
+:root, [data-bs-theme] {
+  --snow: var(--lg-bg);
+  --surface: var(--lg-glass);
+  --frost: var(--lg-field);
+  --ice: var(--lg-line-2);
+  --line: var(--lg-line);
+  --ink: var(--lg-text);
+  --ink-2: var(--lg-muted);
+  --ink-3: var(--lg-muted);
+  --on-accent: var(--lg-on-accent);
+  --fjord: var(--lg-accent);
+  --fjord-deep: var(--lg-accent);
+  --fjord-wash: color-mix(in srgb, var(--lg-accent) 14%, transparent);
+  --shadow: var(--lg-shadow);
+}
+body { font-family: var(--lg-font); }
+code, .mono { font-family: var(--lg-mono); }
+
+/* Frosted surfaces; the ones content scrolls under get the stronger glass so text stays readable. */
+.panel, .test-row, .lesson { -webkit-backdrop-filter: var(--lg-blur); backdrop-filter: var(--lg-blur);
+                             border-radius: var(--lg-radius-card); }
+.sidebar, .topbar, .detail-panel, .tipbox, .sbs th, .skip-link {
+  background: var(--lg-glass-strong); -webkit-backdrop-filter: var(--lg-blur); backdrop-filter: var(--lg-blur);
+}
+.form-control, .form-select { background-color: var(--lg-field); }

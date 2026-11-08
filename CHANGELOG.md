@@ -4,6 +4,10 @@ All notable changes to this project. Versions follow [semantic versioning](https
 
 ## Unreleased
 
+- Låda Glass family look (1.1.0, vendored): frosted-glass surfaces on the Låda backdrop, Låda colours,
+  type and radii in both themes, via `css/lada.css` and the Bootstrap bridge. Chart and status
+  colours are unchanged
+
 - ESLint (flat config, with the no-unsanitized rule) as a dev-only tool; CI runs `npm run lint`
 - Reviewed all 20 `innerHTML`/`outerHTML` sites (imported compare codes only reach the page escaped
   or through fixed lookups); unsafe DOM sinks are now lint errors. `icon()` escapes its class and label.

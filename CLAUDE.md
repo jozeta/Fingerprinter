@@ -52,6 +52,14 @@ See `docs/ARCHITECTURE.md` for the full module map. Key points:
   create during `run()`.
 - Bump a technique's `version` when its output semantics change.
 
+## Look (Låda Glass)
+
+`design=family`: the app uses the shared Låda Glass look from `vendor/lada-glass/<version>/`
+(`lada-glass.css` plus the Bootstrap bridge `lada-glass-bootstrap.css`), loaded after `css/app.css`.
+`css/lada.css` points the app's own variables (`--snow`, `--surface`, `--ink`, `--fjord`, …) at the
+Låda tokens; change colours there or in Låda Glass, not in `app.css`. The chart and status colours
+(`--s-*`, `--st-*`) are the app's own.
+
 ## App standards
 
 This repo follows the app standards in `~/Desktop/code/tools/standards/STANDARDS.md` (rule IDs,
