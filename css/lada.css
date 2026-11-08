@@ -19,9 +19,10 @@
 body { font-family: var(--lg-font); }
 code, .mono { font-family: var(--lg-mono); }
 
-/* Frosted surfaces; the ones content scrolls under get the stronger glass so text stays readable. */
-.panel, .test-row, .lesson { -webkit-backdrop-filter: var(--lg-blur); backdrop-filter: var(--lg-blur);
-                             border-radius: var(--lg-radius-card); }
+/* Glass surfaces. Content panels get the glass colour without the blur: with backdrop-filter, WebKit
+   on Linux never lets the animated ridge chart settle (the cross-browser suite times out). The
+   chrome that content scrolls under gets the stronger glass and the blur, so text stays readable. */
+.panel, .test-row, .lesson { border-radius: var(--lg-radius-card); }
 .sidebar, .topbar, .detail-panel, .tipbox, .sbs th, .skip-link {
   background: var(--lg-glass-strong); -webkit-backdrop-filter: var(--lg-blur); backdrop-filter: var(--lg-blur);
 }
