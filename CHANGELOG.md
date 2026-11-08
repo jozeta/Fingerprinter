@@ -4,7 +4,7 @@ All notable changes to this project. Versions follow [semantic versioning](https
 
 ## Unreleased
 
-- Låda Glass family look (1.1.0, vendored): frosted-glass surfaces on the Låda backdrop, Låda colours,
+- Låda Glass family look (1.1.1, vendored): frosted-glass surfaces on the Låda backdrop, Låda colours,
   type and radii in both themes, via `css/lada.css` and the Bootstrap bridge. Chart and status
   colours are unchanged
 

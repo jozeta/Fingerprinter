@@ -5,6 +5,12 @@ older copy as advice (DES-FAMILY-2).
 
 ## Unreleased
 
+## 1.1.1 (2026-11-08)
+
+- Bootstrap bridge: a forced `data-bs-theme` now always wins. On a light-mode system, the system-light
+  rule of `lada-glass.css` outranked `[data-bs-theme="dark"]`, so a dark Bootstrap app got light
+  accent-text tokens (white text on accent colours; found by Fingerprinter's contrast checks).
+
 ## 1.1.0 (2026-11-08)
 
 - `lada-glass-bootstrap.css`, a bridge for apps built with Bootstrap 5.3: `data-bs-theme` picks the
