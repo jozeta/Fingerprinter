@@ -4,10 +4,17 @@ All notable changes to this project. Versions follow [semantic versioning](https
 
 ## Unreleased
 
-- Låda Glass family look (1.1.1, vendored): frosted-glass surfaces on the Låda backdrop, Låda colours,
-  type and radii in both themes, via `css/lada.css` and the Bootstrap bridge. Chart and status
-  colours are unchanged
+## 2.4.0 (2026-11-11)
 
+- Låda Glass family look, on Låda Glass 2.0.0 (vendored in `vendor/lada-glass/2.0.0/`; first
+  vendored as 1.1.1, which is removed): glass surfaces on the Låda backdrop, Låda colours and type in
+  both themes, via `css/lada.css` and the Bootstrap bridge. Chart and status colours are unchanged
+- Låda Glass 2.0: the detail panel and navigation drawer get the 2.0 glass (faint gradient, 1 px
+  edge, top light, layered shadow); larger control and card radii; a lit primary button; tables in
+  `.table-responsive` get a rounded, clipping frame and a small uppercase header. Content panels
+  stay without backdrop blur (WebKit on Linux timed out on the animated ridge chart).
+  `lada-glass.js` is vendored but not loaded (no Låda Glass components are used). README
+  screenshots retaken
 - ESLint (flat config, with the no-unsanitized rule) as a dev-only tool; CI runs `npm run lint`
 - Reviewed all 20 `innerHTML`/`outerHTML` sites (imported compare codes only reach the page escaped
   or through fixed lookups); unsafe DOM sinks are now lint errors. `icon()` escapes its class and label.
