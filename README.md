@@ -2,13 +2,18 @@
 
 **See what any website can learn about your browser, without cookies.**
 
-**Live demo: https://jozeta.github.io/Fingerprinter/** · Current version: **2.4.0** ([changelog](CHANGELOG.md))
+**Live demo: https://jozeta.github.io/Fingerprinter/** · Current version: **2.4.1** ([changelog](CHANGELOG.md))
 
 An educational, defensive privacy lab that runs real browser-fingerprinting techniques against your own browser, shows exactly what each one revealed, and explains it in plain language. Every technique is linked to documented real-world use, with an explicit evidence level. Everything runs locally: nothing is sent anywhere.
 
 ![Overview: the fingerprint-ridge figure shows every check by category, coloured by result](docs/images/overview.png)
 
-## What's new in 2.4.0
+## What's new in 2.4.1
+
+- Låda Glass updated from 2.0.0 to 2.2.0 (CSS fixes; no new components used, no visible feature changes).
+- README screenshots are now in a captioned grid.
+
+### 2.4.0
 
 - A new look from the Låda Glass design system (2.0): glass panels with a clean 1 px edge, rounder
   controls and cards, a lit primary button, and tables with rounded corners and a compact header, in
@@ -38,21 +43,23 @@ Older versions: see [CHANGELOG.md](CHANGELOG.md).
 
 ## Screenshots
 
-| | |
-|---|---|
-| ![Fingerprint tests: searchable list with compact filters and readable results](docs/images/tests.png) | ![Technique detail panel: what it is, how it works, your result, evidence and mitigations](docs/images/detail.png) |
-| **Fingerprint tests**: search, filter and see what each check returned | **Technique detail**: plain-language explanation, your actual result, evidence and how to protect yourself |
-| ![Learning center with illustrated lessons](docs/images/learning.png) | ![Companies and adversaries catalogue with evidence levels](docs/images/companies.png) |
-| **Learning center**: illustrated lessons and hands-on exercises | **Companies & adversaries**: documented use, each link with an evidence level and sources |
-
-![Side-by-side comparison of two setups using a pasted result code](docs/images/compare-codes.png)
-*Comparing two setups with a result code: rows and individual values that differ are highlighted.*
-
-![Hover box on the fingerprint figure showing a check, its value, what it means and how common it is](docs/images/tooltip.png)
-*Hover over the fingerprint figure or the category chart to see what is behind each part.*
-
-![Dark mode overview](docs/images/overview-dark.png)
-*Dark mode, with its own colour steps tuned for the dark background.*
+<table>
+<tr>
+<td><img src="docs/images/tests.png" alt="Fingerprint tests: searchable list with compact filters and readable results"><br><sub>Fingerprint tests: search, filter and see what each check returned</sub></td>
+<td><img src="docs/images/detail.png" alt="Technique detail panel: what it is, how it works, your result, evidence and mitigations"><br><sub>Technique detail: plain-language explanation, your actual result, evidence and how to protect yourself</sub></td>
+</tr>
+<tr>
+<td><img src="docs/images/learning.png" alt="Learning center with illustrated lessons"><br><sub>Learning center: illustrated lessons and hands-on exercises</sub></td>
+<td><img src="docs/images/companies.png" alt="Companies and adversaries catalogue with evidence levels"><br><sub>Companies &amp; adversaries: documented use, each link with an evidence level and sources</sub></td>
+</tr>
+<tr>
+<td><img src="docs/images/compare-codes.png" alt="Side-by-side comparison of two setups using a pasted result code"><br><sub>Comparing two setups with a result code: differing rows and values are highlighted</sub></td>
+<td><img src="docs/images/tooltip.png" alt="Hover box on the fingerprint figure showing a check, its value, what it means and how common it is"><br><sub>Hover over the fingerprint figure or the category chart to see what is behind each part</sub></td>
+</tr>
+<tr>
+<td><img src="docs/images/overview-dark.png" alt="Dark mode overview"><br><sub>Dark mode, with its own colour steps tuned for the dark background</sub></td>
+</tr>
+</table>
 
 Screenshots were taken in a headless test browser; your own results will differ.
 

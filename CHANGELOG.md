@@ -4,6 +4,12 @@ All notable changes to this project. Versions follow [semantic versioning](https
 
 ## Unreleased
 
+## 2.4.1 (2026-11-12)
+
+- Låda Glass 2.0.0 -> 2.2.0 (vendored in `vendor/lada-glass/2.2.0/`, the 2.0.0 folder removed): CSS
+  fixes only; `lada-glass.js` is vendored but still not loaded, no new components adopted
+- README screenshots in a grid with a caption under each image
+
 ## 2.4.0 (2026-11-11)
 
 - Låda Glass family look, on Låda Glass 2.0.0 (vendored in `vendor/lada-glass/2.0.0/`; first

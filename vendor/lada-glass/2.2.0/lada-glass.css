@@ -1,4 +1,4 @@
-/* Låda Glass 2.0.0: the shared look of Johan's apps (tools/design).
+/* Låda Glass 2.2.0: the shared look of Johan's apps (tools/design).
    Dark charcoal frosted glass is the main theme, light the alternative; compact density; custom
    accents. Values come from Låda (tokens.json); no build step, no dependencies, works from file://.
 
@@ -238,6 +238,9 @@
             color: var(--lg-muted); margin: 0 0 var(--lg-space-s); }
 .lg-muted { color: var(--lg-muted); }
 .lg-small { font-size: var(--lg-fs-small); }
+/* Visually hidden, still read by screen readers (live regions, extra labels). */
+.lg-sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0);
+              clip-path: inset(50%); white-space: nowrap; border: 0; }
 .lg-mono, .lg code { font-family: var(--lg-mono); font-size: var(--lg-fs-mono); }
 .lg-code { font-family: var(--lg-mono); font-size: var(--lg-fs-mono); background: var(--lg-code); color: var(--lg-text);
            border: 1px solid var(--lg-glass-edge); background-clip: padding-box; border-radius: var(--lg-radius-control);
@@ -248,7 +251,7 @@
    shadow. Clean corners: the background stops at the inside of the border (padding-box), so a
    semi-transparent edge never shows a halo. Overrides set background-color only (the shorthand
    would reset the clip). */
-.lg-glass, .lg-card, .lg-sidebar, .lg-toast, .lg-popup, .lg-empty, .lg-modal, .lg-drawer, .lg-palette, .lg-popover, .lg-menu, .lg-combobox {
+.lg-glass, .lg-card, .lg-sidebar, .lg-toast, .lg-popup, .lg-empty, .lg-modal, .lg-drawer, .lg-palette, .lg-popover, .lg-menu, .lg-combobox, .lg-notifications {
   position: relative; isolation: isolate;
   background-color: var(--lg-glass);
   background-image: linear-gradient(180deg, var(--lg-glass-fill-top), var(--lg-glass-fill-bottom));
@@ -262,7 +265,7 @@
 .lg-card.lg-hover { transition: transform var(--lg-dur-quick) var(--lg-ease-out), box-shadow var(--lg-dur-quick) var(--lg-ease-out); }
 .lg-card.lg-hover:hover { transform: translateY(-1px); box-shadow: var(--lg-lift), 0 0 0 1px color-mix(in srgb, var(--lg-accent) 45%, transparent); }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .lg-glass, .lg-card, .lg-sidebar, .lg-toast, .lg-popup, .lg-empty, .lg-modal, .lg-drawer, .lg-palette, .lg-popover, .lg-menu, .lg-combobox { background-color: var(--lg-surface); }
+  .lg-glass, .lg-card, .lg-sidebar, .lg-toast, .lg-popup, .lg-empty, .lg-modal, .lg-drawer, .lg-palette, .lg-popover, .lg-menu, .lg-combobox, .lg-notifications { background-color: var(--lg-surface); }
 }
 
 /* ---- layout: app shell, stack, row, responsive grid ----------------------------------------------- */
@@ -643,6 +646,7 @@ textarea.lg-input { min-height: 72px; resize: vertical; }
 .lg-counter { display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding: 0 5px; border-radius: 999px; font-size: 10px; font-weight: 700; line-height: 1;
               font-variant-numeric: tabular-nums; color: var(--lg-on-accent); background: var(--lg-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25); }
 .lg-counter-float { position: absolute; top: -5px; right: -6px; }
+.lg-counter[hidden] { display: none; }
 
 .lg-avatar { --lg-avatar-size: 28px; display: inline-grid; place-items: center; flex: none; width: var(--lg-avatar-size); height: var(--lg-avatar-size); overflow: hidden;
              border-radius: 50%; font-size: calc(var(--lg-avatar-size) * .38); font-weight: 600; line-height: 1; text-transform: uppercase; color: var(--lg-text);
@@ -808,10 +812,10 @@ hr.lg-divider { height: 1px; margin: var(--lg-space-m) 0; border: 0; background:
    popover support). The UA popover look (border, padding, Canvas colours) is reset. Popover and menus
    are the 2.0 glass on the solid surface; the tooltip is a small solid label that never takes the
    pointer. They fade in quickly (the modal's open animation); nothing animates under reduced motion. */
-.lg-tooltip, .lg-popover, .lg-menu, .lg-combobox { position: fixed; inset: auto; margin: 0; z-index: 1001; box-sizing: border-box;
+.lg-tooltip, .lg-popover, .lg-menu, .lg-combobox, .lg-notifications { position: fixed; inset: auto; margin: 0; z-index: 1001; box-sizing: border-box;
     color: var(--lg-text); font: inherit; overflow: visible; }
-.lg-tooltip:not([data-lg-open]), .lg-popover:not([data-lg-open]), .lg-menu:not([data-lg-open]), .lg-combobox:not([data-lg-open]) { display: none; }
-.lg-tooltip[data-lg-open], .lg-popover[data-lg-open], .lg-menu[data-lg-open], .lg-combobox[data-lg-open] { animation: lg-modal-in var(--lg-dur-quick) var(--lg-ease-out); }
+.lg-tooltip:not([data-lg-open]), .lg-popover:not([data-lg-open]), .lg-menu:not([data-lg-open]), .lg-combobox:not([data-lg-open]), .lg-notifications:not([data-lg-open]) { display: none; }
+.lg-tooltip[data-lg-open], .lg-popover[data-lg-open], .lg-menu[data-lg-open], .lg-combobox[data-lg-open], .lg-notifications[data-lg-open] { animation: lg-modal-in var(--lg-dur-quick) var(--lg-ease-out); }
 .lg-tooltip { display: flex; align-items: center; gap: var(--lg-space-s); max-width: min(280px, calc(100vw - 16px)); padding: 4px 8px;
               border: 1px solid var(--lg-line-2); border-radius: var(--lg-radius-small); background: var(--lg-elevated); font-size: var(--lg-fs-small);
               line-height: 1.4; overflow-wrap: anywhere; pointer-events: none; box-shadow: 0 6px 18px -8px var(--lg-glass-shadow); }
@@ -892,6 +896,60 @@ hr.lg-divider { height: 1px; margin: var(--lg-space-m) 0; border: 0; background:
 .lg-chart-tip-value { font-weight: 600; }
 .lg-chart-tip-name { color: var(--lg-muted); }
 
+/* ---- notifications (LadaGlass.notifications) -------------------------------------------------------- */
+/* The bell carries a floating .lg-counter. The panel is a floating panel like the menus (the 2.0 glass on
+   the solid surface): a header, then the items grouped Today / Earlier. Each item has a 3 px type stripe
+   (--lg-stripe, as toasts and alerts, in the *-text status colours), an icon in the same colour, its text, the time and an unread dot
+   (unread is also said in text and shown by a bolder title, never by colour alone). Hover and focus use
+   the menus' 16 % accent fill. */
+.lg-notifications-bell { position: relative; }
+.lg-notifications { display: flex; flex-direction: column; width: min(360px, calc(100vw - 16px)); max-height: min(480px, calc(100vh - 16px));
+                    padding: 0; overflow: hidden; background-color: var(--lg-surface); }
+.lg-notifications:focus { outline: none; }
+.lg-notifications:focus-visible { outline: 2px solid var(--lg-accent); outline-offset: 2px; }
+.lg-notifications-head { display: flex; align-items: center; gap: var(--lg-space-s); flex: none;
+                         padding: var(--lg-space-s) var(--lg-space-s) var(--lg-space-s) var(--lg-space-m); border-bottom: 1px solid var(--lg-line); }
+.lg-notifications-title { margin-right: auto; font-weight: 600; }
+.lg-notifications-mark-all { min-height: 0; padding: 3px 8px; font-size: var(--lg-fs-small); color: var(--lg-text); }   /* the accent is under AA on the panel */
+.lg-notifications-mark-all:hover:not(:disabled) { background: var(--lg-field); }
+.lg-notifications-mark-all:disabled { color: var(--lg-muted); opacity: .7; cursor: default; }
+.lg-notifications-body { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: var(--lg-space-xs); }
+.lg-notifications-group { margin: var(--lg-space-s) var(--lg-space-s) var(--lg-space-xs); font-size: var(--lg-fs-label); font-weight: 600;
+                          letter-spacing: .08em; text-transform: uppercase; color: var(--lg-muted); }
+.lg-notifications-group:first-child { margin-top: var(--lg-space-xs); }
+.lg-notifications-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.lg-notifications-empty { margin: 0; padding: var(--lg-space-xl) var(--lg-space-m); text-align: center; color: var(--lg-muted); }
+.lg-notification { --lg-stripe: var(--lg-accent); position: relative; display: flex; align-items: flex-start; border-radius: var(--lg-radius-control);
+                   transition: background-color var(--lg-dur-quick) var(--lg-ease-out); }
+.lg-notification::before { content: ""; position: absolute; inset: 7px auto 7px 0; width: 3px; border-radius: 2px; background: var(--lg-stripe); pointer-events: none; }
+/* The *-text status colours: they keep 3:1 on the focused fill, where the plain ones don't. */
+.lg-notification.lg-ok { --lg-stripe: var(--lg-ok-text); } .lg-notification.lg-warn { --lg-stripe: var(--lg-warn-text); } .lg-notification.lg-bad { --lg-stripe: var(--lg-bad-text); }
+.lg-notification:is(:hover, :focus-within) { background: color-mix(in srgb, var(--lg-accent) 16%, transparent); }
+/* Muted is under AA on that fill in dark: the description and time take the text colour there. */
+.lg-notification:is(:hover, :focus-within) :is(.lg-notification-desc, .lg-notification-time) { color: var(--lg-text); }
+.lg-notification .lg-notification-main { flex: 1 1 auto; min-width: 0; display: flex; align-items: flex-start; gap: var(--lg-space-s); margin: 0;
+    padding: 8px 4px 8px 12px; border: 0; border-radius: var(--lg-radius-control); background: transparent; color: var(--lg-text);
+    font: inherit; text-align: left; text-decoration: none; cursor: pointer; }
+.lg-notification .lg-notification-main:focus { outline: none; }
+.lg-notification .lg-notification-main:focus-visible { outline: 2px solid var(--lg-accent); outline-offset: -2px; }
+.lg-notification-icon { flex: none; display: inline-flex; padding-top: 1px; color: var(--lg-stripe); }
+.lg-notification-icon > .lg-icon { width: 16px; height: 16px; }
+.lg-notification-text { flex: 1 1 auto; min-width: 0; display: grid; gap: 1px; overflow-wrap: anywhere; }
+.lg-notification-title { font-weight: 500; }
+.lg-notification[data-lg-unread] .lg-notification-title { font-weight: 650; }
+.lg-notification-desc, .lg-notification-time { color: var(--lg-muted); font-size: var(--lg-fs-small); }
+.lg-notification-dot { flex: none; width: 8px; height: 8px; margin: 5px 2px 0 0; border-radius: 50%; background: var(--lg-accent); }
+.lg-notification-remove { flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; margin: 6px 4px 0 0; padding: 0; border: 0;
+                          border-radius: var(--lg-radius-small); background: transparent; color: var(--lg-muted); cursor: pointer;
+                          transition: background-color var(--lg-dur-quick), color var(--lg-dur-quick); }
+.lg-notification-remove > .lg-icon { width: 14px; height: 14px; }
+.lg-notification-remove:hover { background: var(--lg-field); color: var(--lg-text); }
+.lg-notification-remove:focus-visible { outline: 2px solid var(--lg-accent); outline-offset: -2px; color: var(--lg-text); }
+@media (pointer: coarse) {
+  .lg-notification .lg-notification-main { min-height: var(--lg-touch); }
+  .lg-notification-remove { width: var(--lg-touch); height: var(--lg-touch); margin: 0; }
+}
+
 /* ---- accessibility preferences ------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .lg, .lg *, .lg *::before, .lg *::after { animation: none !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
@@ -902,7 +960,8 @@ hr.lg-divider { height: 1px; margin: var(--lg-space-m) 0; border: 0; background:
   .lg-spinner, .lg-skeleton, .lg-progress:indeterminate { animation: none !important; }
   /* modals open and close at once */
   .lg-modal, .lg-modal::backdrop, .lg-drawer, .lg-drawer::backdrop, .lg-palette, .lg-palette::backdrop { animation: none !important; }
-  .lg-tooltip, .lg-popover, .lg-menu, .lg-combobox { animation: none !important; }
+  .lg-tooltip, .lg-popover, .lg-menu, .lg-combobox, .lg-notifications { animation: none !important; }
+  .lg-notification, .lg-notification-remove { transition: none !important; }
   /* numbers change at once */
   .lg-digit-col { transition: none !important; }
   .lg-chart-seg { transition: none !important; }
@@ -911,13 +970,16 @@ hr.lg-divider { height: 1px; margin: var(--lg-space-m) 0; border: 0; background:
   .lg-progress:indeterminate { background: linear-gradient(90deg, var(--lg-accent) 0 35%, transparent 35%), var(--lg-field); }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .lg-glass, .lg-card, .lg-sidebar, .lg-toast, .lg-popup, .lg-empty, .lg-modal, .lg-drawer, .lg-palette, .lg-popover, .lg-menu, .lg-combobox { background-color: var(--lg-surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .lg-glass, .lg-card, .lg-sidebar, .lg-toast, .lg-popup, .lg-empty, .lg-modal, .lg-drawer, .lg-palette, .lg-popover, .lg-menu, .lg-combobox, .lg-notifications { background-color: var(--lg-surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
   .lg-backdrop { background: var(--lg-bg); }
 }
 @media (forced-colors: active) {
-  .lg-glass, .lg-card, .lg-sidebar, .lg-toast, .lg-popup, .lg-empty, .lg-modal, .lg-drawer, .lg-palette, .lg-popover, .lg-menu, .lg-combobox { border: 1px solid CanvasText; }
+  .lg-glass, .lg-card, .lg-sidebar, .lg-toast, .lg-popup, .lg-empty, .lg-modal, .lg-drawer, .lg-palette, .lg-popover, .lg-menu, .lg-combobox, .lg-notifications { border: 1px solid CanvasText; }
   .lg-toggle, .lg-check, .lg-select, .lg-stepper { border: 1px solid CanvasText; }
   .lg-shimmer { background: none; color: CanvasText; }
+  .lg-notification::before, .lg-notification-dot { forced-color-adjust: none; background: CanvasText; }
+  .lg-notification:is(:hover, :focus-within) { outline: 1px solid Highlight; }
+  .lg-notifications-head { border-bottom-color: CanvasText; }
   .lg-alert, .lg-banner, .lg-accordion, .lg-load-more, .lg-pagination :is(a, button)[aria-current="page"] { border: 1px solid CanvasText; }
   .lg-ring::before { background: conic-gradient(Highlight calc(var(--lg-value) * 1%), GrayText 0); }
   .lg-spinner { border-color: GrayText; border-top-color: Highlight; }
@@ -925,9 +987,10 @@ hr.lg-divider { height: 1px; margin: var(--lg-space-m) 0; border: 0; background:
 }
 @media print {
   .lg-backdrop { background: none; }
-  .lg-glass, .lg-card, .lg-sidebar, .lg-toast, .lg-popup, .lg-empty, .lg-modal, .lg-drawer, .lg-palette, .lg-popover, .lg-menu, .lg-combobox { background: none; box-shadow: none; border: 1px solid #999; }
+  .lg-glass, .lg-card, .lg-sidebar, .lg-toast, .lg-popup, .lg-empty, .lg-modal, .lg-drawer, .lg-palette, .lg-popover, .lg-menu, .lg-combobox, .lg-notifications { background: none; box-shadow: none; border: 1px solid #999; }
   .lg-shimmer { animation: none; background: none; color: inherit; }
   .lg-spinner, .lg-skeleton { animation: none; }
+  .lg-notifications { display: none !important; }   /* a passing panel, not page content */
 }
 
 /* An inlined icon sprite (icons/sprite.svg) takes no space. */

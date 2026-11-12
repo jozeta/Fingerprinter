@@ -1,11 +1,11 @@
-/* Låda Glass 2.0.0: behaviour for lada-glass.css (tools/design). Generated from design/js/ by build.py; do not edit. */
+/* Låda Glass 2.2.0: behaviour for lada-glass.css (tools/design). Generated from design/js/ by build.py; do not edit. */
 // Opens the wrapper that 99-foot.js closes. build.py concatenates design/js/*.js in name order
 // into lada-glass.js; every part in between is plain statements that attach to LG.
 (function (root) {
 "use strict";
 
 const LG = {};
-LG.version = "2.0.0";            // build.py: design/VERSION
+LG.version = "2.2.0";            // build.py: design/VERSION
 LG.tokens = {"accents": [{"name": "fjord", "d": "#5A93C4", "l": "#2B5B84"}, {"name": "arctic-teal", "d": "#459AA3", "l": "#216B73"}, {"name": "slate-steel", "d": "#7D91A8", "l": "#415164"}, {"name": "frost-cyan", "d": "#88C0D0", "l": "#2A7288"}, {"name": "aurora-green", "d": "#A3BE8C", "l": "#45763E"}, {"name": "aurora-violet", "d": "#B48EAD", "l": "#714D88"}, {"name": "lingonberry", "d": "#D96E75", "l": "#A83541"}, {"name": "cloudberry", "d": "#E0915C", "l": "#AD591D"}, {"name": "birch-gold", "d": "#E1BC6D", "l": "#8C6A16"}, {"name": "midnight-indigo", "d": "#8D95E3", "l": "#41479C"}]};       // build.py: { accents: [{name, d, l}, …] } from tokens.json, in its order
 LG._added = [];                      // functions called with each element added to the document (one shared MutationObserver, set up in 04-stepper.js)
 LG._init = [];                       // parts push setup functions (delegated listeners); 99-foot.js runs them once the DOM is ready
@@ -357,10 +357,15 @@ function floatLayerClose(L, focus) {
   if (typeof L.onClose === "function") L.onClose();
 }
 
-// Close the newest panels down to the first one that holds `target` (a click or focus outside).
-function floatOutside(target) {
+// Close the newest panels down to the first one that holds the event's target (a click or focus
+// outside). The event path counts too: a click on a control that the panel removed or rebuilt while
+// handling it (a notification's remove button) is still a click inside, though the target is detached.
+function floatOutside(e) {
+  const target = e.target;
+  const path = typeof e.composedPath === "function" ? e.composedPath() : [];
+  const holds = (n) => !!n && ((target && n.contains(target)) || path.includes(n));
   for (const L of floatLayers.slice().reverse()) {
-    if (target && (L.el.contains(target) || (L.trigger && L.trigger.contains(target)))) return;
+    if (target && (holds(L.el) || holds(L.trigger))) return;
     floatLayerClose(L, false);
   }
 }
@@ -439,8 +444,8 @@ LG._init.push(() => {
     e.preventDefault();
     floatLayerClose(floatLayers[floatLayers.length - 1], true);
   }, true);
-  document.addEventListener("click", (e) => { if (floatLayers.length) floatOutside(e.target); });
-  document.addEventListener("focusin", (e) => { if (floatLayers.length) floatOutside(e.target); });
+  document.addEventListener("click", (e) => { if (floatLayers.length) floatOutside(e); });
+  document.addEventListener("focusin", (e) => { if (floatLayers.length) floatOutside(e); });
   const follow = () => { for (const el of floatShown.keys()) floatPosition(el); };
   document.addEventListener("scroll", follow, { capture: true, passive: true });
   window.addEventListener("resize", follow);
@@ -2255,6 +2260,466 @@ LG._init.push(() => {
     }
   });
 });
+
+// Notification centre (LadaGlass.notifications): a short history of events worth keeping after the
+// toast is gone (scan finished, new finding, certificate expiring, sync failed).
+//   notifications({storageKey, max = 50, toast = false, locale}) → center
+//     center.add({title, description, type: "info"|"ok"|"warn"|"bad", time = Date.now(), href, read = false}) → id
+//       (read: true adds history: kept, not toasted or announced; null when max is full of newer items)
+//     center.markRead(id) / markAllRead() / remove(id) / clear()
+//     center.list() → copies, newest first;  center.unread() → number
+//     center.on("change", fn({items, unread})) → off;  center.on("select", fn(item)) → off (an item activated)
+//     center.attach(button) → detach;  center.open(trigger?) / close() / isOpen();  center.panel;  center.destroy()
+//   A <button data-lg-notifications="<storageKey>"> (a bare attribute: a centre made without one) is
+//   wired to the newest centre made with that key, whenever either appears. The bell gets a
+//   .lg-counter badge ("9+" above 9) and aria-label "Notifications, 3 unread".
+//   The panel is a floating .lg-notifications (role="dialog", the LG._float layer of popovers and
+//   menus, so it moves into an open modal): a header with "Mark all read", the items grouped Today /
+//   Earlier (role="list"), each with a type icon and stripe, title, description, relative time, an
+//   unread dot and a remove button; a link only for http(s) and relative hrefs. Opening it marks
+//   nothing read; activating an item does. ↑ ↓ Home End move between items; Esc closes it and puts
+//   focus back on the bell. All text goes in as textContent.
+//   toast: true also shows a LadaGlass.toast per added item (warn as info: toasts have no warn type);
+//   otherwise the item is announced in a visually hidden polite live region.
+//   With a storageKey the items persist in localStorage as {v: 1, items}; every access is in
+//   try/catch, and what is loaded is validated (wrong shapes dropped, text capped, links filtered).
+// Pure helpers (unit-tested in Node): relative(time, now) → {value, unit}, ago(time, now, locale),
+// bucket(time, now) → "today" | "earlier", safeHref(h), parse(text, max), serialize(items).
+(function () {
+  const TYPES = ["info", "ok", "warn", "bad"];
+  const CAP = { title: 200, description: 1000, href: 2048, id: 64, store: 512 * 1024 };
+  const MAX_TIME = 8.64e15;   // the Date range
+  const VERSION = 1;
+  const hasDom = typeof document !== "undefined";
+
+  // --- pure parts ------------------------------------------------------------------------------
+
+  // Only http:, https: and same-site relative links (no protocol-relative //host or \\host). Tabs and
+  // newlines are dropped and the ends trimmed the way
+  // a URL parser does, so "java\tscript:" can't sneak past; any other control character refuses it.
+  function safeHref(h) {
+    if (typeof h !== "string" || h.length > CAP.href) return null;
+    const s = h.replace(/[\t\n\r]/g, "").replace(/^[\u0000- ]+|[\u0000- ]+$/g, "");
+    if (!s || /[\u0000-\u001F\u007F]/.test(s)) return null;
+    if (/^[\\/]{2}/.test(s)) return null;   // //host, \\host, /\host: protocol-relative, they leave the site
+    const scheme = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(s);
+    if (scheme && !/^https?$/i.test(scheme[1])) return null;
+    return s;
+  }
+
+  function clean(raw) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+    const { id, title, time } = raw;
+    if (typeof id !== "string" || !id || id.length > CAP.id) return null;
+    if (typeof title !== "string") return null;
+    if (typeof time !== "number" || !Number.isFinite(time) || Math.abs(time) > MAX_TIME) return null;
+    return {
+      id,
+      title: title.slice(0, CAP.title),
+      description: typeof raw.description === "string" ? raw.description.slice(0, CAP.description) : "",
+      type: TYPES.includes(raw.type) ? raw.type : "info",
+      time,
+      href: safeHref(raw.href),
+      read: raw.read === true,
+    };
+  }
+
+  const newestFirst = (a, b) => b.time - a.time;   // Array.prototype.sort is stable
+
+  function parse(text, max) {
+    if (typeof text !== "string" || !text || text.length > CAP.store) return [];
+    let data;
+    try { data = JSON.parse(text); } catch (_) { return []; }
+    if (!data || typeof data !== "object" || data.v !== VERSION || !Array.isArray(data.items)) return [];
+    const seen = new Set();
+    const out = [];
+    for (const raw of data.items) {
+      const item = clean(raw);
+      if (!item || seen.has(item.id)) continue;
+      seen.add(item.id);
+      out.push(item);
+    }
+    return out.sort(newestFirst).slice(0, max > 0 ? max : 50);
+  }
+
+  const serialize = (items) => JSON.stringify({ v: VERSION, items });
+
+  // Thresholds: under 45 s "now"; then minutes, hours, days (under 7), weeks (under 30 days),
+  // months (under a year), years. Whole units, rounded down, at least 1. The future counts as now.
+  function relative(time, now) {
+    const s = Number.isFinite(time) && Number.isFinite(now) ? Math.max(0, (now - time) / 1000) : 0;
+    const whole = (v) => Math.max(1, Math.floor(v));
+    const d = s / 86400;
+    if (s < 45) return { value: 0, unit: "second" };
+    if (s < 3600) return { value: whole(s / 60), unit: "minute" };
+    if (s < 86400) return { value: whole(s / 3600), unit: "hour" };
+    if (d < 7) return { value: whole(d), unit: "day" };
+    if (d < 30) return { value: whole(d / 7), unit: "week" };
+    if (d < 365) return { value: whole(d / 30), unit: "month" };
+    return { value: whole(d / 365), unit: "year" };
+  }
+
+  const formatters = new Map();
+  function ago(time, now, locale) {
+    const r = relative(time, now);
+    const k = locale || "";
+    try {
+      if (!formatters.has(k)) formatters.set(k, new Intl.RelativeTimeFormat(locale || undefined, { numeric: "auto", style: "short" }));
+      return formatters.get(k).format(r.value === 0 ? 0 : -r.value, r.unit);
+    } catch (_) {
+      return r.value === 0 ? "now" : `${r.value} ${r.unit}${r.value === 1 ? "" : "s"} ago`;
+    }
+  }
+
+  // Today: the same local calendar day as now (or later); everything before it is Earlier.
+  function bucket(time, now) {
+    if (!Number.isFinite(time) || !Number.isFinite(now) || time >= now) return "today";
+    const t = new Date(time), n = new Date(now);
+    return t.getFullYear() === n.getFullYear() && t.getMonth() === n.getMonth() && t.getDate() === n.getDate() ? "today" : "earlier";
+  }
+
+  // --- shared DOM bits -------------------------------------------------------------------------
+
+  const registry = new Map();     // storageKey ("" for none) -> the newest centre made with it
+  const owner = new WeakMap();    // bell -> detach function of the centre it is attached to
+  let seq = 0;
+  let live = null;
+
+  const svgIcon = (paths, circle) => LG.util.svg("svg", { class: "lg-icon", viewBox: "0 0 24 24", "aria-hidden": "true" },
+    (circle ? [LG.util.svg("circle", { cx: 12, cy: 12, r: 9 })] : []).concat(paths.map((d) => LG.util.svg("path", { d }))));
+  const ICONS = {   // the sprite's info, check-circle and alert, and a ! in a circle (as the toasts)
+    info: () => svgIcon(["M12 11v5.5M12 7.5v.01"], true),
+    ok: () => svgIcon(["M8 12.5l3 3 5-6"], true),
+    warn: () => svgIcon(["M12 3.5l9.5 16.5h-19L12 3.5z", "M12 10v4.5M12 17.5v.01"], false),
+    bad: () => svgIcon(["M12 7.5v5.5M12 16.5v.01"], true),
+  };
+
+  function storage() {
+    if (typeof window === "undefined") return null;
+    try { return window.localStorage || null; } catch (_) { return null; }
+  }
+
+  // The newest open modal holds the live region (the rest of the page is inert while one is open).
+  function announce(text) {
+    if (!hasDom || !document.body) return;
+    if (!live) live = LG.util.el("div", { class: "lg-sr-only lg-notifications-live", attrs: { "aria-live": "polite", role: "status" } });
+    const modals = LG.overlay ? LG.overlay.stack().filter((d) => d.open && d.isConnected) : [];
+    const host = modals.length ? modals[modals.length - 1] : document.body;
+    if (live.parentNode !== host) host.append(live);
+    live.textContent = "";
+    // A moment later, so the same text twice is still a change the screen reader announces.
+    setTimeout(() => { if (live) live.textContent = text; }, 50);
+  }
+
+  function wireBells(root) {
+    if (!root || typeof root.querySelectorAll !== "function") return;
+    const found = Array.from(root.querySelectorAll("[data-lg-notifications]"));
+    if (typeof root.matches === "function" && root.matches("[data-lg-notifications]")) found.unshift(root);
+    for (const b of found) {
+      const c = registry.get(b.getAttribute("data-lg-notifications") || "");
+      if (c && !c._has(b)) c.attach(b);
+    }
+  }
+  LG._added.push(wireBells);
+  LG._init.push(() => wireBells(document));
+
+  // --- the centre ------------------------------------------------------------------------------
+
+  LG.notifications = function notifications(opts) {
+    const o = opts || {};
+    const key = typeof o.storageKey === "string" ? o.storageKey : "";
+    const max = Number.isInteger(o.max) && o.max > 0 ? o.max : 50;
+    const toast = !!o.toast;
+    const locale = () => o.locale || (hasDom && document.documentElement.lang) || undefined;
+    const listeners = { change: new Set(), select: new Set() };
+    const bells = new Map();   // button -> {counter, onClick, label, addedClass}
+    let items = load();
+    let panel = null, body = null, markAll = null, panelId = null, timer = 0;
+
+    function load() {
+      const s = key ? storage() : null;
+      if (!s) return [];
+      try { return parse(s.getItem(key), max); } catch (_) { return []; }
+    }
+    function save() {
+      const s = key ? storage() : null;
+      if (!s) return;
+      try { s.setItem(key, serialize(items)); } catch (_) { /* full or denied: the centre still works */ }
+    }
+    function emit(type, arg) {
+      for (const fn of Array.from(listeners[type])) {
+        try { fn(arg); } catch (e) { console.error("LadaGlass.notifications:", e); }
+      }
+    }
+    const copy = (i) => Object.assign({}, i);
+    const find = (id) => items.find((i) => i.id === id);
+    const unread = () => items.reduce((n, i) => n + (i.read ? 0 : 1), 0);
+
+    function changed() {
+      save();
+      for (const b of bells.keys()) renderBell(b);
+      if (panel && LG._float.shown(panel)) render();
+      emit("change", { items: items.map(copy), unread: unread() });
+    }
+
+    function newId() {
+      let id;
+      do { id = "n" + Date.now().toString(36) + (++seq).toString(36) + Math.random().toString(36).slice(2, 6); } while (find(id));
+      return id;
+    }
+
+    // --- bells ---
+    function renderBell(b) {
+      const st = bells.get(b);
+      const n = unread();
+      st.counter.textContent = n > 9 ? "9+" : String(n);
+      st.counter.hidden = n === 0;
+      b.setAttribute("aria-label", n ? `Notifications, ${n} unread` : "Notifications");
+    }
+
+    function attach(b) {
+      if (!b || !hasDom) return () => {};
+      if (bells.has(b)) return () => detach(b);
+      const prev = owner.get(b);
+      if (prev) prev();
+      if (!panelId) panelId = LG.util.uid("lg-notifications");
+      const st = {
+        counter: LG.util.el("span", { class: "lg-counter lg-counter-float lg-notifications-count", attrs: { "aria-hidden": "true" } }),
+        label: b.getAttribute("aria-label"),
+        addedClass: !b.classList.contains("lg-notifications-bell"),
+        onClick: () => { if (isOpen()) close(); else open(b); },
+      };
+      bells.set(b, st);
+      owner.set(b, () => detach(b));
+      b.classList.add("lg-notifications-bell");
+      if (b.tagName === "BUTTON" && !b.hasAttribute("type")) b.setAttribute("type", "button");
+      b.setAttribute("aria-haspopup", "dialog");
+      b.setAttribute("aria-expanded", "false");
+      b.setAttribute("aria-controls", panelId);
+      b.append(st.counter);
+      b.addEventListener("click", st.onClick);
+      renderBell(b);
+      return () => detach(b);
+    }
+
+    function detach(b) {
+      const st = bells.get(b);
+      if (!st) return;
+      if (panel && LG._float.isOpen(panel) && b.getAttribute("aria-expanded") === "true") close();
+      bells.delete(b);
+      if (owner.get(b)) owner.delete(b);
+      b.removeEventListener("click", st.onClick);
+      st.counter.remove();
+      for (const a of ["aria-haspopup", "aria-expanded", "aria-controls"]) b.removeAttribute(a);
+      if (st.label === null) b.removeAttribute("aria-label"); else b.setAttribute("aria-label", st.label);
+      if (st.addedClass) b.classList.remove("lg-notifications-bell");
+    }
+
+    // --- the panel ---
+    function ensurePanel() {
+      if (panel) return panel;
+      const el = LG.util.el;
+      if (!panelId) panelId = LG.util.uid("lg-notifications");
+      markAll = el("button", { class: "lg-btn lg-btn-ghost lg-notifications-mark-all", text: "Mark all read", attrs: { type: "button" } });
+      body = el("div", { class: "lg-notifications-body" });
+      panel = el("div", { class: "lg-notifications", attrs: { role: "dialog", "aria-label": "Notifications", id: panelId, tabindex: "-1" } }, [
+        el("div", { class: "lg-notifications-head" }, [el("strong", { class: "lg-notifications-title", text: "Notifications" }), markAll]),
+        body,
+      ]);
+      markAll.addEventListener("click", () => markAllRead());
+      panel.addEventListener("click", (e) => {
+        const t = e.target && typeof e.target.closest === "function" ? e.target : null;
+        const row = t && t.closest(".lg-notification");
+        if (!row || !panel.contains(row)) return;
+        const id = row.getAttribute("data-id");
+        if (t.closest(".lg-notification-remove")) { remove(id); return; }
+        if (t.closest(".lg-notification-main")) {
+          const item = find(id);
+          if (!item) return;
+          markRead(id);
+          emit("select", copy(item));
+        }
+      });
+      panel.addEventListener("keydown", (e) => {
+        if (e.defaultPrevented || e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
+        const m = Array.from(panel.querySelectorAll(".lg-notification-main"));
+        const k = e.key || "";
+        if (!m.length || !["ArrowDown", "ArrowUp", "Home", "End"].includes(k)) return;
+        const row = e.target && typeof e.target.closest === "function" ? e.target.closest(".lg-notification") : null;
+        const cur = row ? m.indexOf(row.querySelector(".lg-notification-main")) : -1;
+        const n = m.length;
+        const next = k === "Home" ? 0 : k === "End" ? n - 1
+          : k === "ArrowDown" ? (cur < 0 ? 0 : (cur + 1) % n) : (cur < 0 ? n - 1 : (cur - 1 + n) % n);
+        e.preventDefault();
+        m[next].focus();
+      });
+      return panel;
+    }
+
+    function row(item, now) {
+      const el = LG.util.el;
+      const li = el("li", { class: `lg-notification lg-${item.type}`, attrs: { "data-id": item.id } });
+      if (!item.read) li.setAttribute("data-lg-unread", "");
+      const main = item.href
+        ? el("a", { class: "lg-notification-main", attrs: { href: item.href } })
+        : el("button", { class: "lg-notification-main", attrs: { type: "button" } });
+      // Nulls filtered out: a plain append would add the text "null".
+      main.append(...[
+        el("span", { class: "lg-notification-icon", attrs: { "aria-hidden": "true" } }, [ICONS[item.type]()]),
+        el("span", { class: "lg-notification-text" }, [
+          item.read ? null : el("span", { class: "lg-sr-only", text: "Unread: " }),
+          el("span", { class: "lg-notification-title", text: item.title }),
+          item.description ? el("span", { class: "lg-notification-desc", text: item.description }) : null,
+          el("time", { class: "lg-notification-time", text: ago(item.time, now, locale()), attrs: { datetime: new Date(item.time).toISOString() } }),
+        ]),
+        item.read ? null : el("span", { class: "lg-notification-dot", attrs: { "aria-hidden": "true" } }),
+      ].filter(Boolean));
+      const x = el("button", { class: "lg-notification-remove", attrs: { type: "button", "aria-label": `Remove: ${item.title}` } },
+        [svgIcon(["M6 6l12 12M18 6L6 18"])]);
+      li.append(main, x);
+      return li;
+    }
+
+    // Rebuilds the list. Focus on an item (or its remove button) stays on that item; when the item is
+    // gone it moves to the one that took its place, else the panel itself.
+    function render() {
+      const el = LG.util.el;
+      const a = document.activeElement;
+      const oldRows = Array.from(body.querySelectorAll(".lg-notification"));
+      const focusRow = a && body.contains(a) ? a.closest(".lg-notification") : null;
+      const focus = focusRow ? { id: focusRow.getAttribute("data-id"), remove: !!a.closest(".lg-notification-remove"), index: oldRows.indexOf(focusRow) } : null;
+      const now = Date.now();
+      const groups = [["today", "Today", []], ["earlier", "Earlier", []]];
+      for (const item of items) groups[bucket(item.time, now) === "today" ? 0 : 1][2].push(item);
+      const parts = [];
+      for (const [, label, list] of groups) {
+        if (!list.length) continue;
+        const gid = LG.util.uid("lg-notifications-group");
+        parts.push(el("p", { class: "lg-notifications-group", text: label, attrs: { id: gid } }),
+          el("ul", { class: "lg-notifications-list", attrs: { role: "list", "aria-labelledby": gid } }, list.map((i) => row(i, now))));
+      }
+      if (!items.length) parts.push(el("p", { class: "lg-notifications-empty", text: "No notifications" }));
+      body.replaceChildren(...parts);
+      // A focused button that gets disabled drops focus to <body>: move it to the first item (or the
+      // panel) first, so "Mark all read" from the keyboard keeps focus in the panel.
+      if (unread() === 0 && document.activeElement === markAll) (body.querySelector(".lg-notification-main") || panel).focus();
+      markAll.disabled = unread() === 0;
+      if (focus) {
+        const rows = Array.from(body.querySelectorAll(".lg-notification"));
+        const same = rows.find((r) => r.getAttribute("data-id") === focus.id);
+        const target = same ? same.querySelector(focus.remove ? ".lg-notification-remove" : ".lg-notification-main")
+          : rows.length ? rows[Math.min(focus.index, rows.length - 1)].querySelector(".lg-notification-main") : panel;
+        target.focus();
+      }
+      if (LG._float.shown(panel)) LG._float.update(panel);
+    }
+
+    function updateTimes() {
+      if (!panel) return;
+      const now = Date.now();
+      for (const t of panel.querySelectorAll(".lg-notification-time")) {
+        const item = find(t.closest(".lg-notification").getAttribute("data-id"));
+        if (item) t.textContent = ago(item.time, now, locale());
+      }
+    }
+
+    function isOpen() { return !!panel && LG._float.isOpen(panel); }
+
+    function open(trigger) {
+      if (!hasDom || isOpen()) return;
+      const t = trigger && trigger.isConnected ? trigger : Array.from(bells.keys()).find((b) => b.isConnected) || null;
+      ensurePanel();
+      render();
+      const corner = () => {
+        const w = document.documentElement.clientWidth;
+        return { left: w - 8, right: w - 8, top: 8, bottom: 8, width: 0, height: 0 };
+      };
+      LG._float.open(panel, { anchor: t ? () => t.getBoundingClientRect() : corner, side: "bottom", host: t, trigger: t,
+        onClose: () => {
+          clearInterval(timer);
+          timer = 0;
+          for (const b of bells.keys()) b.setAttribute("aria-expanded", "false");
+        } });
+      if (t && bells.has(t)) t.setAttribute("aria-expanded", "true");
+      const first = panel.querySelector(".lg-notification-main");
+      (first || panel).focus();
+      timer = setInterval(updateTimes, 30000);
+    }
+
+    function close() { if (isOpen()) LG._float.close(panel, { focus: true }); }
+
+    // --- the API ---
+    function add(n) {
+      const src = n || {};
+      const item = clean({
+        id: newId(),
+        title: src.title === undefined || src.title === null ? "" : String(src.title),
+        description: src.description === undefined || src.description === null ? "" : String(src.description),
+        type: src.type,
+        time: typeof src.time === "number" && Number.isFinite(src.time) && Math.abs(src.time) <= MAX_TIME ? src.time : Date.now(),
+        href: src.href,
+        read: src.read === true,
+      });
+      const at = items.findIndex((i) => i.time <= item.time);
+      if (at < 0) items.push(item); else items.splice(at, 0, item);
+      if (items.length > max) items.length = max;
+      if (!find(item.id)) return null;   // older than everything kept at max: not added, not announced
+      changed();
+      if (item.read) return item.id;   // history (added as read): kept, not announced
+      if (toast && LG.toast) LG.toast(item.title, { type: item.type === "warn" ? "info" : item.type, description: item.description || undefined });
+      else announce(`New notification: ${item.title}`);
+      return item.id;
+    }
+    function markRead(id) {
+      const i = find(id);
+      if (!i || i.read) return;
+      i.read = true;
+      changed();
+    }
+    function markAllRead() {
+      if (!unread()) return;
+      for (const i of items) i.read = true;
+      changed();
+    }
+    function remove(id) {
+      const at = items.findIndex((i) => i.id === id);
+      if (at < 0) return;
+      items.splice(at, 1);
+      changed();
+    }
+    function clear() {
+      if (!items.length) return;
+      items = [];
+      changed();
+    }
+    function on(type, fn) {
+      if (!listeners[type]) throw new Error(`LadaGlass.notifications: unknown event ${type}`);
+      listeners[type].add(fn);
+      return () => listeners[type].delete(fn);
+    }
+    function destroy() {
+      close();
+      for (const b of Array.from(bells.keys())) detach(b);
+      if (panel) panel.remove();
+      clearInterval(timer);
+      listeners.change.clear(); listeners.select.clear();
+      if (registry.get(key) === api) registry.delete(key);
+    }
+
+    const api = {
+      add, markRead, markAllRead, remove, clear, on, attach, open, close, isOpen, destroy,
+      list: () => items.map(copy),
+      unread,
+      get panel() { return hasDom ? ensurePanel() : null; },
+      _has: (b) => bells.has(b),
+    };
+    registry.set(key, api);
+    if (hasDom) wireBells(document);
+    return api;
+  };
+
+  Object.assign(LG.notifications, { relative, ago, bucket, safeHref, parse, serialize });
+})();
 
 // Closes the wrapper opened in 00-head.js: Node gets the object from require(); browsers get the
 // global LadaGlass and the auto-init (every LG._init function, once the DOM is ready).

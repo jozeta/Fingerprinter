@@ -3,6 +3,85 @@
 Newest first. Apps vendor a version under `vendor/lada-glass/<version>/`; `claude-check` reports an
 older copy as advice (DES-FAMILY-2).
 
+## 2.2.0 (2026-11-11)
+
+Notifications: a notification centre for web apps and system notifications for Mac apps. Nothing
+existing changes behaviour; apps copy the new files over the old ones (`lada-glass.css`,
+`lada-glass.js`, `icons/`, and `LadaGlass.swift` for Mac apps).
+
+- `LadaGlass.notifications({storageKey, max = 50, toast = false, locale})` → a centre with `add`
+  (`{title, description, type: info|ok|warn|bad, time, href, read}`), `markRead`, `markAllRead`,
+  `remove`, `clear`, `list` (newest first), `unread`, `on("change" | "select", fn) → off`, `attach(bell)`,
+  `open` / `close` / `isOpen`, `panel` and `destroy`. Items added with `read: true` are history: kept,
+  not toasted or announced. `add` returns null for an item older than everything kept when `max` is full
+  (it is not added, toasted or announced).
+- Bell: `<button data-lg-notifications="<storageKey>">` (a bare attribute for a centre without a key)
+  is wired to the newest centre made with that key, by auto-init or when either appears later; or call
+  `center.attach(button)`. It gets a `.lg-counter` badge ("9+" above 9; hidden at 0) and the
+  `aria-label` "Notifications, 3 unread".
+- Panel: `.lg-notifications`, a floating panel on the menus' layer (`role="dialog"`, moves into an open
+  modal like menus do). A header with "Mark all read", the items grouped Today / Earlier (`role="list"`),
+  each with a type stripe and icon, title, description, relative time (`Intl.RelativeTimeFormat`, short:
+  now, minutes, hours, days, weeks, months, years; refreshed every 30 s while open), an unread dot (unread
+  is also said in text and shown by a bolder title) and a remove button; "No notifications" when empty.
+  Opening it marks nothing read; activating an item does; after "Mark all read" focus moves to the first item. ↑ ↓ Home End move between items; Esc closes it
+  and puts focus back on the bell; focus stays in the list when an item is removed.
+- Safety: all text goes in as `textContent`; only `http:`, `https:` and same-site relative links are
+  used (`javascript:`, `data:`, `vbscript:` and every other scheme are dropped, also with tabs or control
+  characters inside, and so are protocol-relative `//host`, `\\host` and `/\host`). Storage is `{v: 1, items}` in `localStorage`, all access in try/catch; on load,
+  unknown versions and wrong shapes are dropped, titles are capped at 200 characters and descriptions at
+  1,000, and a store over 512 KB is ignored.
+- Announcements: with `toast: true` each new item is a `LadaGlass.toast` (warn shows as info: toasts
+  have no warn type); otherwise it is announced in a visually hidden polite live region (in the newest
+  open modal while one is open).
+- CSS: the panel uses the 2.0 surface recipe; type stripes and icons use the `*-text` status colours
+  (3:1 on the focused fill, where the plain status colours are not); a hovered or focused item has the
+  menus' 16 % accent fill, and its description and time take the text colour there. Still under reduced
+  motion, outlined in forced colours (stripes and dots kept), not printed, 44 px targets on touch.
+  New `.lg-sr-only` (visually hidden) and `.lg-counter[hidden]`.
+- Contrast pairs for the notification text and muted text on the panel, text on the focused fill, the
+  unread dot and every type stripe on the panel and the focused fill, both themes, all accents.
+- Floating panels: a click on a control the panel removed or rebuilt while handling the click (a
+  notification's remove button) no longer counts as a click outside (the event path is checked too).
+- Icons: new `bell`.
+- Swift: `LadaGlass.SystemNotifications(sender:toasts:isAppActive:policy:)` with
+  `requestAuthorization()` and `post(title:body:identifier:type:)`. The default rule posts a macOS
+  notification (UserNotifications) only when the app is not active and shows an `LGToastCenter` toast
+  otherwise; `policy` overrides it. When the user hasn't allowed notifications (or turned them off), a
+  system notification becomes a toast instead (`.none` with no toast centre). Alerts and sound only, no badge. The sender is the injectable `LGNotificationSender` protocol
+  (`LGUserNotificationSender` is the real one), with unit tests in `design/swift`.
+- Preview: a Notifications section with a bell in a demo header, buttons for the sample events (scan
+  finished, new finding, certificate expires in 3 days, sync failed) and a page-palette command "Add
+  sample notification".
+
+## 2.1.0 (2026-11-11)
+
+SwiftUI parity: Mac apps built with `LadaGlass.swift` now look and behave like the 2.0 web apps.
+Nothing changes for web apps (only the version in the headers). Mac apps copy the new
+`LadaGlass.swift` over the old one; it needs macOS 14 and imports Charts.
+
+- Tokens: `LadaGlass.Glass` carries the `glass` group (fill top and bottom, edge, highlight, shadow,
+  glow), and `check_tokens.py swift` checks it.
+- Look: `lgSurface()` and `lgPanel()` use the 2.0 recipe (vertical fill gradient over the material, a
+  1 pt edge, a top highlight, a layered shadow). New `LGButtonStyle` (`.buttonStyle(.lg(.primary))`,
+  also `.secondary`, `.ghost`, `.danger`), with a lit primary and visible pressed states. `LGChip`
+  is a pill with a 12 % tint and a thin tinted outline (neutral: 5 %).
+- Toasts: `LGToastCenter` (`show`, `update`, `dismiss`, `promise`) and `.lgToasts(center)`. Stacked
+  bottom-trailing, at most three visible, fanned out on hover or keyboard / VoiceOver focus (timers
+  pause), 4 s auto-dismiss, loading toasts stay until updated, swipe right or × to dismiss, announced
+  to VoiceOver (bad toasts with high priority).
+- Command palette: `.lgCommandPalette(isPresented:commands:)`, toggled with ⌘K, with the web's fuzzy
+  scoring (`LadaGlass.fuzzy`) and groups; ↑↓ move, Return runs, Esc closes.
+- Numbers: `LGNumber(value:format:showsDelta:)` rolls with `.numericText`; `LGDelta` shows +n / −n
+  (a real minus sign). Instant under Reduce Motion.
+- Charts: `LadaGlass.chartColors()` (the web's order), `.lgChartSeriesStyle(index:)` (a distinct
+  symbol and dash per series, so no chart relies on colour alone) and `LGSparkline(values:)`.
+- Sheets, drawers and popovers stay native: `.lgSheetSurface()` for `.inspector` and `.sheet`,
+  `.lgPopoverSurface()` for `.popover` (recipes in the file header).
+- `design/swift/`: a SwiftPM harness that builds the shipped file, unit tests for the pure parts
+  (fuzzy, chart colours and series styles, delta formatting, toast timing and stacking) and a
+  `#Preview` of every component. `tests/design-swift.test.sh` runs the tests on macOS.
+
 ## 2.0.0 (2026-11-11)
 
 ### Breaking
