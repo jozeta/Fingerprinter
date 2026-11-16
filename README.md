@@ -2,13 +2,17 @@
 
 **See what any website can learn about your browser, without cookies.**
 
-**Live demo: https://jozeta.github.io/Fingerprinter/** · Current version: **2.4.1** ([changelog](CHANGELOG.md))
+**Live demo: https://jozeta.github.io/Fingerprinter/** · Current version: **2.4.2** ([changelog](CHANGELOG.md))
 
 An educational, defensive privacy lab that runs real browser-fingerprinting techniques against your own browser, shows exactly what each one revealed, and explains it in plain language. Every technique is linked to documented real-world use, with an explicit evidence level. Everything runs locally: nothing is sent anywhere.
 
 ![Overview: the fingerprint-ridge figure shows every check by category, coloured by result](docs/images/overview.png)
 
-## What's new in 2.4.1
+## What's new in 2.4.2
+
+- Låda Glass updated from 2.2.0 to 2.2.1 (bug fixes only; the app's behaviour doesn't change).
+
+### 2.4.1
 
 - Låda Glass updated from 2.0.0 to 2.2.0 (CSS fixes; no new components used, no visible feature changes).
 - README screenshots are now in a captioned grid.

@@ -3,6 +3,24 @@
 Newest first. Apps vendor a version under `vendor/lada-glass/<version>/`; `claude-check` reports an
 older copy as advice (DES-FAMILY-2).
 
+## 2.2.1 (2026-11-16)
+
+Bug fixes from the 2026-11-15 bug check. Apps copy the new files over the old ones.
+
+- Reopening a modal, drawer or the palette during its close animation keeps it open (it used to
+  end closed). New `LadaGlass.overlay.isOpen(dialog)`: true when open and not closing.
+- Notifications: the stored history is trimmed to the load limit (512 KB, oldest left out) when
+  saving, so a large `max` no longer wipes the whole history on the next page load; `center.open()`
+  from inside a modal puts the panel in that modal even when the bell is elsewhere or missing.
+- `palette()` returns `destroy()`, which removes its ⌘K/Ctrl+K listener and closes it.
+- Charts and sparklines with very many points (over ~125,000) no longer throw.
+- The stepper works with steps in exponent form (e.g. `step="0.0000001"`).
+- Swift: `LGSparkline` ignores NaN and infinite values (it crashed); a toast with a huge or
+  infinite duration stays until dismissed (it crashed). New `LadaGlass.sparklineSeries(_:)`.
+- Tooling: `build.py` writes nothing when any output fails and stops on a missing
+  `<!-- build:x -->` marker; `check_tokens.py` checks each Swift colour's dark and light value in
+  place, and `textHex`.
+
 ## 2.2.0 (2026-11-11)
 
 Notifications: a notification centre for web apps and system notifications for Mac apps. Nothing

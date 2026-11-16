@@ -1,11 +1,11 @@
-/* Låda Glass 2.2.0: behaviour for lada-glass.css (tools/design). Generated from design/js/ by build.py; do not edit. */
+/* Låda Glass 2.2.1: behaviour for lada-glass.css (tools/design). Generated from design/js/ by build.py; do not edit. */
 // Opens the wrapper that 99-foot.js closes. build.py concatenates design/js/*.js in name order
 // into lada-glass.js; every part in between is plain statements that attach to LG.
 (function (root) {
 "use strict";
 
 const LG = {};
-LG.version = "2.2.0";            // build.py: design/VERSION
+LG.version = "2.2.1";            // build.py: design/VERSION
 LG.tokens = {"accents": [{"name": "fjord", "d": "#5A93C4", "l": "#2B5B84"}, {"name": "arctic-teal", "d": "#459AA3", "l": "#216B73"}, {"name": "slate-steel", "d": "#7D91A8", "l": "#415164"}, {"name": "frost-cyan", "d": "#88C0D0", "l": "#2A7288"}, {"name": "aurora-green", "d": "#A3BE8C", "l": "#45763E"}, {"name": "aurora-violet", "d": "#B48EAD", "l": "#714D88"}, {"name": "lingonberry", "d": "#D96E75", "l": "#A83541"}, {"name": "cloudberry", "d": "#E0915C", "l": "#AD591D"}, {"name": "birch-gold", "d": "#E1BC6D", "l": "#8C6A16"}, {"name": "midnight-indigo", "d": "#8D95E3", "l": "#41479C"}]};       // build.py: { accents: [{name, d, l}, …] } from tokens.json, in its order
 LG._added = [];                      // functions called with each element added to the document (one shared MutationObserver, set up in 04-stepper.js)
 LG._init = [];                       // parts push setup functions (delegated listeners); 99-foot.js runs them once the DOM is ready
@@ -109,7 +109,9 @@ LG.util = {
 //                                                   focused element) and add it to the stack
 //   close(dialog, returnValue?)                     play the close animation, close it, and put
 //                                                   focus back on its trigger
-//   stack()                                         the open overlays, newest last
+//   stack()                                         the open overlays, newest last (incl. closing ones)
+//   isOpen(dialog)                                  open and not closing
+// open() during the close animation cancels the close: the dialog stays open, as it was.
 // Esc closes only the newest overlay. A click on a modal's backdrop closes it unless the dialog has
 // data-lg-static. A <button type="button" data-lg-close value="…"> closes its dialog with that
 // value and skips form validation (use it for Cancel, so Enter in a field never means Cancel). A
@@ -222,7 +224,18 @@ LG.overlay = {
     if (!overlayIsDialog(d)) throw new TypeError("LadaGlass.overlay.open: expected a <dialog> element");
     const o = opts || {};
     overlayPrune();
-    if (overlayState.has(d)) return;   // already open
+    const cur = overlayState.get(d);
+    if (cur && cur.closing && d.open) {
+      // Reopened during its close animation: cancel the close and keep this opening (same place in
+      // the stack, same trigger and onClose); a late animationend or timer no longer settles it.
+      clearTimeout(cur.timer);
+      if (cur.onEnd) d.removeEventListener("animationend", cur.onEnd);
+      d.removeAttribute("data-lg-closing");
+      cur.gen = ++overlayGen;
+      cur.closing = false; cur.timer = 0; cur.onEnd = null;
+      return;
+    }
+    if (cur) return;   // already open
     overlayWire(d);
     const trigger = o.trigger || (document.activeElement !== document.body ? document.activeElement : null);
     d.removeAttribute("data-lg-closing");
@@ -257,6 +270,13 @@ LG.overlay = {
   stack() {
     overlayPrune();
     return overlayStack.slice();
+  },
+
+  // isOpen(d): in the stack and not playing its close animation (open() then cancels the close).
+  isOpen(d) {
+    overlayPrune();
+    const st = overlayState.get(d);
+    return !!st && !st.closing;
   },
 };
 
@@ -470,10 +490,12 @@ LG._init.push(() => {
 // delegated listeners and a MutationObserver, so controls added later work without any setup. The
 // fill also re-syncs on focus, pointer press, change and form reset, so a script setting `value`
 // (which fires no event) is corrected as soon as the slider is used.
+// decimals(n): digits after the point, also for exponent notation (String(1e-7) is "1e-7": 7).
 function decimals(n) {
-  const s = String(n);
-  const i = s.indexOf(".");
-  return i < 0 ? 0 : s.length - i - 1;
+  const m = /^-?\d*(?:\.(\d+))?(?:e([+-]?\d+))?$/i.exec(String(n));
+  if (!m) return 0;
+  const d = (m[1] ? m[1].length : 0) - (m[2] ? Number(m[2]) : 0);
+  return Math.min(100, Math.max(0, d));   // toFixed takes 0–100
 }
 
 function stepInput(input, dir) {
@@ -982,9 +1004,10 @@ LG._init.push(() => {
 
 // Command palette (LadaGlass.palette) on the overlay core: a <dialog class="lg-palette"> about 70 px
 // from the top with a search field and a grouped, fuzzy-filtered list of commands.
-//   palette({commands, placeholder = "Type a command or search…", shortcut = true}) → {open(), close(), setCommands(list)}
+//   palette({commands, placeholder = "Type a command or search…", shortcut = true}) → {open(), close(), setCommands(list), destroy()}
 //   command: {group?, label, keywords?: [], shortcut?: "⌘E", run()}
-// With shortcut, Mod+K (Meta on Apple platforms, Ctrl elsewhere) toggles it from anywhere. Groups
+// With shortcut, Mod+K (Meta on Apple platforms, Ctrl elsewhere) toggles it from anywhere; destroy()
+// removes that document listener and closes the palette (call it when the app drops the palette). Groups
 // keep the order they first appear in; inside a group the best LG.fuzzy score over the label and
 // keywords comes first, then the original order. The field is an ARIA combobox (aria-controls,
 // aria-expanded, aria-activedescendant) over a listbox of options; ↑↓ wrap, Enter or a click runs a
@@ -1028,7 +1051,7 @@ LG.palette = (opts) => {
   const empty = el("p", { class: "lg-palette-empty", attrs: { role: "status" } });
   const d = el("dialog", { class: "lg-palette", attrs: { "aria-label": "Command palette" } }, [input, list, empty]);
 
-  const isOpen = () => LG.overlay.stack().includes(d);
+  const isOpen = () => LG.overlay.isOpen(d);   // false while the close animation plays, so Mod+K reopens it
 
   function select(i) {
     sel = i;
@@ -1120,14 +1143,21 @@ LG.palette = (opts) => {
   };
   api.setCommands(o.commands);
 
+  let offKey = null;
   if (o.shortcut !== false && typeof document !== "undefined") {
-    LG.util.onKey(document, {
+    offKey = LG.util.onKey(document, {
       "Mod+k": (e) => {
         e.preventDefault();
         if (isOpen()) api.close(); else api.open();
       },
     });
   }
+  // destroy(): remove the Mod+K shortcut and close the palette (no pending command runs).
+  api.destroy = () => {
+    if (offKey) { offKey(); offKey = null; }
+    pending = null;
+    api.close();
+  };
   return api;
 };
 
@@ -1550,6 +1580,10 @@ LG._init.push(() => {
 // result instead.
 const fin = Number.isFinite;
 const round2 = (x) => { const r = Math.round(x * 100) / 100; return Object.is(r, -0) ? 0 : r; };
+// arrMin(a) / arrMax(a): Math.min / Math.max over an array in a loop (a spread throws past ~125k
+// items). Empty gives Infinity / -Infinity, as Math.min() / Math.max() do.
+const arrMin = (a) => { let m = Infinity; for (const v of a) if (v < m || Number.isNaN(v)) m = v; return m; };
+const arrMax = (a) => { let m = -Infinity; for (const v of a) if (v > m || Number.isNaN(v)) m = v; return m; };
 
 LG.chart = {
   // niceTicks(min, max, count = 5): ticks at 1, 2 or 5 × 10ⁿ steps covering [min, max]; a flat
@@ -1643,7 +1677,7 @@ LG.chart.sparkline = (el, values, opts) => {
   el.removeAttribute("data-lg-empty");
   const ys = pts.map((p) => p[1]);
   const x = LG.chart.scale([pts[0][0], pts[pts.length - 1][0]], [0, W]);
-  const y = LG.chart.scale([Math.min(...ys), Math.max(...ys)], [H - PAD, PAD]);
+  const y = LG.chart.scale([arrMin(ys), arrMax(ys)], [H - PAD, PAD]);
   const xy = pts.map((p) => [x(p[0]), y(p[1])]);
   const line = LG.chart.linePath(xy);
   const kids = [];
@@ -1883,16 +1917,16 @@ LG.chart.sparkline = (el, values, opts) => {
     const fy = userFmt(o.y && o.y.format, (v) => fullNum.format(v));
     const ys = all.map((p) => p[1]);
     const top = 10, bottom = 24;
-    const ax = valueAxis(Math.min(...ys), Math.max(...ys), H - top - bottom, userFmt(o.y && o.y.format, null));
+    const ax = valueAxis(arrMin(ys), arrMax(ys), H - top - bottom, userFmt(o.y && o.y.format, null));
     const y = C.scale([ax.lo, ax.hi], [H - bottom, top]);
-    const left = Math.max(...ax.labels.map((t) => t.length)) * CH + 12;
+    const left = arrMax(ax.labels.map((t) => t.length)) * CH + 12;
 
     // End labels: 2–4 series whose last points are at least 14 px apart; otherwise the legend and dashes carry identity.
     const drawn = series.filter((x) => x.pts.length);
     let ends = drawn.length >= 2 && drawn.length <= 4 ? drawn.map((x) => ({ x, y: y(x.pts[x.pts.length - 1][1]), text: short(x.name, 18) })) : [];
     const ey = ends.map((e) => e.y).sort((a, b) => a - b);
     if (ey.some((v, i) => i && v - ey[i - 1] < 14)) ends = [];
-    const right = ends.length ? Math.max(...ends.map((e) => e.text.length)) * CH + 14 : 16;
+    const right = ends.length ? arrMax(ends.map((e) => e.text.length)) * CH + 14 : 16;
     const x0 = left, x1 = Math.max(left + 20, W - right);
     const x = C.scale([xs[0], xs[xs.length - 1]], [x0, x1]);
     const px = xs.map(x);
@@ -1936,7 +1970,7 @@ LG.chart.sparkline = (el, values, opts) => {
     const summary = drawn.map((sr) => {
       const v = sr.pts.map((p) => p[1]);
       return v.length === 1 ? `${sr.name} ${fy(v[0])}` :
-        `${sr.name} ${fy(v[0])} to ${fy(v[v.length - 1])} (low ${fy(Math.min(...v))}, high ${fy(Math.max(...v))})`;
+        `${sr.name} ${fy(v[0])} to ${fy(v[v.length - 1])} (low ${fy(arrMin(v))}, high ${fy(arrMax(v))})`;
     }).join("; ");
     return {
       nodes,
@@ -1948,7 +1982,7 @@ LG.chart.sparkline = (el, values, opts) => {
         at(i) {
           const vals = series.map((sr) => valueAt(sr, xs[i]));
           const fy0 = vals.filter((v) => v !== null);
-          return { title: fx(xs[i]), x: px[i], y: fy0.length ? y(Math.max(...fy0)) : top,
+          return { title: fx(xs[i]), x: px[i], y: fy0.length ? y(arrMax(fy0)) : top,
                    rows: series.map((sr, k) => ({ name: sr.name, value: vals[k] === null ? "–" : fy(vals[k]), swatch: swatchLine(sr.color, sr.dash) })) };
         },
         mark(i) {
@@ -1990,12 +2024,12 @@ LG.chart.sparkline = (el, values, opts) => {
     });
     const k = stacked ? 1 : series.length;
     const labelled = !stacked;
-    const valueLen = Math.max(...series.map((sr) => Math.max(...sr.vals.map((v) => (v === null ? 0 : fv(v).length)))));
+    const valueLen = arrMax(series.map((sr) => arrMax(sr.vals.map((v) => (v === null ? 0 : fv(v).length)))));
 
     let x0, x1, y0, y1, height, ax;
     if (horiz) {
       const band = Math.max(28, k * 14 + 12);
-      x0 = Math.min(W * 0.4, Math.max(...cats.map((c) => short(c, 24).length)) * CH + 12);
+      x0 = Math.min(W * 0.4, arrMax(cats.map((c) => short(c, 24).length)) * CH + 12);
       x1 = Math.max(x0 + 20, W - 10 - (labelled ? valueLen * CH + 6 : 0));
       y0 = 8; y1 = y0 + band * cats.length;
       height = y1 + 24;
@@ -2003,7 +2037,7 @@ LG.chart.sparkline = (el, values, opts) => {
     } else {
       y0 = labelled ? 18 : 10; y1 = H - 24;
       ax = valueAxis(lo, hi, y1 - y0);
-      x0 = Math.max(...ax.labels.map((t) => t.length)) * CH + 12;
+      x0 = arrMax(ax.labels.map((t) => t.length)) * CH + 12;
       x1 = W - 8;
     }
     const v = horiz ? C.scale([ax.lo, ax.hi], [x0, x1]) : C.scale([ax.lo, ax.hi], [y1, y0]);
@@ -2274,7 +2308,7 @@ LG._init.push(() => {
 //   wired to the newest centre made with that key, whenever either appears. The bell gets a
 //   .lg-counter badge ("9+" above 9) and aria-label "Notifications, 3 unread".
 //   The panel is a floating .lg-notifications (role="dialog", the LG._float layer of popovers and
-//   menus, so it moves into an open modal): a header with "Mark all read", the items grouped Today /
+//   menus, so it moves into the newest open modal, also when the bell is elsewhere or missing): a header with "Mark all read", the items grouped Today /
 //   Earlier (role="list"), each with a type icon and stripe, title, description, relative time, an
 //   unread dot and a remove button; a link only for http(s) and relative hrefs. Opening it marks
 //   nothing read; activating an item does. ↑ ↓ Home End move between items; Esc closes it and puts
@@ -2283,6 +2317,7 @@ LG._init.push(() => {
 //   otherwise the item is announced in a visually hidden polite live region.
 //   With a storageKey the items persist in localStorage as {v: 1, items}; every access is in
 //   try/catch, and what is loaded is validated (wrong shapes dropped, text capped, links filtered).
+//   What is saved always fits the 512 KB load limit: past it the oldest items are left out of the store.
 // Pure helpers (unit-tested in Node): relative(time, now) → {value, unit}, ago(time, now, locale),
 // bucket(time, now) → "today" | "earlier", safeHref(h), parse(text, max), serialize(items).
 (function () {
@@ -2291,6 +2326,7 @@ LG._init.push(() => {
   const MAX_TIME = 8.64e15;   // the Date range
   const VERSION = 1;
   const hasDom = typeof document !== "undefined";
+  const isModal = (d) => { try { return d.matches(":modal"); } catch (_) { return true; } };
 
   // --- pure parts ------------------------------------------------------------------------------
 
@@ -2343,6 +2379,25 @@ LG._init.push(() => {
   }
 
   const serialize = (items) => JSON.stringify({ v: VERSION, items });
+
+  // fitStore(items): serialize the newest items (items are newest first) that fit in CAP.store, so
+  // what is saved is never something parse() rejects; the oldest are left out of the store.
+  function fitStore(list) {
+    let n = list.length;
+    let text = serialize(list);
+    if (text.length <= CAP.store) return text;
+    let size = serialize([]).length - 1;   // the items' JSON and their commas fill the rest
+    n = 0;
+    for (const item of list) {
+      const add = JSON.stringify(item).length + 1;
+      if (size + add > CAP.store) break;
+      size += add;
+      n++;
+    }
+    text = serialize(list.slice(0, n));
+    while (n > 0 && text.length > CAP.store) text = serialize(list.slice(0, --n));   // never, but safe
+    return text;
+  }
 
   // Thresholds: under 45 s "now"; then minutes, hours, days (under 7), weeks (under 30 days),
   // months (under a year), years. Whole units, rounded down, at least 1. The future counts as now.
@@ -2444,7 +2499,7 @@ LG._init.push(() => {
     function save() {
       const s = key ? storage() : null;
       if (!s) return;
-      try { s.setItem(key, serialize(items)); } catch (_) { /* full or denied: the centre still works */ }
+      try { s.setItem(key, fitStore(items)); } catch (_) { /* full or denied: the centre still works */ }
     }
     function emit(type, arg) {
       for (const fn of Array.from(listeners[type])) {
@@ -2630,11 +2685,16 @@ LG._init.push(() => {
       const t = trigger && trigger.isConnected ? trigger : Array.from(bells.keys()).find((b) => b.isConnected) || null;
       ensurePanel();
       render();
+      // The panel goes into the newest open modal when there is one (anywhere else the modal makes it
+      // inert): through the bell when the bell is in that modal, otherwise through the modal itself.
+      const modals = LG.overlay ? LG.overlay.stack().filter((d) => d.open && d.isConnected && isModal(d)) : [];
+      const top = modals[modals.length - 1];
+      const host = top && !(t && top.contains(t)) ? top : t;
       const corner = () => {
         const w = document.documentElement.clientWidth;
         return { left: w - 8, right: w - 8, top: 8, bottom: 8, width: 0, height: 0 };
       };
-      LG._float.open(panel, { anchor: t ? () => t.getBoundingClientRect() : corner, side: "bottom", host: t, trigger: t,
+      LG._float.open(panel, { anchor: t ? () => t.getBoundingClientRect() : corner, side: "bottom", host, trigger: t,
         onClose: () => {
           clearInterval(timer);
           timer = 0;

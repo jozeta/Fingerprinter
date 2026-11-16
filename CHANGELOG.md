@@ -4,6 +4,12 @@ All notable changes to this project. Versions follow [semantic versioning](https
 
 ## Unreleased
 
+## 2.4.2 (2026-11-16)
+
+- Låda Glass 2.2.0 → 2.2.1: bug fixes only; the app's behaviour doesn't change.
+  Vendored in `vendor/lada-glass/2.2.1/` (the 2.2.0 folder removed); `lada-glass.js` is vendored but
+  still not loaded
+
 ## 2.4.1 (2026-11-12)
 
 - Låda Glass 2.0.0 -> 2.2.0 (vendored in `vendor/lada-glass/2.2.0/`, the 2.0.0 folder removed): CSS
